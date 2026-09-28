@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="晶序：根据星座、五行、MBTI 或近期状态匹配水晶，自由选择毫米珠子并实时串出专属手链。"
+    />
+    <title>晶序 | 水晶匹配与自由串珠</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <a class="brand" href="#test" aria-label="晶序首页">
+          <span class="brand-gem" aria-hidden="true">
+            <span></span>
+          </span>
+          <span class="brand-copy">
+            <strong>晶序</strong>
+            <small>把此刻，串成一条路</small>
+          </span>
+        </a>
+
+        <nav class="main-nav" id="main-nav" aria-label="应用导航">
+          <button class="nav-button is-active" type="button" data-view="test" aria-selected="true">
+            水晶测配
+          </button>
+          <button class="nav-button" type="button" data-view="studio" aria-selected="false">
+            自由串珠
+          </button>
+          <button class="nav-button" type="button" data-view="library" aria-selected="false">
+            水晶图鉴
+          </button>
+        </nav>
+
+        <p class="header-note">象征与情绪偏好工具，非医疗建议</p>
+      </header>
+
+      <main class="app-main">
+        <section class="app-view is-active" id="view-test" data-view-panel="test">
+          <div class="view-heading test-heading">
+            <div>
+              <p class="eyebrow">1 秒水晶测配</p>
+              <h1>你现在适合什么水晶？</h1>
+              <p>任选一种入口告诉晶序：星座、五行、人格，或最近最想疏解的事。</p>
+            </div>
+            <div class="status-chip">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="engine-status">测配引擎已就绪</span>
+            </div>
+          </div>
+
+          <div class="test-layout">
+            <section class="panel form-panel" aria-labelledby="form-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-kicker">选择入口</p>
+                  <h2 id="form-title">从最像你的地方开始</h2>
+                </div>
+                <span class="step-mark">01</span>
+              </div>
+
+              <div class="source-tabs" id="source-tabs" role="tablist" aria-label="测配入口">
+                <button class="source-tab is-active" type="button" role="tab" data-source="zodiac" aria-selected="true">
+                  星座
+                </button>
+                <button class="source-tab" type="button" role="tab" data-source="element" aria-selected="false">
+                  五行
+                </button>
+                <button class="source-tab" type="button" role="tab" data-source="mbti" aria-selected="false">
+                  人格
+                </button>
+                <button class="source-tab" type="button" role="tab" data-source="issue" aria-selected="false">
+                  最近不顺
+                </button>
+              </div>
+
+              <div class="source-context">
+                <p class="source-title" id="source-title">选择你的星座</p>
+                <p class="source-copy" id="source-copy">不确定上升星座也没关系，选太阳星座即可。</p>
+              </div>
+
+              <div class="choice-area" id="choice-area" aria-live="polite"></div>
+
+              <div class="selection-note" id="selection-note">
+                <span>未选择</span>
+                <span>测配将基于象征关联与情绪偏好</span>
+              </div>
+
+              <button class="primary-action" id="analyze-button" type="button" disabled>
+                <span class="button-shine" aria-hidden="true"></span>
+                <span id="analyze-label">请先完成选择</span>
+              </button>
+
+              <p class="wellness-note">
+                水晶内容用于日常自我关照与仪式感，不替代专业医疗、心理或财务建议。
+              </p>
+            </section>
+
+            <section class="panel result-panel" id="result-panel" aria-labelledby="result-title">
+              <div class="empty-result" id="empty-result">
+                <div class="empty-orbit" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <p class="panel-kicker">你的水晶配方</p>
+                <h2 id="result-title">答案会在选择后出现</h2>
+                <p>你会得到一颗主石、两颗辅助石、能量柱状图、静心方法和一句赠言。</p>
+                <div class="preview-dimensions" aria-label="测配维度">
+                  <span>稳定</span>
+                  <span>清晰</span>
+                  <span>勇气</span>
+                  <span>柔软</span>
+                  <span>直觉</span>
+                  <span>行动</span>
+                </div>
+              </div>
+
+              <div class="result-content" id="result-content" hidden>
+                <div class="result-topline">
+                  <p class="panel-kicker" id="result-match-label">你的此刻配方</p>
+                  <button class="text-action" id="copy-result-button" type="button">复制摘要</button>
+                </div>
+
+                <div class="result-hero">
+                  <div class="bracelet-stage result-bracelet-stage">
+                    <canvas
+                      class="bracelet-canvas"
+                      id="result-bracelet"
+                      role="img"
+                      aria-label="根据测配结果生成的水晶手链预览"
+                    ></canvas>
+                  </div>
+                  <div class="result-main">
+                    <p class="match-caption">当前主石</p>
+                    <h2 id="primary-crystal-name">紫水晶</h2>
+                    <p class="crystal-en" id="primary-crystal-en">Amethyst</p>
+                    <p class="result-meaning" id="primary-crystal-meaning"></p>
+                    <div class="result-tags" id="primary-crystal-tags"></div>
+                  </div>
+                </div>
+
+                <div class="recipe-strip" id="recipe-strip"></div>
+
+                <div class="result-section">
+                  <div class="section-heading">
+                    <div>
+                      <p class="panel-kicker">组合能量</p>
+                      <h3>六维情绪力量</h3>
+                    </div>
+                    <span class="section-note" id="energy-dominant-label">直觉领先</span>
+                  </div>
+                  <div class="energy-chart" id="result-energy-chart" role="img" aria-label="组合情绪力量柱状图"></div>
+                </div>
+
+                <div class="result-section">
+                  <div class="section-heading">
+                    <div>
+                      <p class="panel-kicker">三石静心法</p>
+                      <h3>把寓意变成今天的行动</h3>
+                    </div>
+                  </div>
+                  <div class="ritual-list" id="ritual-list"></div>
+                </div>
+
+                <blockquote class="daily-quote">
+                  <span class="quote-mark" aria-hidden="true">“</span>
+                  <p id="quote-text"></p>
+                  <cite id="quote-author"></cite>
+                </blockquote>
+
+                <div class="result-actions">
+                  <button class="primary-action compact" id="use-recipe-button" type="button">
+                    用这套配方开始串珠
+                  </button>
+                  <button class="secondary-action" id="reroll-button" type="button">重新选择</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="app-view" id="view-studio" data-view-panel="studio" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">自由串珠台</p>
+              <h1>你的手链，你决定每一颗</h1>
+              <p>挑选水晶与 6 / 8 / 10 / 12 毫米珠径，实时看到手链、颗粒数量与组合能量。</p>
+            </div>
+            <div class="heading-actions">
+              <button class="secondary-action" id="load-sample-button" type="button">载入示例</button>
+              <button class="secondary-action danger" id="clear-bracelet-button" type="button">清空手链</button>
+            </div>
+          </div>
+
+          <div class="studio-layout">
+            <section class="panel studio-picker-panel" aria-labelledby="picker-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-kicker">选珠子</p>
+                  <h2 id="picker-title">水晶与珠径</h2>
+                </div>
+                <span class="step-mark">02</span>
+              </div>
+
+              <div class="size-selector" id="size-selector" role="radiogroup" aria-label="选择珠子直径">
+                <button type="button" role="radio" data-size="6" aria-checked="false">6 mm</button>
+                <button type="button" role="radio" data-size="8" aria-checked="true" class="is-active">8 mm</button>
+                <button type="button" role="radio" data-size="10" aria-checked="false">10 mm</button>
+                <button type="button" role="radio" data-size="12" aria-checked="false">12 mm</button>
+              </div>
+
+              <label class="stone-search">
+                <span class="sr-only">搜索水晶名称</span>
+                <input id="stone-search" type="search" placeholder="搜索水晶名称" autocomplete="off" />
+              </label>
+
+              <div class="stone-picker" id="stone-picker"></div>
+
+              <div class="picker-foot">
+                <div class="selected-size-readout">
+                  <span>当前珠径</span>
+                  <strong id="selected-size-readout">8 mm</strong>
+                </div>
+                <button class="primary-action compact" id="add-bead-button" type="button">加入下一颗</button>
+              </div>
+            </section>
+
+            <section class="panel studio-preview-panel" aria-labelledby="preview-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-kicker">实时预览</p>
+                  <h2 id="preview-title">你的组合手链</h2>
+                </div>
+                <span class="bead-count" id="bead-count">0 颗</span>
+              </div>
+
+              <div class="bracelet-stage studio-bracelet-stage">
+                <canvas
+                  class="bracelet-canvas"
+                  id="studio-bracelet"
+                  role="img"
+                  aria-label="自由组合的水晶手链预览，点击珠子可选中"
+                ></canvas>
+                <div class="canvas-empty" id="studio-canvas-empty">
+                  <span>从左侧加入第一颗珠子</span>
+                </div>
+              </div>
+
+              <div class="composition-stats" id="composition-stats"></div>
+
+              <div class="result-section energy-section studio-energy-section">
+                <div class="section-heading">
+                  <div>
+                    <p class="panel-kicker">组合能量</p>
+                    <h3>正在形成的力量</h3>
+                  </div>
+                  <span class="section-note" id="studio-energy-label">等待添加</span>
+                </div>
+                <div class="energy-chart" id="studio-energy-chart" role="img" aria-label="定制手链的组合能量柱状图"></div>
+              </div>
+            </section>
+
+            <section class="panel sequence-panel" aria-labelledby="sequence-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-kicker">排列顺序</p>
+                  <h2 id="sequence-title">珠串清单</h2>
+                </div>
+                <span class="step-mark">03</span>
+              </div>
+
+              <p class="drag-note">拖动珠子调整位置，点击珠子可修改珠径。</p>
+              <div class="sequence-list" id="sequence-list" aria-live="polite"></div>
+
+              <div class="bead-editor" id="bead-editor" hidden>
+                <div class="editor-heading">
+                  <div>
+                    <span>当前选中</span>
+                    <strong id="editor-stone-name">紫水晶</strong>
+                  </div>
+                  <button class="text-action danger-text" id="remove-bead-button" type="button">移除</button>
+                </div>
+                <div class="editor-size" id="editor-size" role="radiogroup" aria-label="修改选中珠子直径">
+                  <button type="button" data-editor-size="6">6</button>
+                  <button type="button" data-editor-size="8">8</button>
+                  <button type="button" data-editor-size="10">10</button>
+                  <button type="button" data-editor-size="12">12</button>
+                </div>
+                <div class="editor-actions">
+                  <button class="secondary-action small" id="move-bead-left" type="button">← 向前</button>
+                  <button class="secondary-action small" id="move-bead-right" type="button">向后 →</button>
+                </div>
+              </div>
+
+              <button class="secondary-action full-width" id="copy-bracelet-button" type="button">
+                复制手链清单
+              </button>
+            </section>
+          </div>
+        </section>
+
+        <section class="app-view" id="view-library" data-view-panel="library" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">水晶图鉴</p>
+              <h1>先理解它，再决定是否靠近</h1>
+              <p>查看每种水晶的象征、情绪力量、佩戴建议和一日静心方法。</p>
+            </div>
+          </div>
+
+          <div class="library-layout">
+            <section class="panel crystal-index-panel" aria-labelledby="crystal-index-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="panel-kicker" id="catalog-count">成品水晶珠图鉴</p>
+                  <h2 id="crystal-index-title">图鉴目录</h2>
+                </div>
+              </div>
+              <div class="crystal-index" id="crystal-index"></div>
+            </section>
+
+            <section class="panel crystal-detail-panel" id="crystal-detail-panel" aria-live="polite">
+              <div class="crystal-detail-hero">
+                <div class="detail-gem-stage">
+                  <canvas
+                    class="single-gem-canvas"
+                    id="detail-gem-canvas"
+                    role="img"
+                    aria-label="当前水晶的切面预览"
+                  ></canvas>
+                </div>
+                <div>
+                  <p class="panel-kicker">当前水晶</p>
+                  <h2 id="detail-name">紫水晶</h2>
+                  <p class="crystal-en" id="detail-en">Amethyst</p>
+                  <p class="detail-meaning" id="detail-meaning"></p>
+                  <div class="result-tags" id="detail-tags"></div>
+                </div>
+              </div>
+
+              <div class="detail-facts">
+                <div>
+                  <span>对应情绪</span>
+                  <strong id="detail-emotion"></strong>
+                </div>
+                <div>
+                  <span>五行象征</span>
+                  <strong id="detail-element"></strong>
+                </div>
+              </div>
+
+              <div class="result-section">
+                <div class="section-heading">
+                  <div>
+                    <p class="panel-kicker">情绪力量</p>
+                    <h3>六维象征图谱</h3>
+                  </div>
+                </div>
+                <div class="energy-chart" id="detail-energy-chart" role="img" aria-label="当前水晶的情绪力量柱状图"></div>
+              </div>
+
+              <div class="library-ritual">
+                <p class="panel-kicker">一日静心法</p>
+                <p id="detail-ritual"></p>
+              </div>
+
+              <div class="library-action-row">
+                <button class="primary-action compact" id="add-detail-to-bracelet" type="button">
+                  用 8 mm 加入手链
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <details class="image-credits">
+            <summary>颜色参考与来源</summary>
+            <p>
+              成品圆珠使用程序化材质绘制，仅参考公开矿物样本的色调与天然特征。点击条目可查看参考资料与授权。
+            </p>
+            <div class="image-credits-list" id="image-credits-list"></div>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./assets/crystals/image-data.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
