@@ -732,10 +732,12 @@
   }
 
   const REAL_BEAD_BY_ID = {
+    ...(window.GENERATED_BEAD_IMAGES || {}),
     amethyst: "./assets/beads/generated-3d-real/uruguay-classic.png",
     clear: "./assets/beads/generated-3d-real/clear-quartz.png",
   };
   const REAL_BEAD_BY_NAME = {
+    ...(window.GENERATED_BEAD_IMAGES_BY_NAME || {}),
     "巴西浅紫": "./assets/beads/generated-3d-real/brasil-light.png",
     "巴西紫": "./assets/beads/generated-3d-real/mid-amethyst.png",
     "乌拉圭紫": "./assets/beads/generated-3d-real/uruguay-classic.png",
