@@ -1039,6 +1039,7 @@
         analyzeLabel: document.getElementById("analyze-label"),
         engineStatus: document.getElementById("engine-status"),
         emptyResult: document.getElementById("empty-result"),
+        resultPanel: document.getElementById("result-panel"),
         resultContent: document.getElementById("result-content"),
         resultMatchLabel: document.getElementById("result-match-label"),
         resultBracelet: document.getElementById("result-bracelet"),
@@ -1480,6 +1481,11 @@
       this.dom.quoteText.textContent = result.quote.text;
       this.dom.quoteAuthor.textContent = `—— ${result.quote.author}`;
       requestAnimationFrame(() => this.renderResultCanvas());
+      if (window.matchMedia("(max-width: 700px)").matches) {
+        requestAnimationFrame(() => {
+          this.dom.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
     }
 
     renderEnergyChart(container, energies) {

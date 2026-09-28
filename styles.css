@@ -1855,6 +1855,383 @@ a:focus-visible {
   }
 }
 
+@media (max-width: 700px) {
+  :root {
+    --mobile-nav-height: 66px;
+  }
+
+  html {
+    background: var(--canvas);
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: 15px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app-header {
+    position: static;
+    display: block;
+    min-height: 0;
+    padding: calc(12px + env(safe-area-inset-top)) 16px 8px;
+    border-bottom: 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .brand-gem {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-copy strong {
+    font-size: 18px;
+  }
+
+  .brand-copy small {
+    display: none;
+  }
+
+  .main-nav {
+    position: fixed;
+    z-index: 40;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid rgba(185, 203, 199, 0.9);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 -10px 30px rgba(36, 74, 72, 0.09);
+    backdrop-filter: blur(18px);
+  }
+
+  .nav-button {
+    display: grid;
+    min-width: 0;
+    min-height: 52px;
+    place-items: center;
+    padding: 4px 2px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.2;
+    touch-action: manipulation;
+  }
+
+  .nav-button::before {
+    width: 20px;
+    height: 4px;
+    border-radius: 999px;
+    background: currentColor;
+    content: "";
+    opacity: 0.25;
+  }
+
+  .nav-button.is-active {
+    background: var(--teal-soft);
+    color: var(--teal-deep);
+    box-shadow: none;
+  }
+
+  .nav-button.is-active::before {
+    opacity: 1;
+  }
+
+  .app-main {
+    padding: 6px 12px calc(28px + var(--mobile-nav-height) + env(safe-area-inset-bottom));
+  }
+
+  .view-heading {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .view-heading h1 {
+    margin: 2px 0 6px;
+    font-size: 28px;
+  }
+
+  .view-heading p:not(.eyebrow) {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .view-heading .heading-actions {
+    margin-top: 12px;
+  }
+
+  .panel {
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(36, 74, 72, 0.06);
+  }
+
+  .form-panel,
+  .studio-picker-panel,
+  .sequence-panel,
+  .studio-preview-panel,
+  .crystal-index-panel,
+  .crystal-detail-panel,
+  .result-panel {
+    padding: 16px;
+  }
+
+  .panel-heading {
+    margin-bottom: 16px;
+  }
+
+  .panel-heading h2,
+  .section-heading h3 {
+    font-size: 18px;
+  }
+
+  .step-mark {
+    font-size: 20px;
+  }
+
+  .source-tabs {
+    gap: 3px;
+  }
+
+  .source-tab {
+    min-height: 46px;
+    font-size: 13px;
+    touch-action: manipulation;
+  }
+
+  .source-context {
+    margin: 18px 0 12px;
+  }
+
+  .choice-area {
+    min-height: 0;
+    gap: 9px;
+  }
+
+  .choice-button {
+    min-height: 56px;
+    padding: 10px 11px;
+    border-radius: 8px;
+    font-size: 14px;
+    touch-action: manipulation;
+  }
+
+  .choice-button small {
+    font-size: 10px;
+  }
+
+  .selection-note {
+    margin-top: 12px;
+    padding: 9px 0;
+  }
+
+  .primary-action {
+    min-height: 52px;
+    border-radius: 8px;
+    font-size: 15px;
+    touch-action: manipulation;
+  }
+
+  .secondary-action {
+    min-height: 48px;
+    border-radius: 8px;
+    touch-action: manipulation;
+  }
+
+  .secondary-action.small {
+    min-height: 42px;
+  }
+
+  .stone-search input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .size-selector,
+  .editor-size {
+    gap: 4px;
+  }
+
+  .size-selector button,
+  .editor-size button {
+    min-height: 44px;
+    font-size: 14px;
+    touch-action: manipulation;
+  }
+
+  .stone-picker {
+    max-height: 46vh;
+  }
+
+  .stone-option {
+    grid-template-columns: 34px minmax(0, 1fr);
+    min-height: 58px;
+    border-radius: 8px;
+    touch-action: manipulation;
+  }
+
+  .gem-thumb {
+    width: 34px;
+    height: 34px;
+  }
+
+  .picker-foot {
+    position: sticky;
+    z-index: 10;
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
+    margin-top: 12px;
+    padding: 12px 0 8px;
+    background: #fff;
+  }
+
+  .picker-foot .primary-action {
+    min-height: 50px;
+  }
+
+  .studio-bracelet-stage,
+  .bracelet-canvas {
+    min-height: 280px;
+  }
+
+  .result-bracelet-stage,
+  .result-bracelet-stage .bracelet-canvas {
+    min-height: 230px;
+  }
+
+  .result-hero {
+    gap: 14px;
+    padding: 0 0 18px;
+  }
+
+  .result-main h2 {
+    font-size: 32px;
+  }
+
+  .result-meaning,
+  .detail-meaning {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .result-section {
+    margin-top: 22px;
+  }
+
+  .recipe-strip,
+  .ritual-list {
+    gap: 8px;
+  }
+
+  .energy-chart {
+    min-height: 154px;
+    padding: 16px 6px 0;
+    gap: 4px;
+  }
+
+  .energy-bar-track {
+    min-height: 104px;
+  }
+
+  .energy-label {
+    font-size: 10px;
+  }
+
+  .result-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .result-actions > * {
+    width: 100%;
+  }
+
+  .daily-quote {
+    margin-top: 18px;
+    padding: 18px;
+  }
+
+  .sequence-list {
+    max-height: none;
+  }
+
+  .sequence-item {
+    min-height: 56px;
+    touch-action: manipulation;
+  }
+
+  .drag-note {
+    margin-top: -4px;
+  }
+
+  .crystal-index {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 8px;
+    max-height: none;
+    padding: 0 2px 6px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+
+  .library-layout > *,
+  .crystal-index-panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .crystal-index-button {
+    flex: 0 0 146px;
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .crystal-detail-panel {
+    margin-top: 12px;
+  }
+
+  .detail-gem-stage,
+  .single-gem-canvas {
+    min-height: 220px;
+  }
+
+  .detail-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .image-credits {
+    margin-top: 12px;
+  }
+
+  .toast {
+    right: 12px;
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 12px);
+    left: 12px;
+    max-width: none;
+    text-align: center;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .choice-button:hover,
+  .primary-action:hover:not(:disabled),
+  .secondary-action:hover,
+  .stone-option:hover,
+  .image-credit-item:hover {
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
