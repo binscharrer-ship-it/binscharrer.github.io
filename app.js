@@ -732,17 +732,17 @@
   }
 
   const REAL_BEAD_BY_ID = {
-    amethyst: "./assets/beads/live/uruguay-classic.png",
-    clear: "./assets/beads/live/clear-quartz.png",
+    amethyst: "./assets/beads/generated-3d-real/uruguay-classic.png",
+    clear: "./assets/beads/generated-3d-real/clear-quartz.png",
   };
   const REAL_BEAD_BY_NAME = {
-    "巴西浅紫": "./assets/beads/live/brasil-light.png",
-    "巴西紫": "./assets/beads/live/mid-amethyst.png",
-    "乌拉圭紫": "./assets/beads/live/uruguay-classic.png",
-    "薰衣草紫": "./assets/beads/live/brasil-light.png",
-    "梦幻紫": "./assets/beads/live/deep-amethyst.png",
-    "白水晶": "./assets/beads/live/clear-quartz.png",
-    "净体白水晶": "./assets/beads/live/clear-quartz.png",
+    "巴西浅紫": "./assets/beads/generated-3d-real/brasil-light.png",
+    "巴西紫": "./assets/beads/generated-3d-real/mid-amethyst.png",
+    "乌拉圭紫": "./assets/beads/generated-3d-real/uruguay-classic.png",
+    "薰衣草紫": "./assets/beads/generated-3d-real/brasil-light.png",
+    "梦幻紫": "./assets/beads/generated-3d-real/deep-amethyst.png",
+    "白水晶": "./assets/beads/generated-3d-real/clear-quartz.png",
+    "净体白水晶": "./assets/beads/generated-3d-real/clear-quartz.png",
   };
 
   function realBeadForName(name) {
