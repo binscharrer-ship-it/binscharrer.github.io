@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "cihu-union-platform/**"
+      - "cihu-union-cloud/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -34,6 +35,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -R cihu-union-platform _site/cihu-union-platform
+          cp -R cihu-union-cloud _site/cihu-union-cloud
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -45,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}cihu-union-platform/
+      url: ${{ steps.deployment.outputs.page_url }}cihu-union-cloud/
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
