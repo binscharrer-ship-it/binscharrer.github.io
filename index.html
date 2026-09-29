@@ -367,7 +367,10 @@
                     <span>当前选中</span>
                     <strong id="editor-stone-name">紫水晶</strong>
                   </div>
-                  <button class="text-action danger-text" id="remove-bead-button" type="button">移除</button>
+                  <div class="editor-heading-actions">
+                    <button class="text-action danger-text" id="remove-bead-button" type="button">移除</button>
+                    <button class="text-action" id="close-bead-editor" type="button">收起</button>
+                  </div>
                 </div>
                 <div class="editor-size" id="editor-size" role="radiogroup" aria-label="修改选中珠子直径">
                   <button type="button" data-editor-size="6">6</button>
@@ -385,6 +388,10 @@
                 复制手链清单
               </button>
             </section>
+          </div>
+          <div class="studio-mobile-dock" id="studio-mobile-dock" hidden>
+            <button class="primary-action compact" id="studio-jump-picker" type="button">选珠子</button>
+            <button class="secondary-action" id="studio-edit-selected" type="button">编辑选中</button>
           </div>
         </section>
 

@@ -1342,6 +1342,20 @@ a:focus-visible {
   margin-bottom: 10px;
 }
 
+.editor-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#close-bead-editor {
+  display: none;
+}
+
+.studio-mobile-dock {
+  display: none;
+}
+
 .editor-heading span,
 .editor-heading strong {
   display: block;
@@ -2484,6 +2498,63 @@ a:focus-visible {
 
   .picker-foot .primary-action {
     min-height: 50px;
+  }
+
+  #view-studio {
+    padding-bottom: 62px;
+  }
+
+  .studio-mobile-dock {
+    position: fixed;
+    z-index: 36;
+    right: 12px;
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 8px);
+    left: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: rgba(255, 253, 253, 0.96);
+    box-shadow: 0 12px 34px rgba(91, 62, 77, 0.16);
+    backdrop-filter: blur(16px);
+  }
+
+  .studio-mobile-dock .primary-action,
+  .studio-mobile-dock .secondary-action {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .bead-editor {
+    position: fixed;
+    z-index: 60;
+    right: 12px;
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 8px);
+    left: 12px;
+    max-width: 430px;
+    margin: 0 auto;
+    border-color: var(--line-strong);
+    background: rgba(255, 253, 253, 0.98);
+    box-shadow: 0 18px 46px rgba(91, 62, 77, 0.22);
+    backdrop-filter: blur(18px);
+  }
+
+  .bead-editor::before {
+    display: block;
+    width: 42px;
+    height: 4px;
+    margin: -4px auto 10px;
+    border-radius: 999px;
+    background: var(--line-strong);
+    content: "";
+  }
+
+  #close-bead-editor {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
   }
 
   .studio-bracelet-stage,

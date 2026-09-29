@@ -1159,6 +1159,7 @@
         useRecipeButton: document.getElementById("use-recipe-button"),
         rerollButton: document.getElementById("reroll-button"),
         sizeSelector: document.getElementById("size-selector"),
+        studioPickerPanel: document.querySelector(".studio-picker-panel"),
         stoneSearch: document.getElementById("stone-search"),
         stonePicker: document.getElementById("stone-picker"),
         selectedSizeReadout: document.getElementById("selected-size-readout"),
@@ -1176,6 +1177,7 @@
         removeBeadButton: document.getElementById("remove-bead-button"),
         moveBeadLeft: document.getElementById("move-bead-left"),
         moveBeadRight: document.getElementById("move-bead-right"),
+        closeBeadEditor: document.getElementById("close-bead-editor"),
         loadSampleButton: document.getElementById("load-sample-button"),
         clearBraceletButton: document.getElementById("clear-bracelet-button"),
         copyBraceletButton: document.getElementById("copy-bracelet-button"),
@@ -1218,6 +1220,9 @@
         profileStartTest: document.getElementById("profile-start-test"),
         profileOpenStudio: document.getElementById("profile-open-studio"),
         clearRecentButton: document.getElementById("clear-recent-button"),
+        studioMobileDock: document.getElementById("studio-mobile-dock"),
+        studioJumpPicker: document.getElementById("studio-jump-picker"),
+        studioEditSelected: document.getElementById("studio-edit-selected"),
         imageCreditsList: document.getElementById("image-credits-list"),
         toast: document.getElementById("toast"),
       };
@@ -1338,6 +1343,23 @@
       this.dom.removeBeadButton.addEventListener("click", () => this.removeSelectedBead());
       this.dom.moveBeadLeft.addEventListener("click", () => this.moveSelectedBead(-1));
       this.dom.moveBeadRight.addEventListener("click", () => this.moveSelectedBead(1));
+      this.dom.closeBeadEditor.addEventListener("click", () => {
+        this.state.studio.selectedBeadIndex = null;
+        this.renderStudio();
+      });
+      this.dom.studioJumpPicker.addEventListener("click", () => {
+        this.dom.studioPickerPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      this.dom.studioEditSelected.addEventListener("click", () => {
+        if (!this.state.studio.beads.length) {
+          this.showToast("先加入一颗珠子");
+          return;
+        }
+        if (this.state.studio.selectedBeadIndex === null) {
+          this.state.studio.selectedBeadIndex = this.state.studio.beads.length - 1;
+        }
+        this.renderStudio();
+      });
       this.dom.editorSize.addEventListener("click", (event) => {
         const button = event.target.closest("[data-editor-size]");
         if (!button) return;
@@ -1419,9 +1441,10 @@
         panel.hidden = !active;
         panel.classList.toggle("is-active", active);
       });
+      this.dom.studioMobileDock.hidden = view !== "studio";
       window.scrollTo({ top: 0, behavior: "smooth" });
       requestAnimationFrame(() => {
-        if (view === "studio") this.renderStudioCanvas();
+        if (view === "studio") this.renderStudio();
         if (view === "library") this.renderDetailCanvas();
         if (view === "profile") this.renderProfile();
       });
@@ -1757,7 +1780,9 @@
         stoneId: this.state.studio.selectedStoneId,
         size: this.state.studio.selectedSize,
       });
-      this.state.studio.selectedBeadIndex = this.state.studio.beads.length - 1;
+      this.state.studio.selectedBeadIndex = window.matchMedia("(max-width: 700px)").matches
+        ? null
+        : this.state.studio.beads.length - 1;
       this.saveStudio();
       this.renderStudio();
       const crystal = CRYSTAL_MAP.get(this.state.studio.selectedStoneId);
@@ -1876,6 +1901,7 @@
       const index = this.state.studio.selectedBeadIndex;
       const bead = index === null ? null : this.state.studio.beads[index];
       this.dom.beadEditor.hidden = !bead;
+      this.dom.studioMobileDock.hidden = Boolean(bead) || this.state.view !== "studio";
       if (!bead) return;
       const crystal = CRYSTAL_MAP.get(bead.stoneId);
       this.dom.editorStoneName.textContent = crystal.name;
