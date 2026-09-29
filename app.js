@@ -842,6 +842,61 @@
   }));
   const CRYSTAL_MAP = new Map(CRYSTALS.map((crystal) => [crystal.id, crystal]));
   const IMAGE_DATA = window.CRYSTAL_IMAGE_DATA || {};
+
+  function spacerPreviewSvg(spacer) {
+    const { color, dark, light, type } = spacer;
+    let shape = "";
+    if (type === "flower") {
+      shape = `
+        <g fill="url(#spacerMetal)">
+          <ellipse cx="32" cy="13" rx="8" ry="11" />
+          <ellipse cx="49" cy="21" rx="8" ry="11" transform="rotate(60 49 21)" />
+          <ellipse cx="49" cy="43" rx="8" ry="11" transform="rotate(120 49 43)" />
+          <ellipse cx="32" cy="51" rx="8" ry="11" />
+          <ellipse cx="15" cy="43" rx="8" ry="11" transform="rotate(60 15 43)" />
+          <ellipse cx="15" cy="21" rx="8" ry="11" transform="rotate(120 15 21)" />
+          <circle cx="32" cy="32" r="7" fill="${light}" />
+        </g>`;
+    } else if (type === "ring") {
+      shape = `<circle cx="32" cy="32" r="20" fill="none" stroke="url(#spacerMetal)" stroke-width="8" /><circle cx="32" cy="32" r="20" fill="none" stroke="${light}" stroke-opacity=".5" stroke-width="2" />`;
+    } else if (type === "pearl") {
+      shape = `<circle cx="32" cy="32" r="22" fill="url(#spacerPearl)" /><ellipse cx="24" cy="23" rx="7" ry="5" fill="#fff" opacity=".62" />`;
+    } else if (type === "star") {
+      shape = `<path d="m32 8 7 15 17 2-12 12 3 17-15-8-15 8 3-17L8 25l17-2Z" fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.5" />`;
+    } else if (type === "moon") {
+      shape = `<path d="M42 9c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C11 54 5 36 14 22 19 14 30 9 42 9Z" fill="url(#spacerMetal)" /><circle cx="24" cy="20" r="4" fill="${light}" opacity=".72" />`;
+    } else {
+      shape = `<circle cx="32" cy="32" r="22" fill="url(#spacerMetal)" /><path d="M32 11v42M11 32h42M17 17l30 30M47 17 17 47" stroke="${light}" stroke-opacity=".34" stroke-width="2" />`;
+    }
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spacerMetal" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${light}"/><stop offset=".5" stop-color="${color}"/><stop offset="1" stop-color="${dark}"/></linearGradient><radialGradient id="spacerPearl" cx="35%" cy="28%" r="72%"><stop stop-color="#fff"/><stop offset=".65" stop-color="${light}"/><stop offset="1" stop-color="${color}"/></radialGradient></defs>${shape}</svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  }
+
+  const SPACER_SPECS = [
+    { id: "spacer-gold-flower", name: "金色花托", type: "flower", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "花托"] },
+    { id: "spacer-silver-flower", name: "银色花托", type: "flower", color: "#aeb9c1", dark: "#66737b", light: "#f3f7f9", tags: ["隔珠", "花托"] },
+    { id: "spacer-gold-ring", name: "金色圆环", type: "ring", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "圆环"] },
+    { id: "spacer-silver-ring", name: "银色圆环", type: "ring", color: "#aeb9c1", dark: "#66737b", light: "#f3f7f9", tags: ["隔珠", "圆环"] },
+    { id: "spacer-pearl", name: "珍珠隔珠", type: "pearl", color: "#d9d4cb", dark: "#9a948b", light: "#fffdf8", tags: ["隔珠", "珍珠"] },
+    { id: "spacer-black-gold", name: "黑金隔片", type: "disc", color: "#7d6b43", dark: "#26292d", light: "#e8c678", tags: ["隔珠", "隔片"] },
+    { id: "spacer-pink-star", name: "粉金星隔珠", type: "star", color: "#d98fa7", dark: "#9a516a", light: "#ffe4ee", tags: ["隔珠", "星形"] },
+    { id: "spacer-moon", name: "月光小隔珠", type: "moon", color: "#a8bdc8", dark: "#667d8b", light: "#eef8fb", tags: ["隔珠", "月形"] },
+  ];
+  const SPACERS = SPACER_SPECS.map((spacer) => {
+    const preview = spacerPreviewSvg(spacer);
+    return {
+      ...spacer,
+      preview,
+      realImage: preview,
+      beadStyle: "spacer",
+      emotion: "隔珠 / 配件",
+      size: 6,
+    };
+  });
+  const SPACER_MAP = new Map(SPACERS.map((spacer) => [spacer.id, spacer]));
+  const isSpacerBead = (bead) => bead?.kind === "spacer";
+  const beadEntity = (bead) =>
+    isSpacerBead(bead) ? SPACER_MAP.get(bead.spacerId) : CRYSTAL_MAP.get(bead?.stoneId);
   const CORE_CRYSTAL_IDS = new Set(
     [...BASE_CRYSTALS, ...EXTRA_CRYSTALS].map((crystal) => crystal.id),
   );
@@ -1072,6 +1127,12 @@
           search: "",
           beads: this.loadStudio(),
           selectedBeadIndex: null,
+          editorOpen: false,
+          picker: {
+            tab: "stone",
+            search: "",
+            color: "all",
+          },
         },
       };
       this.braceletHits = new WeakMap();
@@ -1225,6 +1286,16 @@
         studioMobileDock: document.getElementById("studio-mobile-dock"),
         studioJumpPicker: document.getElementById("studio-jump-picker"),
         studioEditSelected: document.getElementById("studio-edit-selected"),
+        beadActionPopover: document.getElementById("bead-action-popover"),
+        beadActionAdd: document.getElementById("bead-action-add"),
+        beadActionDelete: document.getElementById("bead-action-delete"),
+        beadPickerModal: document.getElementById("bead-picker-modal"),
+        closeBeadPicker: document.getElementById("close-bead-picker"),
+        beadPickerTabs: document.getElementById("bead-picker-tabs"),
+        beadPickerToolbar: document.getElementById("bead-picker-toolbar"),
+        beadPickerSearch: document.getElementById("bead-picker-search"),
+        beadPickerColor: document.getElementById("bead-picker-color"),
+        beadPickerGrid: document.getElementById("bead-picker-grid"),
         imageCreditsList: document.getElementById("image-credits-list"),
         toast: document.getElementById("toast"),
       };
@@ -1251,7 +1322,9 @@
     }
 
     loadRealBeadImages() {
-      const sources = new Set(CRYSTALS.map((crystal) => crystal.realImage).filter(Boolean));
+      const sources = new Set(
+        [...CRYSTALS, ...SPACERS].map((crystal) => crystal.realImage).filter(Boolean),
+      );
       sources.forEach((source) => {
         const image = new Image();
         image.decoding = "async";
@@ -1338,6 +1411,7 @@
         });
         if (closest) {
           this.state.studio.selectedBeadIndex = closest.index;
+          this.state.studio.editorOpen = false;
           this.renderStudio();
         }
       });
@@ -1348,7 +1422,7 @@
       this.dom.insertBeadLeft.addEventListener("click", () => this.insertSelectedBead(-1));
       this.dom.insertBeadRight.addEventListener("click", () => this.insertSelectedBead(1));
       this.dom.closeBeadEditor.addEventListener("click", () => {
-        this.state.studio.selectedBeadIndex = null;
+        this.state.studio.editorOpen = false;
         this.renderStudio();
       });
       this.dom.studioJumpPicker.addEventListener("click", () => {
@@ -1362,7 +1436,35 @@
         if (this.state.studio.selectedBeadIndex === null) {
           this.state.studio.selectedBeadIndex = this.state.studio.beads.length - 1;
         }
+        this.state.studio.editorOpen = true;
         this.renderStudio();
+      });
+      this.dom.beadActionAdd.addEventListener("click", () => this.openBeadPicker());
+      this.dom.beadActionDelete.addEventListener("click", () => {
+        this.hideBeadActionPopover();
+        this.removeSelectedBead();
+      });
+      this.dom.closeBeadPicker.addEventListener("click", () => {
+        this.dom.beadPickerModal.hidden = true;
+      });
+      this.dom.beadPickerModal.addEventListener("click", (event) => {
+        if (event.target === this.dom.beadPickerModal) {
+          this.dom.beadPickerModal.hidden = true;
+        }
+      });
+      this.dom.beadPickerTabs.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-picker-tab]");
+        if (!button) return;
+        this.state.studio.picker.tab = button.dataset.pickerTab;
+        this.renderBeadPicker();
+      });
+      this.dom.beadPickerSearch.addEventListener("input", () => {
+        this.state.studio.picker.search = this.dom.beadPickerSearch.value.trim();
+        this.renderBeadPicker();
+      });
+      this.dom.beadPickerColor.addEventListener("change", () => {
+        this.state.studio.picker.color = this.dom.beadPickerColor.value;
+        this.renderBeadPicker();
       });
       this.dom.editorSize.addEventListener("click", (event) => {
         const button = event.target.closest("[data-editor-size]");
@@ -1781,6 +1883,7 @@
 
     addBead() {
       this.state.studio.beads.push({
+        kind: "stone",
         stoneId: this.state.studio.selectedStoneId,
         size: this.state.studio.selectedSize,
       });
@@ -1805,7 +1908,9 @@
       const beads = this.state.studio.beads;
       const energies = this.combineEnergies(beads);
       const dominant = this.dominantDimension(energies);
-      const uniqueStones = new Set(beads.map((bead) => bead.stoneId)).size;
+      const uniqueStones = new Set(
+        beads.filter((bead) => !isSpacerBead(bead)).map((bead) => bead.stoneId),
+      ).size;
       const averageSize = beads.length
         ? beads.reduce((total, bead) => total + bead.size, 0) / beads.length
         : 0;
@@ -1844,6 +1949,133 @@
       this.renderEnergyChart(this.dom.studioEnergyChart, energies);
     }
 
+    updateBeadActionPopover() {
+      const index = this.state.studio.selectedBeadIndex;
+      const popover = this.dom.beadActionPopover;
+      if (
+        index === null ||
+        this.state.studio.editorOpen ||
+        this.state.view !== "studio" ||
+        !this.dom.beadPickerModal.hidden
+      ) {
+        this.hideBeadActionPopover();
+        return;
+      }
+      const hits = this.braceletHits.get(this.dom.studioBracelet) || [];
+      const hit = hits.find((item) => item.index === index);
+      if (!hit) {
+        this.hideBeadActionPopover();
+        return;
+      }
+      const canvasRect = this.dom.studioBracelet.getBoundingClientRect();
+      const stageRect = this.dom.studioBracelet.parentElement.getBoundingClientRect();
+      const left = hit.x + canvasRect.left - stageRect.left;
+      const top = hit.y + canvasRect.top - stageRect.top;
+      const above = top - hit.radius > 54;
+      popover.hidden = false;
+      popover.classList.toggle("is-below", !above);
+      popover.style.left = `${left}px`;
+      popover.style.top = `${above ? top - hit.radius - 8 : top + hit.radius + 8}px`;
+    }
+
+    hideBeadActionPopover() {
+      this.dom.beadActionPopover.hidden = true;
+    }
+
+    renderBeadPicker() {
+      const picker = this.state.studio.picker;
+      this.dom.beadPickerTabs.querySelectorAll("[data-picker-tab]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.pickerTab === picker.tab);
+      });
+      this.dom.beadPickerToolbar.hidden = picker.tab === "spacer";
+
+      if (this.dom.beadPickerColor.options.length <= 1) {
+        this.dom.beadPickerColor.innerHTML = [
+          '<option value="all">全部颜色</option>',
+          ...COLOR_FILTERS.map((filter) => `<option value="${filter.id}">${filter.label}</option>`),
+          '<option value="other">其他</option>',
+        ].join("");
+      }
+      this.dom.beadPickerSearch.value = picker.search;
+      this.dom.beadPickerColor.value = picker.color;
+
+      const query = picker.search.toLowerCase();
+      let items = [];
+      if (picker.tab === "spacer") {
+        items = SPACERS.filter((spacer) =>
+          `${spacer.name} ${spacer.tags.join(" ")}`.toLowerCase().includes(query),
+        );
+      } else {
+        items = CRYSTALS.filter((crystal) => {
+          if (
+            picker.color !== "all" &&
+            colorBucket(crystal) !== picker.color
+          ) {
+            return false;
+          }
+          if (!query) return true;
+          return `${crystal.name} ${crystal.en} ${crystal.emotion} ${crystal.tags.join(" ")}`
+            .toLowerCase()
+            .includes(query);
+        });
+      }
+      this.dom.beadPickerGrid.innerHTML = items.length
+        ? items
+            .map(
+              (item) => `
+                <button
+                  class="bead-picker-item"
+                  type="button"
+                  data-picker-kind="${picker.tab}"
+                  data-picker-id="${item.id}"
+                >
+                  ${this.gemThumbMarkup(item)}
+                  <span>
+                    <strong>${escapeHtml(item.name)}</strong>
+                    <small>${escapeHtml(item.emotion || item.tags.join(" · "))}</small>
+                  </span>
+                </button>
+              `,
+            )
+            .join("")
+        : '<div class="profile-empty">没有找到符合条件的珠子。</div>';
+      this.dom.beadPickerGrid.querySelectorAll("[data-picker-id]").forEach((button) => {
+        button.addEventListener("click", () =>
+          this.insertPickedBead(button.dataset.pickerKind, button.dataset.pickerId),
+        );
+      });
+    }
+
+    openBeadPicker() {
+      if (this.state.studio.selectedBeadIndex === null) {
+        this.showToast("先点选一颗珠子");
+        return;
+      }
+      this.state.studio.picker.tab = "stone";
+      this.state.studio.picker.search = "";
+      this.state.studio.picker.color = "all";
+      this.renderBeadPicker();
+      this.dom.beadPickerModal.hidden = false;
+      this.hideBeadActionPopover();
+    }
+
+    insertPickedBead(kind, id) {
+      const index = this.state.studio.selectedBeadIndex;
+      if (index === null) return;
+      const bead =
+        kind === "spacer"
+          ? { kind: "spacer", spacerId: id, size: SPACER_MAP.get(id)?.size || 6 }
+          : { kind: "stone", stoneId: id, size: this.state.studio.selectedSize };
+      this.state.studio.beads.splice(index + 1, 0, bead);
+      this.state.studio.selectedBeadIndex = index + 1;
+      this.state.studio.editorOpen = false;
+      this.saveStudio();
+      this.dom.beadPickerModal.hidden = true;
+      this.renderStudio();
+      const entity = beadEntity(bead);
+      this.showToast(`已加入${entity?.name || "珠子"}`);
+    }
+
     renderSequence() {
       const beads = this.state.studio.beads;
       const selectedIndex = this.state.studio.selectedBeadIndex;
@@ -1852,7 +2084,8 @@
       } else {
         this.dom.sequenceList.innerHTML = beads
           .map((bead, index) => {
-            const crystal = CRYSTAL_MAP.get(bead.stoneId);
+            const crystal = beadEntity(bead);
+            if (!crystal) return "";
             return `
               <div
                 class="sequence-item${index === selectedIndex ? " is-selected" : ""}"
@@ -1874,6 +2107,7 @@
         this.dom.sequenceList.querySelectorAll("[data-sequence-index]").forEach((item) => {
           item.addEventListener("click", () => {
             this.state.studio.selectedBeadIndex = Number(item.dataset.sequenceIndex);
+            this.state.studio.editorOpen = true;
             this.renderStudio();
           });
           item.addEventListener("dragstart", (event) => {
@@ -1904,13 +2138,14 @@
     updateBeadEditor() {
       const index = this.state.studio.selectedBeadIndex;
       const bead = index === null ? null : this.state.studio.beads[index];
-      this.dom.beadEditor.hidden = !bead;
-      this.dom.studioMobileDock.hidden = Boolean(bead) || this.state.view !== "studio";
-      if (!bead) return;
-      const crystal = CRYSTAL_MAP.get(bead.stoneId);
+      const editorBead = this.state.studio.editorOpen ? bead : null;
+      this.dom.beadEditor.hidden = !editorBead;
+      this.dom.studioMobileDock.hidden = Boolean(editorBead) || this.state.view !== "studio";
+      if (!editorBead) return;
+      const crystal = beadEntity(editorBead);
       this.dom.editorStoneName.textContent = crystal.name;
       this.dom.editorSize.querySelectorAll("[data-editor-size]").forEach((button) => {
-        button.classList.toggle("is-active", Number(button.dataset.editorSize) === bead.size);
+        button.classList.toggle("is-active", Number(button.dataset.editorSize) === editorBead.size);
       });
       this.dom.moveBeadLeft.disabled = index === 0;
       this.dom.moveBeadRight.disabled = index === this.state.studio.beads.length - 1;
@@ -2006,7 +2241,11 @@
       context.stroke();
       context.restore();
 
-      if (!beads.length) return;
+      if (!beads.length) {
+        this.braceletHits.set(canvas, []);
+        this.hideBeadActionPopover();
+        return;
+      }
 
       const gapMm = 0.55;
       const physicalWeights = beads.map((bead) => bead.size + gapMm);
@@ -2022,7 +2261,7 @@
       let cursor = -Math.PI * 0.5;
 
       beads.forEach((bead, index) => {
-        const crystal = CRYSTAL_MAP.get(bead.stoneId);
+        const crystal = beadEntity(bead);
         if (!crystal) return;
         const angleSpan = (physicalWeights[index] / totalWeight) * Math.PI * 2;
         const angle = cursor + angleSpan * 0.5;
@@ -2035,6 +2274,9 @@
       });
 
       this.braceletHits.set(canvas, hits);
+      if (canvas === this.dom.studioBracelet) {
+        this.updateBeadActionPopover();
+      }
     }
 
     drawBead(context, x, y, radius, crystal, index, selected) {
@@ -2694,13 +2936,16 @@
       }
       const counts = new Map();
       beads.forEach((bead) => {
-        const key = `${bead.stoneId}-${bead.size}`;
-        counts.set(key, (counts.get(key) || 0) + 1);
+        const entity = beadEntity(bead);
+        const id = isSpacerBead(bead) ? bead.spacerId : bead.stoneId;
+        const key = `${isSpacerBead(bead) ? "spacer" : "stone"}:${id}:${bead.size}`;
+        const current = counts.get(key) || { entity, size: bead.size, count: 0 };
+        current.count += 1;
+        counts.set(key, current);
       });
-      const lines = [...counts.entries()].map(([key, count]) => {
-        const [stoneId, size] = key.split("-");
-        return `${CRYSTAL_MAP.get(stoneId).name} ${size} mm × ${count}`;
-      });
+      const lines = [...counts.values()].map(
+        ({ entity, size, count }) => `${entity?.name || "珠子"} ${size} mm × ${count}`,
+      );
       this.copyText(`晶序手链清单（共 ${beads.length} 颗）\n${lines.join("\n")}`, "手链清单已复制");
     }
 

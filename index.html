@@ -333,6 +333,10 @@
                 <div class="canvas-empty" id="studio-canvas-empty">
                   <span>从左侧加入第一颗珠子</span>
                 </div>
+                <div class="bead-action-popover" id="bead-action-popover" hidden>
+                  <button class="bead-action-button is-add" id="bead-action-add" type="button" aria-label="在这里增加一颗珠子">+</button>
+                  <button class="bead-action-button is-delete" id="bead-action-delete" type="button" aria-label="删除这颗珠子">×</button>
+                </div>
               </div>
 
               <div class="composition-stats" id="composition-stats"></div>
@@ -596,6 +600,29 @@
           保存图片
         </a>
         <p class="share-hint">手机端也可以长按图片保存。</p>
+      </div>
+    </div>
+
+    <div class="bead-picker-modal" id="bead-picker-modal" hidden>
+      <div class="bead-picker-card">
+        <div class="bead-picker-heading">
+          <div>
+            <p class="panel-kicker">添加一颗</p>
+            <h2>选水晶珠或隔珠</h2>
+          </div>
+          <button class="text-action" type="button" id="close-bead-picker">关闭</button>
+        </div>
+        <div class="bead-picker-tabs" id="bead-picker-tabs" role="tablist" aria-label="选择珠子分类">
+          <button class="is-active" type="button" data-picker-tab="stone">水晶珠</button>
+          <button type="button" data-picker-tab="spacer">隔珠</button>
+        </div>
+        <div class="bead-picker-toolbar" id="bead-picker-toolbar">
+          <input id="bead-picker-search" type="search" placeholder="搜索水晶名称或情绪" autocomplete="off" />
+          <select id="bead-picker-color" aria-label="按颜色筛选">
+            <option value="all">全部颜色</option>
+          </select>
+        </div>
+        <div class="bead-picker-grid" id="bead-picker-grid"></div>
       </div>
     </div>
 
