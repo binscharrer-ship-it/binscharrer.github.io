@@ -308,6 +308,12 @@
           <span>丢失手机后应立即修改密码并联系超级管理员停用账号。</span>
         </article>
       </section>
+      <section class="mobile-section">
+        <article class="mobile-card mobile-legal-card">
+          <span>备案/许可证编号：<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">皖ICP备2026032692号</a></span>
+          <span>开发公司：XG科技公司</span>
+        </article>
+      </section>
     `;
   }
 
