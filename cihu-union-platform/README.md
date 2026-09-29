@@ -4,6 +4,6 @@
 
 在线地址：
 
-`https://binscharrer-ship-it.github.io/cihu-union-platform/`
+`https://binscharrer-ship-it.github.io/binscharrer.github.io/cihu-union-platform/`
 
 数据保存在访问者当前浏览器的 `localStorage` 中，不会上传到 GitHub。正式使用时应定期通过页面内的“数据与设置”导出 JSON 备份。
