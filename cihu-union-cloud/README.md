@@ -4,6 +4,10 @@
 
 `https://binscharrer-ship-it.github.io/binscharrer.github.io/cihu-union-cloud/`
 
+移动端 PWA：
+
+`https://binscharrer-ship-it.github.io/binscharrer.github.io/cihu-union-cloud/mobile.html`
+
 该目录只发布静态演示前端，不连接真实数据库，不保存真实工资卡、身份证或福利数据。
 
 正式多租户生产环境需要另行部署：

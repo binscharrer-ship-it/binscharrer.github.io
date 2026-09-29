@@ -1,0 +1,26 @@
+{
+  "name": "慈湖高新区机关工会移动端",
+  "short_name": "工会移动端",
+  "description": "移动端节点复盘、工资卡汇款、人员落实与福利查询",
+  "start_url": "mobile.html#home",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f5f4",
+  "theme_color": "#0f766e",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

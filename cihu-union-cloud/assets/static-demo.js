@@ -425,10 +425,11 @@
   document.addEventListener("DOMContentLoaded", () => {
     const banner = document.createElement("div");
     banner.textContent = "GitHub Pages 静态演示版：不连接后端，不保存真实数据";
+    const mobilePage = location.pathname.endsWith("mobile.html");
     banner.style.cssText = [
       "position:fixed",
       "right:14px",
-      "bottom:14px",
+      mobilePage ? "top:max(12px,env(safe-area-inset-top))" : "bottom:14px",
       "z-index:9999",
       "padding:9px 12px",
       "background:#a15c0a",
@@ -438,5 +439,6 @@
       "box-shadow:0 8px 24px rgba(0,0,0,.18)"
     ].join(";");
     document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 8000);
   });
 })();

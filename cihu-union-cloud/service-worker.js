@@ -1,13 +1,17 @@
 const CACHE_NAME = "cihu-union-cloud-v4";
 const APP_SHELL = [
   "./",
+  "./mobile.html",
   "./styles.css",
+  "./mobile.css",
   "./assets/app.js",
   "./assets/static-demo.js",
+  "./assets/mobile.js",
   "./assets/icon.svg",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./mobile-manifest.webmanifest"
 ];
 
 self.addEventListener("install", (event) => {
