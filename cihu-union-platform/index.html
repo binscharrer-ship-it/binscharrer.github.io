@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>慈湖高新区机关工会内部管理系统</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">慈</div>
+          <div>
+            <strong>慈湖高新区</strong>
+            <span>机关工会管理台</span>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="主导航">
+          <button class="nav-item active" data-route="dashboard">
+            <span>总览</span><small>工作台</small>
+          </button>
+          <button class="nav-item" data-route="members">
+            <span>会员管理</span><small>资格台账</small>
+          </button>
+          <button class="nav-item" data-route="exams">
+            <span>职工体检</span><small>组织跟踪</small>
+          </button>
+          <button class="nav-item" data-route="benefits">
+            <span>福利发放</span><small>限额校验</small>
+          </button>
+          <button class="nav-item" data-route="retreats">
+            <span>疗休养</span><small>计划结算</small>
+          </button>
+          <button class="nav-item" data-route="budget">
+            <span>经费预算</span><small>执行监控</small>
+          </button>
+          <button class="nav-item" data-route="policies">
+            <span>政策规则</span><small>原文索引</small>
+          </button>
+          <button class="nav-item" data-route="settings">
+            <span>数据与设置</span><small>本机存储</small>
+          </button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <span class="storage-dot" aria-hidden="true"></span>
+          <div>
+            <strong>本机离线存储</strong>
+            <span id="storage-time">尚未保存</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <button class="mobile-menu" data-action="toggle-menu" aria-label="打开导航">菜单</button>
+          <div class="topbar-title">
+            <span id="org-name">慈湖高新区机关工会</span>
+            <strong id="page-title">工作台总览</strong>
+          </div>
+          <div class="topbar-actions">
+            <button class="button ghost" data-action="diagnose">合规诊断</button>
+            <label class="year-picker">
+              <span>年度</span>
+              <select id="fiscal-year" aria-label="选择年度"></select>
+            </label>
+            <button class="button primary" data-action="quick-add">新增业务</button>
+          </div>
+        </header>
+
+        <main class="main-content" id="app"></main>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay" hidden></div>
+    <dialog class="dialog" id="dialog"></dialog>
+    <div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+    <script src="data.js"></script>
+    <script src="rules.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
