@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#141814">
+  <title>Star PDA 现场终端</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23141814'/><path d='M16 4 27 9v8c0 6-4.5 10.4-11 12-6.5-1.6-11-6-11-12V9z' fill='none' stroke='%23e1a13b' stroke-width='2'/><path d='m11 16 3 3 7-7' fill='none' stroke='%2358bd77' stroke-width='2'/></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 5.5 12 2l8 3.5v6.2c0 4.8-3.1 8.7-8 10.3-4.9-1.6-8-5.5-8-10.3V5.5Z"/><path d="m8.3 12 2.2 2.2 5.3-5.4"/></svg>
+        </div>
+        <div>
+          <strong>STAR PDA</strong>
+          <span>FIELD TERMINAL</span>
+        </div>
+      </div>
+
+      <div class="mission-strip">
+        <span class="mission-id">M-0427</span>
+        <span class="strip-divider"></span>
+        <span id="clock">--:--:--</span>
+        <span class="strip-divider"></span>
+        <span id="signal-label">GNSS 14 SAT</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="status-pill" id="network-toggle" type="button" aria-pressed="false">
+          <span class="status-dot"></span>
+          <span id="network-label">离线模式</span>
+        </button>
+        <div class="battery" aria-label="电量 74%">
+          <span>74%</span>
+          <div class="battery-body"><i></i></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <nav class="side-nav" aria-label="主要功能">
+        <button class="nav-item active" type="button" data-view="dashboard" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6v-9h-6v9ZM4 20h6v-4H4v4Zm10-11h6V4h-6v5Z"/></svg>
+          <span>任务</span>
+        </button>
+        <button class="nav-item" type="button" data-view="map">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></svg>
+          <span>导航</span>
+        </button>
+        <button class="nav-item" type="button" data-view="records">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M5 13v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5"/></svg>
+          <span>记录</span>
+        </button>
+        <button class="nav-item" type="button" data-view="sync">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"/><path d="M4 17h5v5"/><path d="M5.4 9A8 8 0 0 1 19 6.3L20 7M4 17l1 1a8 8 0 0 0 13.6-2.7"/></svg>
+          <span>同步</span>
+          <em id="queue-badge">12</em>
+        </button>
+        <button class="nav-item" type="button" data-view="device">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/><path d="M9 6h6M9 10h6"/></svg>
+          <span>设备</span>
+        </button>
+      </nav>
+
+      <main class="main-content">
+        <section class="view active" id="view-dashboard" aria-labelledby="dashboard-title">
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">2026-09-29 / 试点区域 A</p>
+              <h1 id="dashboard-title">今日现场任务</h1>
+            </div>
+            <button class="primary-action" id="new-task" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              新建任务
+            </button>
+          </div>
+
+          <div class="metric-row" aria-label="任务概况">
+            <div class="metric">
+              <span>待执行</span>
+              <strong id="metric-pending">0</strong>
+              <small>项任务</small>
+            </div>
+            <div class="metric">
+              <span>进行中</span>
+              <strong id="metric-active">0</strong>
+              <small>项任务</small>
+            </div>
+            <div class="metric">
+              <span>证据记录</span>
+              <strong id="metric-records">0</strong>
+              <small>条已加密</small>
+            </div>
+            <div class="metric">
+              <span>待同步</span>
+              <strong id="metric-queue">0</strong>
+              <small>条记录</small>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel task-panel" aria-labelledby="task-list-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">本地任务清单</p>
+                  <h2 id="task-list-title">执行队列</h2>
+                </div>
+                <span class="quiet-state">断网可操作</span>
+              </div>
+              <div class="task-list" id="task-list"></div>
+            </section>
+
+            <section class="panel task-detail-panel" aria-labelledby="task-detail-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow" id="task-code">T-01</p>
+                  <h2 id="task-detail-title">任务详情</h2>
+                </div>
+                <span class="priority-label" id="task-priority">高优先级</span>
+              </div>
+
+              <div class="task-detail-body">
+                <h3 id="detail-task-title">北口地质断面复核</h3>
+                <p id="detail-task-description">沿北口断面完成 5 个采样点记录，采集岩层照片和现场说明。</p>
+                <dl class="detail-list">
+                  <div><dt>目标位置</dt><dd id="detail-location">N31.7124 / E118.4821</dd></div>
+                  <div><dt>计划时间</dt><dd id="detail-time">10:30</dd></div>
+                  <div><dt>预计航程</dt><dd id="detail-distance">2.4 km</dd></div>
+                  <div><dt>采集要求</dt><dd id="detail-capture">照片 / 录音 / 点位</dd></div>
+                </dl>
+                <div class="progress-row">
+                  <span>完成度</span>
+                  <strong id="detail-progress-label">55%</strong>
+                </div>
+                <div class="progress-track" role="progressbar" aria-label="任务完成度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55">
+                  <i id="detail-progress-bar" style="width:55%"></i>
+                </div>
+              </div>
+
+              <div class="task-actions">
+                <button class="secondary-action" id="open-task-map" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/></svg>
+                  查看路线
+                </button>
+                <button class="primary-action" id="task-main-action" type="button">标记位置</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-map" aria-labelledby="map-title" hidden>
+          <div class="view-heading map-heading">
+            <div>
+              <p class="eyebrow">StarNavi / 离线矢量图层</p>
+              <h1 id="map-title">现场导航</h1>
+            </div>
+            <div class="map-readouts">
+              <span><b id="map-coordinate">N31.7124 E118.4821</b> 当前坐标</span>
+              <span><b id="map-accuracy">2.1 m</b> 定位精度</span>
+              <span><b id="map-heading">NE 042°</b> 行进方向</span>
+            </div>
+          </div>
+
+          <div class="map-stage">
+            <canvas id="map-canvas" role="img" aria-label="离线地形图和当前航行路线"></canvas>
+            <div class="map-overlay map-title-overlay">
+              <span class="map-layer-label" id="map-layer-label">地形图 / MJ-07</span>
+              <span>离线缓存有效</span>
+            </div>
+            <div class="map-overlay map-legend">
+              <span><i class="legend-line route"></i>建议路线</span>
+              <span><i class="legend-line track"></i>历史航迹</span>
+              <span><i class="legend-dot waypoint"></i>作业点</span>
+              <span><i class="legend-dot risk"></i>风险点</span>
+            </div>
+            <div class="map-compass" aria-hidden="true">
+              <span>N</span>
+              <i></i>
+            </div>
+          </div>
+
+          <div class="map-command-bar">
+            <div class="map-tools">
+              <button class="tool-button" id="map-locate" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+                定位
+              </button>
+              <button class="tool-button" id="map-waypoint" type="button" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="10" r="2"/></svg>
+                添加航点
+              </button>
+              <button class="tool-button" id="map-layer" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 9-4 9 4-9 4-9-4Z"/><path d="m3 12 9 4 9-4M3 18l9 4 9-4"/></svg>
+                切换图层
+              </button>
+              <button class="tool-button" id="map-clear" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/></svg>
+                清除航点
+              </button>
+            </div>
+            <div class="map-next-step">
+              <span>下一作业点</span>
+              <strong id="next-waypoint">WP-03 / 1.1 km / 预计 18 分钟</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-records" aria-labelledby="records-title" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">AES-256-GCM / SHA-256 CHAIN</p>
+              <h1 id="records-title">现场证据记录</h1>
+            </div>
+            <button class="secondary-action" id="export-evidence" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/></svg>
+              导出证据包
+            </button>
+          </div>
+
+          <div class="capture-bar">
+            <button class="capture-button" id="capture-audio" type="button">
+              <span class="capture-icon audio"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg></span>
+              <span><strong>现场录音</strong><small id="audio-state">16 kHz / 单声道</small></span>
+            </button>
+            <button class="capture-button" id="capture-photo" type="button">
+              <span class="capture-icon photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l1.5-2h5L16 7h4v13H4V7Z"/><circle cx="12" cy="13" r="4"/></svg></span>
+              <span><strong>现场拍照</strong><small>JPEG / 地理位置</small></span>
+            </button>
+            <button class="capture-button" id="capture-note" type="button">
+              <span class="capture-icon note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+              <span><strong>文字记录</strong><small>离线便签 / 自动定位</small></span>
+            </button>
+            <div class="record-clock" id="record-clock">
+              <span>当前会话</span>
+              <strong id="record-timer">00:00</strong>
+            </div>
+          </div>
+
+          <div class="records-grid">
+            <section class="panel records-panel" aria-labelledby="record-list-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">RECENT LOCAL RECORDS</p>
+                  <h2 id="record-list-title">本地记录</h2>
+                </div>
+                <span class="quiet-state" id="record-count-label">0 条</span>
+              </div>
+              <div class="record-list" id="record-list"></div>
+            </section>
+
+            <section class="panel chain-panel" aria-labelledby="chain-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">TAMPER EVIDENT</p>
+                  <h2 id="chain-title">证据链状态</h2>
+                </div>
+                <span class="chain-valid">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+                  链连续
+                </span>
+              </div>
+              <div class="chain-summary">
+                <span>根摘要</span>
+                <code id="chain-root">7ac4f2d1e8b6...</code>
+                <span>最新记录</span>
+                <code id="chain-tip">a8c19f03d62b...</code>
+              </div>
+              <div class="chain-track" id="chain-track" aria-label="证据链最近记录"></div>
+              <dl class="chain-facts">
+                <div><dt>加密模式</dt><dd>AES-256-GCM</dd></div>
+                <div><dt>签名方式</dt><dd>Ed25519 批签名</dd></div>
+                <div><dt>密钥载体</dt><dd>ATECC608B / 不可导出</dd></div>
+                <div><dt>断链策略</dt><dd>隔离，不自动修复</dd></div>
+              </dl>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-sync" aria-labelledby="sync-title" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">STORE AND FORWARD</p>
+              <h1 id="sync-title">断点续传</h1>
+            </div>
+            <button class="primary-action" id="start-sync" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"/><path d="M4 17h5v5"/><path d="M5.4 9A8 8 0 0 1 19 6.3L20 7M4 17l1 1a8 8 0 0 0 13.6-2.7"/></svg>
+              开始同步
+            </button>
+          </div>
+
+          <div class="sync-status-grid">
+            <div class="metric">
+              <span>连接状态</span>
+              <strong id="sync-connection">离线</strong>
+              <small id="sync-connection-note">本地队列继续工作</small>
+            </div>
+            <div class="metric">
+              <span>待传记录</span>
+              <strong id="sync-pending">12</strong>
+              <small id="sync-size">86.4 MB</small>
+            </div>
+            <div class="metric">
+              <span>上次同步</span>
+              <strong id="last-sync">09:12</strong>
+              <small>服务器已确认</small>
+            </div>
+            <div class="metric">
+              <span>保留策略</span>
+              <strong>180</strong>
+              <small>天 / 云端</small>
+            </div>
+          </div>
+
+          <div class="sync-grid">
+            <section class="panel sync-queue-panel" aria-labelledby="queue-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">LOCAL OUTBOX</p>
+                  <h2 id="queue-title">同步队列</h2>
+                </div>
+                <span class="quiet-state" id="sync-progress-label">等待联网</span>
+              </div>
+              <div class="progress-track large" role="progressbar" aria-label="同步进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <i id="sync-progress-bar" style="width:0%"></i>
+              </div>
+              <div class="sync-log" id="sync-log" aria-live="polite"></div>
+            </section>
+
+            <section class="panel policy-panel" aria-labelledby="policy-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">DELIVERY POLICY</p>
+                  <h2 id="policy-title">回传规则</h2>
+                </div>
+              </div>
+              <dl class="policy-list">
+                <div><dt>上传方式</dt><dd>64 KiB 分块 / 幂等 ID</dd></div>
+                <div><dt>断点恢复</dt><dd>10% / 50% / 90% 三重校验</dd></div>
+                <div><dt>删除条件</dt><dd>服务器回执验签通过后删除副本</dd></div>
+                <div><dt>冲突处理</dt><dd>保留双方版本，进入人工复核</dd></div>
+                <div><dt>网络策略</dt><dd>仅 Wi-Fi 或专网，禁止蜂窝直传</dd></div>
+              </dl>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-device" aria-labelledby="device-title" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">ZYNQ-7020 / OFFLINE STACK</p>
+              <h1 id="device-title">设备与模块状态</h1>
+            </div>
+            <button class="secondary-action" id="device-test" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/><path d="m9.5 12 1.7 1.7 3.5-3.7"/></svg>
+              运行自检
+            </button>
+          </div>
+
+          <div class="device-status-grid">
+            <article class="health-item">
+              <span class="health-dot good"></span>
+              <div><strong>北斗 / GNSS</strong><small>ZED-F9P / 14 颗卫星 / 2.1 m</small></div>
+              <b>正常</b>
+            </article>
+            <article class="health-item">
+              <span class="health-dot good"></span>
+              <div><strong>PPS 时间戳</strong><small>50 MHz 计数 / 抖动 18 ns</small></div>
+              <b>锁定</b>
+            </article>
+            <article class="health-item">
+              <span class="health-dot good"></span>
+              <div><strong>IMU / Kalman</strong><small>航向漂移 0.7° / 衰减正常</small></div>
+              <b>融合</b>
+            </article>
+            <article class="health-item">
+              <span class="health-dot good"></span>
+              <div><strong>microSD / eMMC</strong><small>写入 12.6 MB/s / 31.8 GB 可用</small></div>
+              <b>正常</b>
+            </article>
+            <article class="health-item">
+              <span class="health-dot warning"></span>
+              <div><strong>音频输入</strong><small>16 kHz / 缓冲水位 72%</small></div>
+              <b>关注</b>
+            </article>
+            <article class="health-item">
+              <span class="health-dot good"></span>
+              <div><strong>安全元件</strong><small>ATECC608B / 设备绑定正常</small></div>
+              <b>已认证</b>
+            </article>
+          </div>
+
+          <div class="device-grid">
+            <section class="panel storage-panel" aria-labelledby="storage-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">STORAGE BUDGET</p>
+                  <h2 id="storage-title">本地容量</h2>
+                </div>
+                <span class="quiet-state">保留 20%</span>
+              </div>
+              <div class="storage-row">
+                <span>系统与地图</span>
+                <div><i style="width:38%"></i></div>
+                <b>12.2 GB</b>
+              </div>
+              <div class="storage-row">
+                <span>现场证据</span>
+                <div><i style="width:28%"></i></div>
+                <b>9.1 GB</b>
+              </div>
+              <div class="storage-row">
+                <span>待同步队列</span>
+                <div><i style="width:11%"></i></div>
+                <b>3.5 GB</b>
+              </div>
+              <div class="storage-row">
+                <span>剩余空间</span>
+                <div><i class="free" style="width:23%"></i></div>
+                <b>7.2 GB</b>
+              </div>
+            </section>
+
+            <section class="panel firmware-panel" aria-labelledby="firmware-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">SIGNED FIRMWARE</p>
+                  <h2 id="firmware-title">版本基线</h2>
+                </div>
+              </div>
+              <dl class="policy-list">
+                <div><dt>终端系统</dt><dd>PDA-OS 1.0.0-rc3</dd></div>
+                <div><dt>PL 基线</dt><dd>Zynq V1.0 Frozen</dd></div>
+                <div><dt>DMA 主机</dt><dd>MicroBlaze DMA V1.0</dd></div>
+                <div><dt>证据格式</dt><dd>EPK-1 / 64 Byte 对齐</dd></div>
+                <div><dt>自检时间</dt><dd id="last-self-test">今天 09:06</dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <figure class="architecture-figure">
+            <img src="assets/pda_offline_stack.png" alt="PDA 离线闭环四层技术架构">
+            <figcaption>现场设备层 / PL 实时层 / PS 监督层 / 业务同步层</figcaption>
+          </figure>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <dialog class="note-dialog" id="note-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">OFFLINE NOTE</p>
+          <h2>新增文字记录</h2>
+        </div>
+        <button class="icon-button" value="cancel" aria-label="关闭" type="submit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <label for="note-content">现场说明</label>
+      <textarea id="note-content" rows="5" placeholder="记录剖面、点位或异常情况"></textarea>
+      <div class="dialog-actions">
+        <button class="secondary-action" value="cancel" type="submit">取消</button>
+        <button class="primary-action" id="save-note" value="default" type="submit">保存记录</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
