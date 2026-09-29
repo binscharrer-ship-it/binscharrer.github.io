@@ -848,35 +848,52 @@
     let shape = "";
     if (type === "flower") {
       shape = `
-        <g fill="url(#spacerMetal)">
-          <ellipse cx="32" cy="13" rx="8" ry="11" />
-          <ellipse cx="49" cy="21" rx="8" ry="11" transform="rotate(60 49 21)" />
-          <ellipse cx="49" cy="43" rx="8" ry="11" transform="rotate(120 49 43)" />
-          <ellipse cx="32" cy="51" rx="8" ry="11" />
-          <ellipse cx="15" cy="43" rx="8" ry="11" transform="rotate(60 15 43)" />
-          <ellipse cx="15" cy="21" rx="8" ry="11" transform="rotate(120 15 21)" />
-          <circle cx="32" cy="32" r="7" fill="${light}" />
+        <g filter="url(#spacerShadow)">
+          <path d="M20 16h24l-3 27c-1 7-17 7-18 0Z" fill="url(#spacerMetal)" />
+          <ellipse cx="32" cy="16" rx="12" ry="5" fill="${light}" />
+          <ellipse cx="32" cy="43" rx="9" ry="4" fill="${dark}" />
+          <path d="M21 23c4 2 18 2 22 0M24 29c3 1 13 1 16 0M27 35c2 1 8 1 10 0" fill="none" stroke="${light}" stroke-opacity=".55" stroke-width="2" />
+          <circle cx="18" cy="17" r="4" fill="${color}" />
+          <circle cx="46" cy="17" r="4" fill="${color}" />
         </g>`;
     } else if (type === "ring") {
       shape = `<circle cx="32" cy="32" r="20" fill="none" stroke="url(#spacerMetal)" stroke-width="8" /><circle cx="32" cy="32" r="20" fill="none" stroke="${light}" stroke-opacity=".5" stroke-width="2" />`;
     } else if (type === "pearl") {
       shape = `<circle cx="32" cy="32" r="22" fill="url(#spacerPearl)" /><ellipse cx="24" cy="23" rx="7" ry="5" fill="#fff" opacity=".62" />`;
     } else if (type === "star") {
-      shape = `<path d="m32 8 7 15 17 2-12 12 3 17-15-8-15 8 3-17L8 25l17-2Z" fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.5" />`;
+      shape = `
+        <g filter="url(#spacerShadow)">
+          <path d="m35 11 7 15 17 2-12 12 3 17-15-8-15 8 3-17L11 28l17-2Z" fill="${dark}" opacity=".42" />
+          <path d="m32 8 7 15 17 2-12 12 3 17-15-8-15 8 3-17L8 25l17-2Z" fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.5" />
+          <circle cx="32" cy="32" r="4.5" fill="${dark}" opacity=".72" />
+        </g>`;
     } else if (type === "moon") {
-      shape = `<path d="M42 9c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C11 54 5 36 14 22 19 14 30 9 42 9Z" fill="url(#spacerMetal)" /><circle cx="24" cy="20" r="4" fill="${light}" opacity=".72" />`;
+      shape = `
+        <g filter="url(#spacerShadow)">
+          <path d="M45 12c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C14 57 8 39 17 25 22 17 33 12 45 12Z" fill="${dark}" opacity=".42" />
+          <path d="M42 9c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C11 54 5 36 14 22 19 14 30 9 42 9Z" fill="url(#spacerMetal)" />
+          <path d="M20 23c-4 9-1 18 7 23" fill="none" stroke="${light}" stroke-opacity=".65" stroke-width="2" />
+        </g>`;
     } else if (type === "butterfly") {
       shape = `
-        <g fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.2">
-          <path d="M29 31C18 17 7 19 8 30c1 9 10 12 21 7Z" />
-          <path d="M35 31c11-14 22-12 21-1-1 9-10 12-21 7Z" />
-          <path d="M29 36C18 48 9 47 10 38c1-8 9-9 19-4Z" />
-          <path d="M35 36c11 12 20 11 19 2-1-8-9-9-19-4Z" />
-          <path d="M30 29h4l2 13h-8Z" />
+        <g filter="url(#spacerShadow)">
+          <g transform="translate(2 3)" fill="${dark}" opacity=".4">
+            <path d="M29 31C18 17 7 19 8 30c1 9 10 12 21 7Z" />
+            <path d="M35 31c11-14 22-12 21-1-1 9-10 12-21 7Z" />
+            <path d="M29 36C18 48 9 47 10 38c1-8 9-9 19-4Z" />
+            <path d="M35 36c11 12 20 11 19 2-1-8-9-9-19-4Z" />
+          </g>
+          <g fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.2">
+            <path d="M29 31C18 17 7 19 8 30c1 9 10 12 21 7Z" />
+            <path d="M35 31c11-14 22-12 21-1-1 9-10 12-21 7Z" />
+            <path d="M29 36C18 48 9 47 10 38c1-8 9-9 19-4Z" />
+            <path d="M35 36c11 12 20 11 19 2-1-8-9-9-19-4Z" />
+            <ellipse cx="32" cy="35" rx="4" ry="12" />
+          </g>
         </g>`;
     } else if (type === "cylinder") {
       shape = `
-        <g>
+        <g filter="url(#spacerShadow)">
           <path d="M18 18h28v28H18Z" fill="url(#spacerMetal)" />
           <ellipse cx="32" cy="18" rx="14" ry="5" fill="${light}" />
           <ellipse cx="32" cy="46" rx="14" ry="5" fill="${dark}" />
@@ -884,26 +901,26 @@
         </g>`;
     } else {
       shape = `
-        <g>
+        <g filter="url(#spacerShadow)">
           <path d="M10 27h44v15H10Z" fill="url(#spacerMetal)" />
           <ellipse cx="32" cy="27" rx="22" ry="7" fill="${light}" />
           <ellipse cx="32" cy="42" rx="22" ry="7" fill="${dark}" />
           <path d="M13 31h38M13 37h38" stroke="${light}" stroke-opacity=".48" stroke-width="2" />
         </g>`;
     }
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spacerMetal" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${light}"/><stop offset=".5" stop-color="${color}"/><stop offset="1" stop-color="${dark}"/></linearGradient><radialGradient id="spacerPearl" cx="35%" cy="28%" r="72%"><stop stop-color="#fff"/><stop offset=".65" stop-color="${light}"/><stop offset="1" stop-color="${color}"/></radialGradient></defs>${shape}</svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spacerMetal" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${light}"/><stop offset=".5" stop-color="${color}"/><stop offset="1" stop-color="${dark}"/></linearGradient><radialGradient id="spacerPearl" cx="35%" cy="28%" r="72%"><stop stop-color="#fff"/><stop offset=".65" stop-color="${light}"/><stop offset="1" stop-color="${color}"/></radialGradient><filter id="spacerShadow" x="-35%" y="-35%" width="170%" height="190%"><feDropShadow dx="2" dy="3" stdDeviation="2.2" flood-color="#3c2f3a" flood-opacity=".28"/></filter></defs>${shape}</svg>`;
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   }
 
   const SPACER_SPECS = [
-    { id: "spacer-gold-flower", name: "金色花托", type: "flower", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "花托"] },
-    { id: "spacer-silver-flower", name: "银色花托", type: "flower", color: "#aeb9c1", dark: "#66737b", light: "#f3f7f9", tags: ["隔珠", "花托"] },
-    { id: "spacer-gold-disc", name: "金色隔片", type: "disc", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "隔片"] },
-    { id: "spacer-black-gold", name: "黑金隔片", type: "disc", color: "#7d6b43", dark: "#26292d", light: "#e8c678", tags: ["隔珠", "隔片"] },
-    { id: "spacer-pink-star", name: "粉金星隔珠", type: "star", color: "#d98fa7", dark: "#9a516a", light: "#ffe4ee", tags: ["隔珠", "星形"] },
-    { id: "spacer-moon", name: "月光小隔珠", type: "moon", color: "#a8bdc8", dark: "#667d8b", light: "#eef8fb", tags: ["隔珠", "月形"] },
-    { id: "spacer-butterfly", name: "蝴蝶隔珠", type: "butterfly", color: "#c49b53", dark: "#735420", light: "#f7dc9d", tags: ["隔珠", "蝴蝶"] },
-    { id: "spacer-cylinder", name: "圆柱隔珠", type: "cylinder", color: "#9faeb5", dark: "#57666f", light: "#edf5f6", tags: ["隔珠", "圆柱"] },
+    { id: "spacer-gold-flower", name: "金色花托", type: "flower", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "花托"], spacerAspect: 0.82 },
+    { id: "spacer-silver-flower", name: "银色花托", type: "flower", color: "#aeb9c1", dark: "#66737b", light: "#f3f7f9", tags: ["隔珠", "花托"], spacerAspect: 0.82 },
+    { id: "spacer-gold-disc", name: "金色隔片", type: "disc", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "隔片"], spacerAspect: 0.78 },
+    { id: "spacer-black-gold", name: "黑金隔片", type: "disc", color: "#7d6b43", dark: "#26292d", light: "#e8c678", tags: ["隔珠", "隔片"], spacerAspect: 0.78 },
+    { id: "spacer-pink-star", name: "粉金星隔珠", type: "star", color: "#d98fa7", dark: "#9a516a", light: "#ffe4ee", tags: ["隔珠", "星形"], spacerAspect: 0.96 },
+    { id: "spacer-moon", name: "月光小隔珠", type: "moon", color: "#a8bdc8", dark: "#667d8b", light: "#eef8fb", tags: ["隔珠", "月形"], spacerAspect: 0.94 },
+    { id: "spacer-butterfly", name: "蝴蝶隔珠", type: "butterfly", color: "#c49b53", dark: "#735420", light: "#f7dc9d", tags: ["隔珠", "蝴蝶"], spacerAspect: 1.02 },
+    { id: "spacer-cylinder", name: "圆柱隔珠", type: "cylinder", color: "#9faeb5", dark: "#57666f", light: "#edf5f6", tags: ["隔珠", "圆柱"], spacerAspect: 0.76 },
   ];
   const SPACERS = SPACER_SPECS.map((spacer) => {
     const preview = spacerPreviewSvg(spacer);
@@ -2323,13 +2340,15 @@
 
       if (crystal.beadStyle === "spacer") {
         const spacerImage = this.realBeadImage(crystal);
+        const spacerHeight = radius * 2.15;
+        const spacerWidth = spacerHeight * (crystal.spacerAspect || 0.88);
         if (spacerImage) {
           context.drawImage(
             spacerImage,
-            x - radius * 1.05,
-            y - radius * 1.05,
-            radius * 2.1,
-            radius * 2.1,
+            x - spacerWidth * 0.5,
+            y - spacerHeight * 0.5,
+            spacerWidth,
+            spacerHeight,
           );
         }
         if (selected) {
@@ -2338,10 +2357,10 @@
           context.strokeStyle = "rgba(35, 111, 115, 0.92)";
           context.lineWidth = 1.8;
           context.strokeRect(
-            x - radius * 1.05,
-            y - radius * 1.05,
-            radius * 2.1,
-            radius * 2.1,
+            x - spacerWidth * 0.56,
+            y - spacerHeight * 0.56,
+            spacerWidth * 1.12,
+            spacerHeight * 1.12,
           );
           context.restore();
         }
