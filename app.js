@@ -848,7 +848,7 @@
     let shape = "";
     if (type === "flower") {
       shape = `
-        <g filter="url(#spacerShadow)">
+        <g>
           <path d="M20 16h24l-3 27c-1 7-17 7-18 0Z" fill="url(#spacerMetal)" />
           <ellipse cx="32" cy="16" rx="12" ry="5" fill="${light}" />
           <ellipse cx="32" cy="43" rx="9" ry="4" fill="${dark}" />
@@ -862,27 +862,19 @@
       shape = `<circle cx="32" cy="32" r="22" fill="url(#spacerPearl)" /><ellipse cx="24" cy="23" rx="7" ry="5" fill="#fff" opacity=".62" />`;
     } else if (type === "star") {
       shape = `
-        <g filter="url(#spacerShadow)">
-          <path d="m35 11 7 15 17 2-12 12 3 17-15-8-15 8 3-17L11 28l17-2Z" fill="${dark}" opacity=".42" />
+        <g>
           <path d="m32 8 7 15 17 2-12 12 3 17-15-8-15 8 3-17L8 25l17-2Z" fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.5" />
           <circle cx="32" cy="32" r="4.5" fill="${dark}" opacity=".72" />
         </g>`;
     } else if (type === "moon") {
       shape = `
-        <g filter="url(#spacerShadow)">
-          <path d="M45 12c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C14 57 8 39 17 25 22 17 33 12 45 12Z" fill="${dark}" opacity=".42" />
+        <g>
           <path d="M42 9c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C11 54 5 36 14 22 19 14 30 9 42 9Z" fill="url(#spacerMetal)" />
           <path d="M20 23c-4 9-1 18 7 23" fill="none" stroke="${light}" stroke-opacity=".65" stroke-width="2" />
         </g>`;
     } else if (type === "butterfly") {
       shape = `
-        <g filter="url(#spacerShadow)">
-          <g transform="translate(2 3)" fill="${dark}" opacity=".4">
-            <path d="M29 31C18 17 7 19 8 30c1 9 10 12 21 7Z" />
-            <path d="M35 31c11-14 22-12 21-1-1 9-10 12-21 7Z" />
-            <path d="M29 36C18 48 9 47 10 38c1-8 9-9 19-4Z" />
-            <path d="M35 36c11 12 20 11 19 2-1-8-9-9-19-4Z" />
-          </g>
+        <g>
           <g fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.2">
             <path d="M29 31C18 17 7 19 8 30c1 9 10 12 21 7Z" />
             <path d="M35 31c11-14 22-12 21-1-1 9-10 12-21 7Z" />
@@ -893,7 +885,7 @@
         </g>`;
     } else if (type === "cylinder") {
       shape = `
-        <g filter="url(#spacerShadow)">
+        <g>
           <path d="M18 18h28v28H18Z" fill="url(#spacerMetal)" />
           <ellipse cx="32" cy="18" rx="14" ry="5" fill="${light}" />
           <ellipse cx="32" cy="46" rx="14" ry="5" fill="${dark}" />
@@ -901,14 +893,14 @@
         </g>`;
     } else {
       shape = `
-        <g filter="url(#spacerShadow)">
+        <g>
           <path d="M10 27h44v15H10Z" fill="url(#spacerMetal)" />
           <ellipse cx="32" cy="27" rx="22" ry="7" fill="${light}" />
           <ellipse cx="32" cy="42" rx="22" ry="7" fill="${dark}" />
           <path d="M13 31h38M13 37h38" stroke="${light}" stroke-opacity=".48" stroke-width="2" />
         </g>`;
     }
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spacerMetal" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${light}"/><stop offset=".5" stop-color="${color}"/><stop offset="1" stop-color="${dark}"/></linearGradient><radialGradient id="spacerPearl" cx="35%" cy="28%" r="72%"><stop stop-color="#fff"/><stop offset=".65" stop-color="${light}"/><stop offset="1" stop-color="${color}"/></radialGradient><filter id="spacerShadow" x="-35%" y="-35%" width="170%" height="190%"><feDropShadow dx="2" dy="3" stdDeviation="2.2" flood-color="#3c2f3a" flood-opacity=".28"/></filter></defs>${shape}</svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spacerMetal" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${light}"/><stop offset=".5" stop-color="${color}"/><stop offset="1" stop-color="${dark}"/></linearGradient><radialGradient id="spacerPearl" cx="35%" cy="28%" r="72%"><stop stop-color="#fff"/><stop offset=".65" stop-color="${light}"/><stop offset="1" stop-color="${color}"/></radialGradient></defs>${shape}</svg>`;
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   }
 
@@ -2333,11 +2325,6 @@
 
     drawBead(context, x, y, radius, crystal, index, selected) {
       context.save();
-      context.fillStyle = "rgba(23, 51, 52, 0.13)";
-      context.beginPath();
-      context.ellipse(x + radius * 0.15, y + radius * 0.48, radius * 0.94, radius * 0.62, 0, 0, Math.PI * 2);
-      context.fill();
-
       if (crystal.beadStyle === "spacer") {
         const spacerImage = this.realBeadImage(crystal);
         const spacerHeight = radius * 2.15;
@@ -2367,6 +2354,11 @@
         context.restore();
         return;
       }
+
+      context.fillStyle = "rgba(23, 51, 52, 0.13)";
+      context.beginPath();
+      context.ellipse(x + radius * 0.15, y + radius * 0.48, radius * 0.94, radius * 0.62, 0, 0, Math.PI * 2);
+      context.fill();
 
       const gradient = context.createRadialGradient(
         x - radius * 0.36,
