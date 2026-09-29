@@ -1177,6 +1177,8 @@
         removeBeadButton: document.getElementById("remove-bead-button"),
         moveBeadLeft: document.getElementById("move-bead-left"),
         moveBeadRight: document.getElementById("move-bead-right"),
+        insertBeadLeft: document.getElementById("insert-bead-left"),
+        insertBeadRight: document.getElementById("insert-bead-right"),
         closeBeadEditor: document.getElementById("close-bead-editor"),
         loadSampleButton: document.getElementById("load-sample-button"),
         clearBraceletButton: document.getElementById("clear-bracelet-button"),
@@ -1343,6 +1345,8 @@
       this.dom.removeBeadButton.addEventListener("click", () => this.removeSelectedBead());
       this.dom.moveBeadLeft.addEventListener("click", () => this.moveSelectedBead(-1));
       this.dom.moveBeadRight.addEventListener("click", () => this.moveSelectedBead(1));
+      this.dom.insertBeadLeft.addEventListener("click", () => this.insertSelectedBead(-1));
+      this.dom.insertBeadRight.addEventListener("click", () => this.insertSelectedBead(1));
       this.dom.closeBeadEditor.addEventListener("click", () => {
         this.state.studio.selectedBeadIndex = null;
         this.renderStudio();
@@ -1920,6 +1924,21 @@
       this.state.studio.selectedBeadIndex = to;
       this.saveStudio();
       this.renderStudio();
+    }
+
+    insertSelectedBead(offset) {
+      const index = this.state.studio.selectedBeadIndex;
+      if (index === null) return;
+      const beads = this.state.studio.beads;
+      const source = beads[index];
+      if (!source) return;
+      const insertIndex = offset < 0 ? index : index + 1;
+      beads.splice(insertIndex, 0, { ...source });
+      this.state.studio.selectedBeadIndex = insertIndex;
+      this.saveStudio();
+      this.renderStudio();
+      const crystal = CRYSTAL_MAP.get(source.stoneId);
+      this.showToast(`已在${offset < 0 ? "左侧" : "右侧"}插入一颗${crystal?.name || "珠子"}`);
     }
 
     removeSelectedBead() {
