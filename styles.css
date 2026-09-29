@@ -1158,6 +1158,23 @@ a:focus-visible {
   display: none;
 }
 
+.gem-thumb.spacer-thumb {
+  overflow: visible;
+  border-radius: 6px;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.gem-thumb.spacer-thumb.has-live-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.gem-thumb.spacer-thumb::after {
+  display: none;
+}
+
 .picker-foot {
   display: flex;
   align-items: center;

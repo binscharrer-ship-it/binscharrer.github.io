@@ -865,8 +865,31 @@
       shape = `<path d="m32 8 7 15 17 2-12 12 3 17-15-8-15 8 3-17L8 25l17-2Z" fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.5" />`;
     } else if (type === "moon") {
       shape = `<path d="M42 9c-14 3-22 15-18 28 3 11 14 18 26 16-6 7-16 10-25 6C11 54 5 36 14 22 19 14 30 9 42 9Z" fill="url(#spacerMetal)" /><circle cx="24" cy="20" r="4" fill="${light}" opacity=".72" />`;
+    } else if (type === "butterfly") {
+      shape = `
+        <g fill="url(#spacerMetal)" stroke="${light}" stroke-width="1.2">
+          <path d="M29 31C18 17 7 19 8 30c1 9 10 12 21 7Z" />
+          <path d="M35 31c11-14 22-12 21-1-1 9-10 12-21 7Z" />
+          <path d="M29 36C18 48 9 47 10 38c1-8 9-9 19-4Z" />
+          <path d="M35 36c11 12 20 11 19 2-1-8-9-9-19-4Z" />
+          <path d="M30 29h4l2 13h-8Z" />
+        </g>`;
+    } else if (type === "cylinder") {
+      shape = `
+        <g>
+          <path d="M18 18h28v28H18Z" fill="url(#spacerMetal)" />
+          <ellipse cx="32" cy="18" rx="14" ry="5" fill="${light}" />
+          <ellipse cx="32" cy="46" rx="14" ry="5" fill="${dark}" />
+          <path d="M20 23h24M20 29h24M20 35h24M20 41h24" stroke="${light}" stroke-opacity=".48" stroke-width="2" />
+        </g>`;
     } else {
-      shape = `<circle cx="32" cy="32" r="22" fill="url(#spacerMetal)" /><path d="M32 11v42M11 32h42M17 17l30 30M47 17 17 47" stroke="${light}" stroke-opacity=".34" stroke-width="2" />`;
+      shape = `
+        <g>
+          <path d="M10 27h44v15H10Z" fill="url(#spacerMetal)" />
+          <ellipse cx="32" cy="27" rx="22" ry="7" fill="${light}" />
+          <ellipse cx="32" cy="42" rx="22" ry="7" fill="${dark}" />
+          <path d="M13 31h38M13 37h38" stroke="${light}" stroke-opacity=".48" stroke-width="2" />
+        </g>`;
     }
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="spacerMetal" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${light}"/><stop offset=".5" stop-color="${color}"/><stop offset="1" stop-color="${dark}"/></linearGradient><radialGradient id="spacerPearl" cx="35%" cy="28%" r="72%"><stop stop-color="#fff"/><stop offset=".65" stop-color="${light}"/><stop offset="1" stop-color="${color}"/></radialGradient></defs>${shape}</svg>`;
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
@@ -875,12 +898,12 @@
   const SPACER_SPECS = [
     { id: "spacer-gold-flower", name: "金色花托", type: "flower", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "花托"] },
     { id: "spacer-silver-flower", name: "银色花托", type: "flower", color: "#aeb9c1", dark: "#66737b", light: "#f3f7f9", tags: ["隔珠", "花托"] },
-    { id: "spacer-gold-ring", name: "金色圆环", type: "ring", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "圆环"] },
-    { id: "spacer-silver-ring", name: "银色圆环", type: "ring", color: "#aeb9c1", dark: "#66737b", light: "#f3f7f9", tags: ["隔珠", "圆环"] },
-    { id: "spacer-pearl", name: "珍珠隔珠", type: "pearl", color: "#d9d4cb", dark: "#9a948b", light: "#fffdf8", tags: ["隔珠", "珍珠"] },
+    { id: "spacer-gold-disc", name: "金色隔片", type: "disc", color: "#d2a34a", dark: "#8c641f", light: "#ffe6a5", tags: ["隔珠", "隔片"] },
     { id: "spacer-black-gold", name: "黑金隔片", type: "disc", color: "#7d6b43", dark: "#26292d", light: "#e8c678", tags: ["隔珠", "隔片"] },
     { id: "spacer-pink-star", name: "粉金星隔珠", type: "star", color: "#d98fa7", dark: "#9a516a", light: "#ffe4ee", tags: ["隔珠", "星形"] },
     { id: "spacer-moon", name: "月光小隔珠", type: "moon", color: "#a8bdc8", dark: "#667d8b", light: "#eef8fb", tags: ["隔珠", "月形"] },
+    { id: "spacer-butterfly", name: "蝴蝶隔珠", type: "butterfly", color: "#c49b53", dark: "#735420", light: "#f7dc9d", tags: ["隔珠", "蝴蝶"] },
+    { id: "spacer-cylinder", name: "圆柱隔珠", type: "cylinder", color: "#9faeb5", dark: "#57666f", light: "#edf5f6", tags: ["隔珠", "圆柱"] },
   ];
   const SPACERS = SPACER_SPECS.map((spacer) => {
     const preview = spacerPreviewSvg(spacer);
@@ -1413,6 +1436,11 @@
           this.state.studio.selectedBeadIndex = closest.index;
           this.state.studio.editorOpen = false;
           this.renderStudio();
+        } else {
+          this.state.studio.selectedBeadIndex = null;
+          this.state.studio.editorOpen = false;
+          this.hideBeadActionPopover();
+          this.renderStudio();
         }
       });
 
@@ -1443,6 +1471,12 @@
       this.dom.beadActionDelete.addEventListener("click", () => {
         this.hideBeadActionPopover();
         this.removeSelectedBead();
+      });
+      document.addEventListener("pointerdown", (event) => {
+        if (this.state.view !== "studio" || this.dom.beadActionPopover.hidden) return;
+        if (this.dom.beadActionPopover.contains(event.target)) return;
+        if (this.dom.studioBracelet.contains(event.target)) return;
+        this.hideBeadActionPopover();
       });
       this.dom.closeBeadPicker.addEventListener("click", () => {
         this.dom.beadPickerModal.hidden = true;
@@ -1862,9 +1896,10 @@
     gemThumbMarkup(crystal) {
       const style = crystal.beadStyle || BEAD_STYLE_BY_ID[crystal.id] || "crystal";
       const realImage = crystal.realImage;
+      const spacerClass = style === "spacer" ? " spacer-thumb" : "";
       return `
         <span
-          class="gem-thumb bead-style-${style}${realImage ? " has-live-image" : ""}"
+          class="gem-thumb bead-style-${style}${realImage ? " has-live-image" : ""}${spacerClass}"
           style="--gem-color:${crystal.color};--gem-dark:${crystal.dark};--gem-light:${crystal.light};${realImage ? `--live-image:url('${realImage}');` : ""}"
           data-style="${style}"
           aria-hidden="true"
@@ -2285,6 +2320,34 @@
       context.beginPath();
       context.ellipse(x + radius * 0.15, y + radius * 0.48, radius * 0.94, radius * 0.62, 0, 0, Math.PI * 2);
       context.fill();
+
+      if (crystal.beadStyle === "spacer") {
+        const spacerImage = this.realBeadImage(crystal);
+        if (spacerImage) {
+          context.drawImage(
+            spacerImage,
+            x - radius * 1.05,
+            y - radius * 1.05,
+            radius * 2.1,
+            radius * 2.1,
+          );
+        }
+        if (selected) {
+          context.save();
+          context.setLineDash([4, 4]);
+          context.strokeStyle = "rgba(35, 111, 115, 0.92)";
+          context.lineWidth = 1.8;
+          context.strokeRect(
+            x - radius * 1.05,
+            y - radius * 1.05,
+            radius * 2.1,
+            radius * 2.1,
+          );
+          context.restore();
+        }
+        context.restore();
+        return;
+      }
 
       const gradient = context.createRadialGradient(
         x - radius * 0.36,
