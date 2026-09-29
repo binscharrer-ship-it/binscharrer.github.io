@@ -16,6 +16,27 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <svg class="svg-defs" aria-hidden="true">
+      <defs>
+        <symbol id="crystal-spirit" viewBox="0 0 120 120">
+          <path d="M60 12 88 30l10 33-21 34H43L22 63l10-33Z" fill="url(#spirit-fill)" stroke="currentColor" stroke-width="3" />
+          <path d="M60 18 79 31l8 27-8 27-19 13-19-13-8-27 8-27Z" fill="rgba(255,255,255,.28)" />
+          <circle cx="47" cy="58" r="3.6" fill="#403640" />
+          <circle cx="73" cy="58" r="3.6" fill="#403640" />
+          <path d="M52 72c4 5 12 5 16 0" fill="none" stroke="#9b5f73" stroke-linecap="round" stroke-width="3" />
+          <path d="M27 28 20 20m73 8 7-8M31 88l-8 8m66-8 8 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3" opacity=".55" />
+          <circle cx="20" cy="20" r="2.5" fill="#e9c26f" />
+          <circle cx="100" cy="20" r="2.5" fill="#e9c26f" />
+          <circle cx="23" cy="96" r="2.5" fill="#e9c26f" />
+          <circle cx="97" cy="96" r="2.5" fill="#e9c26f" />
+        </symbol>
+        <linearGradient id="spirit-fill" x1="20" y1="12" x2="98" y2="108" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#f6dfeb" />
+          <stop offset=".52" stop-color="#e8def6" />
+          <stop offset="1" stop-color="#d8efea" />
+        </linearGradient>
+      </defs>
+    </svg>
     <div class="app-shell">
       <header class="app-header">
         <a class="brand" href="#test" aria-label="晶序首页">
@@ -38,6 +59,9 @@
           <button class="nav-button" type="button" data-view="library" aria-selected="false">
             水晶图鉴
           </button>
+          <button class="nav-button" type="button" data-view="profile" aria-selected="false">
+            我的
+          </button>
         </nav>
 
         <p class="header-note">象征与情绪偏好工具，非医疗建议</p>
@@ -54,6 +78,14 @@
             <div class="status-chip">
               <span class="status-dot" aria-hidden="true"></span>
               <span id="engine-status">测配引擎已就绪</span>
+            </div>
+          </div>
+          <div class="healing-intro">
+            <svg class="spirit-svg" aria-hidden="true"><use href="#crystal-spirit"></use></svg>
+            <div>
+              <p class="panel-kicker">给今天的你</p>
+              <h2>先选一个最像此刻的入口</h2>
+              <p>不用想太多，先跟着第一感觉走。晶序会替你把这份心情整理成一条手链。</p>
             </div>
           </div>
 
@@ -181,6 +213,7 @@
                   <button class="primary-action compact" id="use-recipe-button" type="button">
                     用这套配方开始串珠
                   </button>
+                  <button class="secondary-action" id="share-result-button" type="button">生成分享图</button>
                   <button class="secondary-action" id="reroll-button" type="button">重新选择</button>
                 </div>
               </div>
@@ -222,6 +255,21 @@
                 <span class="sr-only">搜索水晶名称</span>
                 <input id="stone-search" type="search" placeholder="搜索水晶名称" autocomplete="off" />
               </label>
+
+              <div class="wrist-guide">
+                <div class="wrist-guide-heading">
+                  <div>
+                    <p class="panel-kicker">手围测算</p>
+                    <h3>选对珠径和颗数</h3>
+                  </div>
+                </div>
+                <label class="wrist-input">
+                  <span>手围</span>
+                  <input id="wrist-size-input" type="number" min="12" max="24" step="0.1" value="16" inputmode="decimal" />
+                  <span>cm</span>
+                </label>
+                <p class="wrist-result" id="wrist-result"></p>
+              </div>
 
               <div class="stone-picker" id="stone-picker"></div>
 
@@ -313,7 +361,7 @@
             <div>
               <p class="eyebrow">水晶图鉴</p>
               <h1>先理解它，再决定是否靠近</h1>
-              <p>查看每种水晶的象征、情绪力量、佩戴建议和一日静心方法。</p>
+              <p>先看核心推荐，需要时再展开全部品种。支持按颜色、特征和场景查找。</p>
             </div>
           </div>
 
@@ -324,6 +372,37 @@
                   <p class="panel-kicker" id="catalog-count">成品水晶珠图鉴</p>
                   <h2 id="crystal-index-title">图鉴目录</h2>
                 </div>
+              </div>
+              <div class="library-controls">
+                <label class="library-search">
+                  <span class="sr-only">搜索水晶、情绪或特征</span>
+                  <input id="library-search" type="search" placeholder="搜索名称、情绪或特征" autocomplete="off" />
+                </label>
+                <div class="library-scope" id="library-scope" role="group" aria-label="图鉴范围">
+                  <button class="is-active" type="button" data-scope="featured">核心推荐</button>
+                  <button type="button" data-scope="all">全部品种</button>
+                </div>
+                <div class="library-filters">
+                  <label>
+                    <span>颜色</span>
+                    <select id="library-color-filter">
+                      <option value="all">全部颜色</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>特征</span>
+                    <select id="library-feature-filter">
+                      <option value="all">全部特征</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>场景</span>
+                    <select id="library-scene-filter">
+                      <option value="all">全部场景</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="library-result-note" id="library-result-note"></p>
               </div>
               <div class="crystal-index" id="crystal-index"></div>
             </section>
@@ -344,6 +423,7 @@
                   <p class="crystal-en" id="detail-en">Amethyst</p>
                   <p class="detail-meaning" id="detail-meaning"></p>
                   <div class="result-tags" id="detail-tags"></div>
+                  <button class="detail-favorite" id="favorite-detail-button" type="button">收藏这颗</button>
                 </div>
               </div>
 
@@ -373,6 +453,21 @@
                 <p id="detail-ritual"></p>
               </div>
 
+              <div class="detail-care-grid">
+                <article>
+                  <span>佩戴与保养</span>
+                  <p id="detail-care"></p>
+                </article>
+                <article>
+                  <span>搭配建议</span>
+                  <p id="detail-pairing"></p>
+                </article>
+                <article>
+                  <span>珠径建议</span>
+                  <p id="detail-size-note"></p>
+                </article>
+              </div>
+
               <div class="library-action-row">
                 <button class="primary-action compact" id="add-detail-to-bracelet" type="button">
                   用 8 mm 加入手链
@@ -384,12 +479,83 @@
           <details class="image-credits">
             <summary>颜色参考与来源</summary>
             <p>
-              成品圆珠使用程序化材质绘制，仅参考公开矿物样本的色调与天然特征。点击条目可查看参考资料与授权。
+              成品圆珠使用本地 3D 渲染图片资源，公开矿物样本用于色调识别与授权记录。点击条目可查看参考资料与授权。
             </p>
             <div class="image-credits-list" id="image-credits-list"></div>
           </details>
         </section>
+
+        <section class="app-view" id="view-profile" data-view-panel="profile" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">我的晶序</p>
+              <h1>把喜欢的水晶留下来</h1>
+              <p>收藏、最近浏览、上次测配结果和当前手链都集中在这里。</p>
+            </div>
+          </div>
+
+          <div class="profile-layout">
+            <section class="panel profile-overview">
+              <div class="profile-stat">
+                <span>收藏水晶</span>
+                <strong id="profile-favorite-count">0</strong>
+              </div>
+              <div class="profile-stat">
+                <span>最近浏览</span>
+                <strong id="profile-recent-count">0</strong>
+              </div>
+              <div class="profile-stat">
+                <span>当前手链</span>
+                <strong id="profile-bead-count">0 颗</strong>
+              </div>
+              <p class="profile-note" id="profile-result-note">还没有测配结果，先去完成一次水晶测配吧。</p>
+              <div class="profile-actions">
+                <button class="primary-action compact" type="button" id="profile-start-test">开始测配</button>
+                <button class="secondary-action" type="button" id="profile-open-studio">打开我的手链</button>
+              </div>
+            </section>
+
+            <section class="panel profile-block">
+              <div class="section-heading">
+                <div>
+                  <p class="panel-kicker">收藏</p>
+                  <h2>喜欢的水晶</h2>
+                </div>
+                <span class="section-note" id="profile-favorite-note">还没有收藏</span>
+              </div>
+              <div class="profile-list" id="favorite-crystal-list"></div>
+            </section>
+
+            <section class="panel profile-block">
+              <div class="section-heading">
+                <div>
+                  <p class="panel-kicker">足迹</p>
+                  <h2>最近浏览</h2>
+                </div>
+                <button class="text-action" type="button" id="clear-recent-button">清空</button>
+              </div>
+              <div class="profile-list" id="recent-crystal-list"></div>
+            </section>
+          </div>
+        </section>
       </main>
+    </div>
+
+    <div class="share-modal" id="share-modal" hidden>
+      <div class="share-modal-card">
+        <div class="share-modal-heading">
+          <div>
+            <p class="panel-kicker">分享卡片</p>
+            <h2>你的晶序配方</h2>
+          </div>
+          <button class="text-action" type="button" id="close-share-button">关闭</button>
+        </div>
+        <img id="share-image" alt="晶序水晶配方分享图" />
+        <a class="secondary-action share-download" id="download-share-image" download="晶序水晶配方.png">
+          保存图片
+        </a>
+        <p class="share-hint">手机端也可以长按图片保存。</p>
+      </div>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>

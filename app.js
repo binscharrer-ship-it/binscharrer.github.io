@@ -842,6 +842,61 @@
   }));
   const CRYSTAL_MAP = new Map(CRYSTALS.map((crystal) => [crystal.id, crystal]));
   const IMAGE_DATA = window.CRYSTAL_IMAGE_DATA || {};
+  const CORE_CRYSTAL_IDS = new Set(
+    [...BASE_CRYSTALS, ...EXTRA_CRYSTALS].map((crystal) => crystal.id),
+  );
+
+  const COLOR_FILTERS = [
+    { id: "white", label: "白色系", pattern: /白|冰|月光|珍珠|贝|欧泊|银/ },
+    { id: "black", label: "黑色系", pattern: /黑|墨|曜|夜|乌/ },
+    { id: "purple", label: "紫色系", pattern: /紫|薰衣草|梦幻|俱舒/ },
+    { id: "blue", label: "蓝色系", pattern: /蓝|海|天河|坦桑|青金|方钠|堇青|异极/ },
+    { id: "green", label: "绿色系", pattern: /绿|青|翠|橄榄|葡萄|玉|孔雀|岫/ },
+    { id: "yellow", label: "黄色系", pattern: /黄|金|蜜蜡|太阳|虎眼|柠檬|钛|铜发/ },
+    { id: "red", label: "红粉色系", pattern: /红|粉|樱|草莓|石榴|南红|朱砂|玫瑰|蔷薇/ },
+  ];
+
+  const FEATURE_FILTERS = [
+    { id: "clear", label: "透明冰透", pattern: /白水晶|冰|净体|托帕|海蓝宝|碧玺|月光/ },
+    { id: "needle", label: "发晶针状", pattern: /发晶|兔毛|针/ },
+    { id: "cloud", label: "棉絮云雾", pattern: /粉晶|玉髓|珍珠|贝|欧泊|幽灵|超七|草莓|阿塞|胶花/ },
+    { id: "banded", label: "条带纹理", pattern: /玛瑙|纹|龙晶|萤石/ },
+    { id: "cat-eye", label: "猫眼光带", pattern: /虎眼|月光|曜石|极光|闪灵/ },
+    { id: "matrix", label: "矿点晶簇", pattern: /青金|方钠|松石|孔雀|彼得石|草莓|超七/ },
+    { id: "crystal", label: "单晶玻璃", pattern: /水晶|石英|紫|黄|粉|绿|蓝|红/ },
+  ];
+
+  const SCENE_FILTERS = [
+    { id: "calm", label: "静心放松", pattern: /静|安|柔|眠|舒缓|温柔|柔软|放松/ },
+    { id: "clarity", label: "清晰专注", pattern: /清晰|专注|逻辑|判断|表达|洞察|聚焦/ },
+    { id: "action", label: "行动自信", pattern: /行动|勇气|自信|执行|活力|热情|坚持|突破/ },
+    { id: "relationship", label: "关系情感", pattern: /关系|爱|接纳|修复|宽恕|情感|温柔/ },
+    { id: "growth", label: "成长机会", pattern: /成长|机会|丰盛|转化|灵感|创造/ },
+    { id: "boundary", label: "边界保护", pattern: /边界|保护|守护|稳定|落地|安全感|防护/ },
+  ];
+
+  function firstMatchingBucket(crystal, buckets) {
+    const haystack = [
+      crystal.name,
+      crystal.en,
+      crystal.emotion,
+      crystal.meaning,
+      ...(crystal.tags || []),
+    ].join(" ");
+    return buckets.find((bucket) => bucket.pattern.test(haystack))?.id || "other";
+  }
+
+  function colorBucket(crystal) {
+    return firstMatchingBucket(crystal, COLOR_FILTERS);
+  }
+
+  function featureBucket(crystal) {
+    return firstMatchingBucket(crystal, FEATURE_FILTERS);
+  }
+
+  function sceneBucket(crystal) {
+    return firstMatchingBucket(crystal, SCENE_FILTERS);
+  }
 
   const ZODIAC = [
     { id: "aries", name: "白羊座", short: "火", ids: ["red-tiger", "garnet", "sunstone"] },
@@ -1000,6 +1055,17 @@
         },
         result: null,
         detailId: "amethyst",
+        view: "test",
+        library: {
+          scope: "featured",
+          search: "",
+          color: "all",
+          feature: "all",
+          scene: "all",
+        },
+        favorites: this.loadStringList("crystal-favorites-v1"),
+        recent: this.loadStringList("crystal-recent-v1"),
+        wristCm: this.loadWristSize(),
         studio: {
           selectedStoneId: "amethyst",
           selectedSize: 8,
@@ -1017,14 +1083,48 @@
       this.bindEvents();
       this.renderSourceChoices();
       this.renderStonePicker();
+      this.renderLibraryFilters();
       this.renderCrystalIndex();
       this.dom.catalogCount.textContent = `${CRYSTALS.length} 种成品水晶珠`;
       this.selectCrystalDetail("amethyst");
       this.renderStudio();
+      this.renderWristGuide();
       this.renderImageCredits();
       this.loadRealBeadImages();
       this.observeCanvases();
+      this.renderProfile();
       window.__crystalApp = this;
+    }
+
+    loadStringList(key) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value.filter((item) => typeof item === "string") : [];
+      } catch {
+        return [];
+      }
+    }
+
+    saveStringList(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch {
+        // Storage is optional; the live state remains available for this session.
+      }
+    }
+
+    loadWristSize() {
+      const value = Number(localStorage.getItem("crystal-wrist-size-v1") || 16);
+      return Number.isFinite(value) && value >= 12 && value <= 24 ? value : 16;
+    }
+
+    saveWristSize(value) {
+      this.state.wristCm = value;
+      try {
+        localStorage.setItem("crystal-wrist-size-v1", String(value));
+      } catch {
+        // Storage is optional; the live state remains available for this session.
+      }
     }
 
     collectDom() {
@@ -1091,6 +1191,33 @@
         detailEnergyChart: document.getElementById("detail-energy-chart"),
         detailRitual: document.getElementById("detail-ritual"),
         addDetailButton: document.getElementById("add-detail-to-bracelet"),
+        favoriteDetailButton: document.getElementById("favorite-detail-button"),
+        detailCare: document.getElementById("detail-care"),
+        detailPairing: document.getElementById("detail-pairing"),
+        detailSizeNote: document.getElementById("detail-size-note"),
+        librarySearch: document.getElementById("library-search"),
+        libraryScope: document.getElementById("library-scope"),
+        libraryColorFilter: document.getElementById("library-color-filter"),
+        libraryFeatureFilter: document.getElementById("library-feature-filter"),
+        librarySceneFilter: document.getElementById("library-scene-filter"),
+        libraryResultNote: document.getElementById("library-result-note"),
+        wristSizeInput: document.getElementById("wrist-size-input"),
+        wristResult: document.getElementById("wrist-result"),
+        shareResultButton: document.getElementById("share-result-button"),
+        shareModal: document.getElementById("share-modal"),
+        shareImage: document.getElementById("share-image"),
+        closeShareButton: document.getElementById("close-share-button"),
+        downloadShareImage: document.getElementById("download-share-image"),
+        profileFavoriteCount: document.getElementById("profile-favorite-count"),
+        profileRecentCount: document.getElementById("profile-recent-count"),
+        profileBeadCount: document.getElementById("profile-bead-count"),
+        profileResultNote: document.getElementById("profile-result-note"),
+        profileFavoriteNote: document.getElementById("profile-favorite-note"),
+        favoriteCrystalList: document.getElementById("favorite-crystal-list"),
+        recentCrystalList: document.getElementById("recent-crystal-list"),
+        profileStartTest: document.getElementById("profile-start-test"),
+        profileOpenStudio: document.getElementById("profile-open-studio"),
+        clearRecentButton: document.getElementById("clear-recent-button"),
         imageCreditsList: document.getElementById("image-credits-list"),
         toast: document.getElementById("toast"),
       };
@@ -1167,6 +1294,7 @@
         if (!button) return;
         this.state.studio.selectedSize = Number(button.dataset.size);
         this.renderSizeSelector();
+        this.renderWristGuide();
       });
       this.dom.stoneSearch.addEventListener("input", () => {
         this.state.studio.search = this.dom.stoneSearch.value.trim();
@@ -1222,6 +1350,49 @@
         this.addBead();
         this.switchView("studio");
       });
+      this.dom.favoriteDetailButton.addEventListener("click", () => {
+        this.toggleFavorite(this.state.detailId);
+      });
+      this.dom.librarySearch.addEventListener("input", () => {
+        this.state.library.search = this.dom.librarySearch.value.trim();
+        this.renderCrystalIndex();
+      });
+      this.dom.libraryScope.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-scope]");
+        if (!button) return;
+        this.state.library.scope = button.dataset.scope;
+        this.renderCrystalIndex();
+      });
+      [this.dom.libraryColorFilter, this.dom.libraryFeatureFilter, this.dom.librarySceneFilter].forEach(
+        (select) => {
+          select.addEventListener("change", () => {
+            this.state.library.color = this.dom.libraryColorFilter.value;
+            this.state.library.feature = this.dom.libraryFeatureFilter.value;
+            this.state.library.scene = this.dom.librarySceneFilter.value;
+            this.renderCrystalIndex();
+          });
+        },
+      );
+      this.dom.wristSizeInput.addEventListener("input", () => {
+        const value = Number(this.dom.wristSizeInput.value);
+        if (!Number.isFinite(value)) return;
+        this.saveWristSize(clamp(value, 12, 24));
+        this.renderWristGuide();
+      });
+      this.dom.shareResultButton.addEventListener("click", () => this.openShareCard());
+      this.dom.closeShareButton.addEventListener("click", () => {
+        this.dom.shareModal.hidden = true;
+      });
+      this.dom.shareModal.addEventListener("click", (event) => {
+        if (event.target === this.dom.shareModal) this.dom.shareModal.hidden = true;
+      });
+      this.dom.profileStartTest.addEventListener("click", () => this.switchView("test"));
+      this.dom.profileOpenStudio.addEventListener("click", () => this.switchView("studio"));
+      this.dom.clearRecentButton.addEventListener("click", () => {
+        this.state.recent = [];
+        this.saveStringList("crystal-recent-v1", this.state.recent);
+        this.renderProfile();
+      });
     }
 
     observeCanvases() {
@@ -1252,6 +1423,7 @@
       requestAnimationFrame(() => {
         if (view === "studio") this.renderStudioCanvas();
         if (view === "library") this.renderDetailCanvas();
+        if (view === "profile") this.renderProfile();
       });
     }
 
@@ -1488,6 +1660,7 @@
           this.dom.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       }
+      this.renderProfile();
     }
 
     renderEnergyChart(container, energies) {
@@ -1596,6 +1769,7 @@
       this.renderSequence();
       this.renderStudioStats();
       this.renderStudioCanvas();
+      this.renderProfile();
     }
 
     renderStudioStats() {
@@ -2024,25 +2198,205 @@
       context.stroke();
     }
 
+    renderLibraryFilters() {
+      const fill = (select, filters, allLabel) => {
+        select.innerHTML = [
+          `<option value="all">${allLabel}</option>`,
+          ...filters.map((filter) => `<option value="${filter.id}">${filter.label}</option>`),
+          '<option value="other">其他</option>',
+        ].join("");
+      };
+      fill(this.dom.libraryColorFilter, COLOR_FILTERS, "全部颜色");
+      fill(this.dom.libraryFeatureFilter, FEATURE_FILTERS, "全部特征");
+      fill(this.dom.librarySceneFilter, SCENE_FILTERS, "全部场景");
+      this.dom.libraryColorFilter.value = this.state.library.color;
+      this.dom.libraryFeatureFilter.value = this.state.library.feature;
+      this.dom.librarySceneFilter.value = this.state.library.scene;
+    }
+
+    filteredCrystals() {
+      const query = this.state.library.search.toLowerCase();
+      return CRYSTALS.filter((crystal) => {
+        if (this.state.library.scope === "featured" && !CORE_CRYSTAL_IDS.has(crystal.id)) {
+          return false;
+        }
+        if (query) {
+          const haystack = `${crystal.name} ${crystal.en} ${crystal.emotion} ${crystal.meaning} ${crystal.tags.join(" ")}`.toLowerCase();
+          if (!haystack.includes(query)) return false;
+        }
+        if (this.state.library.color !== "all" && colorBucket(crystal) !== this.state.library.color) {
+          return false;
+        }
+        if (this.state.library.feature !== "all" && featureBucket(crystal) !== this.state.library.feature) {
+          return false;
+        }
+        if (this.state.library.scene !== "all" && sceneBucket(crystal) !== this.state.library.scene) {
+          return false;
+        }
+        return true;
+      });
+    }
+
     renderCrystalIndex() {
-      this.dom.crystalIndex.innerHTML = CRYSTALS.map(
-        (crystal) => `
-          <button
-            class="crystal-index-button${crystal.id === this.state.detailId ? " is-selected" : ""}"
-            type="button"
-            data-detail-id="${crystal.id}"
-          >
-            ${this.gemThumbMarkup(crystal)}
-            <span>
-              <strong>${escapeHtml(crystal.name)}</strong>
-              <small>${escapeHtml(crystal.emotion)}</small>
-            </span>
-          </button>
-        `,
-      ).join("");
+      this.dom.libraryScope.querySelectorAll("[data-scope]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.scope === this.state.library.scope);
+      });
+      const crystals = this.filteredCrystals();
+      this.dom.libraryResultNote.textContent = `当前显示 ${crystals.length} 种 · ${
+        this.state.library.scope === "featured" ? "核心推荐" : "全部品种"
+      }`;
+      this.dom.crystalIndex.innerHTML = crystals.length
+        ? crystals
+            .map(
+              (crystal) => `
+                <button
+                  class="crystal-index-button${crystal.id === this.state.detailId ? " is-selected" : ""}"
+                  type="button"
+                  data-detail-id="${crystal.id}"
+                >
+                  ${this.gemThumbMarkup(crystal)}
+                  <span>
+                    <strong>${escapeHtml(crystal.name)}</strong>
+                    <small>${escapeHtml(crystal.emotion)}</small>
+                  </span>
+                </button>
+              `,
+            )
+            .join("")
+        : '<div class="profile-empty">没有找到符合条件的水晶，试试放宽筛选。</div>';
       this.dom.crystalIndex.querySelectorAll("[data-detail-id]").forEach((button) => {
         button.addEventListener("click", () => this.selectCrystalDetail(button.dataset.detailId));
       });
+    }
+
+    trackRecent(id) {
+      this.state.recent = [id, ...this.state.recent.filter((item) => item !== id)].slice(0, 12);
+      this.saveStringList("crystal-recent-v1", this.state.recent);
+    }
+
+    toggleFavorite(id) {
+      const exists = this.state.favorites.includes(id);
+      this.state.favorites = exists
+        ? this.state.favorites.filter((item) => item !== id)
+        : [id, ...this.state.favorites];
+      this.saveStringList("crystal-favorites-v1", this.state.favorites);
+      const crystal = CRYSTAL_MAP.get(id);
+      this.renderFavoriteButton(crystal);
+      this.renderProfile();
+      this.renderCrystalIndex();
+      this.showToast(exists ? `已取消收藏${crystal ? ` · ${crystal.name}` : ""}` : `已收藏${crystal ? ` · ${crystal.name}` : ""}`);
+    }
+
+    renderFavoriteButton(crystal) {
+      if (!crystal) return;
+      const active = this.state.favorites.includes(crystal.id);
+      this.dom.favoriteDetailButton.classList.toggle("is-active", active);
+      this.dom.favoriteDetailButton.textContent = active ? "已收藏" : "收藏这颗";
+    }
+
+    crystalCare(crystal) {
+      const style = crystal.beadStyle || BEAD_STYLE_BY_ID[crystal.id] || "crystal";
+      if (style === "matrix" || style === "flakes") {
+        return "避免香水、清洁剂和长时间浸泡。用软布擦拭表面，缝隙可用软毛刷轻扫。";
+      }
+      if (style === "banded") {
+        return "避免高温、暴晒和染色液体，和硬物分开收纳，以免碰撞留下划痕。";
+      }
+      if (style === "cloudy") {
+        return "适合日常佩戴，避免强力磕碰。定期用清水快速冲洗并擦干，保持柔润光泽。";
+      }
+      if (style === "cat-eye") {
+        return "避免长期暴晒，以免光泽变淡。收纳时单独放置，减少表面磨损。";
+      }
+      return "避免剧烈碰撞和长时间暴晒，佩戴后用柔软干布擦拭，单独收纳即可。";
+    }
+
+    crystalPairing(crystal) {
+      const tags = crystal.tags.slice(0, 2).join("、");
+      const matches = CRYSTALS
+        .filter((item) => item.id !== crystal.id && item.tags.some((tag) => crystal.tags.includes(tag)))
+        .slice(0, 2)
+        .map((item) => item.name);
+      return matches.length
+        ? `可以搭配${matches.join("、")}，延续“${tags}”的感觉。`
+        : `适合单独作为主石，也可以搭配白水晶提升整体的轻盈感。`;
+    }
+
+    crystalSizeNote(crystal) {
+      const energy = this.dominantDimension(crystal.energies);
+      return `想要轻巧日常选 6-8 mm；想要更有存在感和${energy.label}表达，可以选 10-12 mm。`;
+    }
+
+    renderDetailExtras(crystal) {
+      this.dom.detailCare.textContent = this.crystalCare(crystal);
+      this.dom.detailPairing.textContent = this.crystalPairing(crystal);
+      this.dom.detailSizeNote.textContent = this.crystalSizeNote(crystal);
+    }
+
+    renderWristGuide() {
+      const wrist = Number(this.state.wristCm) || 16;
+      const size = Number(this.state.studio.selectedSize) || 8;
+      const wristMm = wrist * 10;
+      const mainCount = Math.max(1, Math.round((wristMm + 6) / size));
+      const minCount = Math.max(1, mainCount - 1);
+      const maxCount = mainCount + 1;
+      const tightness = size >= 10 ? "偏有存在感" : "轻巧日常";
+      this.dom.wristSizeInput.value = String(wrist);
+      this.dom.wristResult.textContent = `手围 ${formatNumber(wrist)} cm，搭配 ${size} mm 珠子大约需要 ${minCount}-${maxCount} 颗，整体${tightness}。`;
+    }
+
+    profileItemMarkup(crystal, action) {
+      return `
+        <button class="profile-item" type="button" data-profile-id="${crystal.id}">
+          ${this.gemThumbMarkup(crystal)}
+          <span>
+            <strong>${escapeHtml(crystal.name)}</strong>
+            <small>${escapeHtml(crystal.emotion)}</small>
+          </span>
+          <span class="text-action">${action}</span>
+        </button>
+      `;
+    }
+
+    renderProfileList(container, ids, action, emptyText, favoriteAction) {
+      const items = ids.map((id) => CRYSTAL_MAP.get(id)).filter(Boolean);
+      container.innerHTML = items.length
+        ? items
+            .map((crystal) => this.profileItemMarkup(crystal, favoriteAction && this.state.favorites.includes(crystal.id) ? "已收藏" : action))
+            .join("")
+        : `<div class="profile-empty">${emptyText}</div>`;
+      container.querySelectorAll("[data-profile-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          this.switchView("library");
+          this.selectCrystalDetail(button.dataset.profileId);
+        });
+      });
+    }
+
+    renderProfile() {
+      this.dom.profileFavoriteCount.textContent = String(this.state.favorites.length);
+      this.dom.profileRecentCount.textContent = String(this.state.recent.length);
+      this.dom.profileBeadCount.textContent = `${this.state.studio.beads.length} 颗`;
+      this.dom.profileFavoriteNote.textContent = this.state.favorites.length
+        ? "已收藏"
+        : "还没有收藏";
+      this.dom.profileResultNote.textContent = this.state.result
+        ? `上次结果：${this.state.result.primary.name} · ${this.state.result.support.name} · ${this.state.result.balance.name}`
+        : "还没有测配结果，先去完成一次水晶测配吧。";
+      this.renderProfileList(
+        this.dom.favoriteCrystalList,
+        this.state.favorites,
+        "查看",
+        "在详情页点一下收藏，喜欢的水晶就会出现在这里。",
+        false,
+      );
+      this.renderProfileList(
+        this.dom.recentCrystalList,
+        this.state.recent,
+        "再看",
+        "你最近查看的水晶会记录在这里。",
+        false,
+      );
     }
 
     renderImageCredits() {
@@ -2063,6 +2417,7 @@
     selectCrystalDetail(id) {
       const crystal = CRYSTAL_MAP.get(id) || CRYSTALS[0];
       this.state.detailId = crystal.id;
+      if (this.state.view === "library") this.trackRecent(crystal.id);
       if (this.dom.crystalIndex.children.length) {
         this.dom.crystalIndex.querySelectorAll("[data-detail-id]").forEach((button) => {
           button.classList.toggle("is-selected", button.dataset.detailId === crystal.id);
@@ -2075,6 +2430,8 @@
       this.dom.detailEmotion.textContent = crystal.emotion;
       this.dom.detailElement.textContent = crystal.element;
       this.dom.detailRitual.textContent = crystal.usage;
+      this.renderDetailExtras(crystal);
+      this.renderFavoriteButton(crystal);
       this.renderEnergyChart(this.dom.detailEnergyChart, crystal.energies);
       requestAnimationFrame(() => this.renderDetailCanvas());
     }
@@ -2116,6 +2473,172 @@
         "说明：内容用于象征与自我关照，不替代专业建议。",
       ].join("\n");
       this.copyText(text, "结果摘要已复制");
+    }
+
+    openShareCard() {
+      const result = this.state.result;
+      if (!result) {
+        this.showToast("先完成一次测配，再生成分享图");
+        return;
+      }
+      const imageUrl = this.createSharePoster(result);
+      this.dom.shareImage.src = imageUrl;
+      this.dom.downloadShareImage.href = imageUrl;
+      this.dom.shareModal.hidden = false;
+    }
+
+    createSharePoster(result) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const context = canvas.getContext("2d");
+      const background = context.createLinearGradient(0, 0, 1080, 1350);
+      background.addColorStop(0, "#fff9f7");
+      background.addColorStop(0.48, "#f8edf2");
+      background.addColorStop(1, "#eaf4f1");
+      context.fillStyle = background;
+      context.fillRect(0, 0, 1080, 1350);
+
+      context.fillStyle = "rgba(255, 255, 255, 0.74)";
+      this.roundRect(context, 68, 72, 944, 1206, 36);
+      context.fill();
+      context.strokeStyle = "rgba(216, 201, 207, 0.72)";
+      context.lineWidth = 2;
+      context.stroke();
+
+      context.fillStyle = "#463742";
+      context.font = '600 34px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText("晶序 · 给此刻的你", 118, 148);
+      context.fillStyle = "#9a8a96";
+      context.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`${result.sourceLabel}配方 · 象征与情绪偏好`, 118, 194);
+
+      const ringY = 505;
+      const ringRadius = 222;
+      const beads = result.beads.slice(0, 14);
+      beads.forEach((bead, index) => {
+        const crystal = CRYSTAL_MAP.get(bead.stoneId);
+        const angle = (Math.PI * 2 * index) / beads.length - Math.PI / 2;
+        this.drawPosterBead(
+          context,
+          540 + Math.cos(angle) * ringRadius,
+          ringY + Math.sin(angle) * ringRadius,
+          34 + (bead.size - 6) * 1.3,
+          crystal,
+          index,
+          false,
+        );
+      });
+
+      context.textAlign = "center";
+      context.fillStyle = "#463742";
+      context.font = '600 42px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(result.primary.name, 540, 850);
+      context.fillStyle = "#9a8a96";
+      context.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(
+        `${result.primary.en} · ${result.primary.emotion}`,
+        540,
+        890,
+      );
+
+      context.fillStyle = "#756674";
+      context.font = '26px "Microsoft YaHei", "PingFang SC", sans-serif';
+      const meaning = this.wrapCanvasText(context, result.primary.meaning, 760);
+      meaning.slice(0, 3).forEach((line, index) => {
+        context.fillText(line, 540, 940 + index * 38);
+      });
+
+      context.fillStyle = "#a84f65";
+      context.font = '600 27px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(
+        `主石 ${result.primary.name} · 辅石 ${result.support.name} · 平衡 ${result.balance.name}`,
+        540,
+        1064,
+      );
+
+      context.fillStyle = "#756674";
+      context.font = 'italic 25px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`“${result.quote.text}”`, 540, 1132);
+      context.font = '22px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`—— ${result.quote.author}`, 540, 1172);
+
+      context.fillStyle = "#9a8a96";
+      context.font = '20px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText("内容用于象征与自我关照，不替代专业建议", 540, 1232);
+      context.textAlign = "left";
+      return canvas.toDataURL("image/png");
+    }
+
+    drawPosterBead(context, x, y, radius, crystal, index) {
+      const gradient = context.createRadialGradient(
+        x - radius * 0.34,
+        y - radius * 0.38,
+        radius * 0.04,
+        x,
+        y,
+        radius * 1.08,
+      );
+      gradient.addColorStop(0, "#ffffff");
+      gradient.addColorStop(0.14, crystal.light);
+      gradient.addColorStop(0.48, crystal.color);
+      gradient.addColorStop(1, crystal.dark);
+      context.fillStyle = gradient;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+      context.strokeStyle = "rgba(255, 255, 255, 0.44)";
+      context.lineWidth = Math.max(1, radius * 0.05);
+      context.beginPath();
+      context.arc(x, y, radius * 0.96, 0, Math.PI * 2);
+      context.stroke();
+      context.fillStyle = "rgba(255, 255, 255, 0.72)";
+      context.beginPath();
+      context.ellipse(
+        x - radius * 0.3,
+        y - radius * 0.38,
+        radius * 0.16,
+        radius * 0.1,
+        -0.5,
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+      if (index % 3 === 0) {
+        context.strokeStyle = "rgba(255, 255, 255, 0.36)";
+        context.lineWidth = Math.max(1, radius * 0.045);
+        context.beginPath();
+        context.moveTo(x - radius * 0.72, y + radius * 0.12);
+        context.quadraticCurveTo(x, y - radius * 0.16, x + radius * 0.72, y + radius * 0.08);
+        context.stroke();
+      }
+    }
+
+    roundRect(context, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      context.beginPath();
+      context.moveTo(x + r, y);
+      context.arcTo(x + width, y, x + width, y + height, r);
+      context.arcTo(x + width, y + height, x, y + height, r);
+      context.arcTo(x, y + height, x, y, r);
+      context.arcTo(x, y, x + width, y, r);
+      context.closePath();
+    }
+
+    wrapCanvasText(context, text, maxWidth) {
+      const lines = [];
+      let line = "";
+      for (const character of String(text)) {
+        const test = line + character;
+        if (context.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = character;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
     }
 
     copyBracelet() {
