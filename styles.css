@@ -1624,7 +1624,7 @@ a:focus-visible {
 
 .healing-intro {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: 96px minmax(0, 1fr);
   align-items: center;
   gap: 18px;
   max-width: 760px;
@@ -1638,8 +1638,8 @@ a:focus-visible {
 }
 
 .spirit-svg {
-  width: 88px;
-  height: 88px;
+  width: 96px;
+  height: 96px;
   color: rgba(99, 75, 104, 0.52);
   filter: drop-shadow(0 8px 14px rgba(126, 96, 128, 0.14));
 }
@@ -2604,15 +2604,15 @@ a:focus-visible {
   }
 
   .healing-intro {
-    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-columns: 76px minmax(0, 1fr);
     gap: 12px;
     margin-bottom: 16px;
     padding: 14px;
   }
 
   .spirit-svg {
-    width: 64px;
-    height: 64px;
+    width: 76px;
+    height: 76px;
   }
 
   .healing-intro h2 {
