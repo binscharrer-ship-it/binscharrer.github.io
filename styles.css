@@ -1672,6 +1672,27 @@ a:focus-visible {
   font-weight: 500;
 }
 
+.detail-gallery-section {
+  margin-top: 22px;
+}
+
+.detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.detail-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
 .library-ritual {
   margin-top: 24px;
   padding: 18px;
@@ -2844,6 +2865,21 @@ a:focus-visible {
 
   .detail-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detail-gallery {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-bottom: 4px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+
+  .detail-gallery img {
+    flex: 0 0 44%;
+    max-width: 180px;
+    scroll-snap-align: start;
   }
 
   .image-credits {

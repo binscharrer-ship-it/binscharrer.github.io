@@ -929,6 +929,7 @@
   const isSpacerBead = (bead) => bead?.kind === "spacer";
   const beadEntity = (bead) =>
     isSpacerBead(bead) ? SPACER_MAP.get(bead.spacerId) : CRYSTAL_MAP.get(bead?.stoneId);
+  const CORE_CRYSTAL_GALLERY = window.CORE_CRYSTAL_GALLERY || {};
   const CORE_CRYSTAL_IDS = new Set(
     [...BASE_CRYSTALS, ...EXTRA_CRYSTALS].map((crystal) => crystal.id),
   );
@@ -1285,6 +1286,8 @@
         detailTags: document.getElementById("detail-tags"),
         detailEmotion: document.getElementById("detail-emotion"),
         detailElement: document.getElementById("detail-element"),
+        detailGallerySection: document.getElementById("detail-gallery-section"),
+        detailGallery: document.getElementById("detail-gallery"),
         detailEnergyChart: document.getElementById("detail-energy-chart"),
         detailRitual: document.getElementById("detail-ritual"),
         addDetailButton: document.getElementById("add-detail-to-bracelet"),
@@ -2688,6 +2691,17 @@
       return `想要轻巧日常选 6-8 mm；想要更有存在感和${energy.label}表达，可以选 10-12 mm。`;
     }
 
+    renderDetailGallery(crystal) {
+      const images = CORE_CRYSTAL_GALLERY[crystal.id] || [];
+      this.dom.detailGallerySection.hidden = !images.length;
+      this.dom.detailGallery.innerHTML = images
+        .map(
+          (source, index) =>
+            `<img src="${escapeHtml(source)}" alt="${escapeHtml(crystal.name)}实拍参考 ${index + 1}" loading="lazy" />`,
+        )
+        .join("");
+    }
+
     renderDetailExtras(crystal) {
       this.dom.detailCare.textContent = this.crystalCare(crystal);
       this.dom.detailPairing.textContent = this.crystalPairing(crystal);
@@ -2791,6 +2805,7 @@
       this.dom.detailEmotion.textContent = crystal.emotion;
       this.dom.detailElement.textContent = crystal.element;
       this.dom.detailRitual.textContent = crystal.usage;
+      this.renderDetailGallery(crystal);
       this.renderDetailExtras(crystal);
       this.renderFavoriteButton(crystal);
       this.renderEnergyChart(this.dom.detailEnergyChart, crystal.energies);
