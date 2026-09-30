@@ -120,6 +120,14 @@
               <p>不用想太多，先跟着第一感觉走。晶序会替你把这份心情整理成一条手链。</p>
             </div>
           </div>
+          <div class="portrait-entry">
+            <div>
+              <p class="panel-kicker">人格画像</p>
+              <h2>你喜欢的水晶，也在说你是什么样的人</h2>
+              <p>结合喜欢的水晶、星座、五行与人格，生成一份性格侧写、生活建议和专属水晶搭配。</p>
+            </div>
+            <button class="primary-action compact" id="open-portrait-button" type="button">开始画像</button>
+          </div>
 
           <div class="test-layout">
             <section class="panel form-panel" aria-labelledby="form-title">
@@ -610,6 +618,27 @@
           保存图片
         </a>
         <p class="share-hint">手机端也可以长按图片保存。</p>
+      </div>
+    </div>
+
+    <div class="portrait-modal" id="portrait-modal" hidden>
+      <div class="portrait-card">
+        <div class="portrait-heading">
+          <div>
+            <p class="panel-kicker">晶序人格画像</p>
+            <h2 id="portrait-step-title">先选你喜欢的水晶</h2>
+          </div>
+          <button class="text-action" type="button" id="close-portrait-button">关闭</button>
+        </div>
+        <div class="portrait-progress" aria-hidden="true">
+          <span id="portrait-progress-bar"></span>
+        </div>
+        <p class="portrait-step-copy" id="portrait-step-copy">最多选择 3 种，跟随第一感觉即可。</p>
+        <div class="portrait-body" id="portrait-body"></div>
+        <div class="portrait-actions">
+          <button class="secondary-action" id="portrait-prev-button" type="button">上一步</button>
+          <button class="primary-action compact" id="portrait-next-button" type="button">下一步</button>
+        </div>
       </div>
     </div>
 

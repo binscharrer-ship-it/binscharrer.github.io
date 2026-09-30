@@ -930,9 +930,54 @@
   const beadEntity = (bead) =>
     isSpacerBead(bead) ? SPACER_MAP.get(bead.spacerId) : CRYSTAL_MAP.get(bead?.stoneId);
   const CORE_CRYSTAL_GALLERY = window.CORE_CRYSTAL_GALLERY || {};
+  const PORTRAIT_PROFILES = {
+    stability: {
+      title: "安定的守护者",
+      copy: "你重视安全感、秩序和可持续的节奏，不太喜欢失控的变化。",
+      strength: "稳定、可靠、能把混乱重新整理成秩序。",
+      caution: "容易为了维持稳定而压住真实需求。",
+      advice: "给变化留一个小入口，不必一次推翻全部。",
+    },
+    clarity: {
+      title: "清醒的观察者",
+      copy: "你习惯先看清事实，再决定是否靠近。对模糊和含糊比较敏感。",
+      strength: "洞察、判断、能把复杂问题说清楚。",
+      caution: "有时候会因为想得太清楚而迟迟不行动。",
+      advice: "先做一个最小动作，让行动帮你补充新的信息。",
+    },
+    courage: {
+      title: "勇敢的开拓者",
+      copy: "你不怕面对阻力，遇到重要的事愿意往前站。",
+      strength: "勇气、担当、能在关键时刻推动局面。",
+      caution: "容易把承担变成习惯，忽略自己的消耗。",
+      advice: "在承担之前先问一句：这件事真的必须由我完成吗？",
+    },
+    softness: {
+      title: "温柔的共情者",
+      copy: "你对他人的情绪和关系变化很敏锐，愿意给出理解与照顾。",
+      strength: "温柔、包容、能让人感到被接住。",
+      caution: "容易把别人的需要放在自己前面。",
+      advice: "先把一部分温柔留给自己，再决定要为谁多做一点。",
+    },
+    intuition: {
+      title: "敏锐的直觉者",
+      copy: "你常常先感觉到答案，再慢慢找到解释。直觉是你的重要导航。",
+      strength: "直觉、灵感、能捕捉别人没注意的信号。",
+      caution: "容易在感受太多时失去清晰的边界。",
+      advice: "把直觉写下来，再用一件具体的小事去验证它。",
+    },
+    action: {
+      title: "果决的行动派",
+      copy: "你更愿意边做边调整，行动本身会带给你方向和信心。",
+      strength: "执行、推进、能把想法快速变成现实。",
+      caution: "有时会因为太快而忽略节奏和后续整理。",
+      advice: "在冲刺之后留十分钟复盘，让下一步更省力。",
+    },
+  };
   const CORE_CRYSTAL_IDS = new Set(
     [...BASE_CRYSTALS, ...EXTRA_CRYSTALS].map((crystal) => crystal.id),
   );
+  const CORE_CRYSTALS = CRYSTALS.filter((crystal) => CORE_CRYSTAL_IDS.has(crystal.id));
 
   const COLOR_FILTERS = [
     { id: "white", label: "白色系", pattern: /白|冰|月光|珍珠|贝|欧泊|银/ },
@@ -1154,6 +1199,14 @@
         favorites: this.loadStringList("crystal-favorites-v1"),
         recent: this.loadStringList("crystal-recent-v1"),
         wristCm: this.loadWristSize(),
+        portrait: {
+          step: 0,
+          favorites: [],
+          zodiac: null,
+          element: null,
+          mbti: null,
+          result: null,
+        },
         studio: {
           selectedStoneId: "amethyst",
           selectedSize: 8,
@@ -1331,6 +1384,15 @@
         beadPickerSearch: document.getElementById("bead-picker-search"),
         beadPickerColor: document.getElementById("bead-picker-color"),
         beadPickerGrid: document.getElementById("bead-picker-grid"),
+        openPortraitButton: document.getElementById("open-portrait-button"),
+        portraitModal: document.getElementById("portrait-modal"),
+        closePortraitButton: document.getElementById("close-portrait-button"),
+        portraitStepTitle: document.getElementById("portrait-step-title"),
+        portraitStepCopy: document.getElementById("portrait-step-copy"),
+        portraitProgressBar: document.getElementById("portrait-progress-bar"),
+        portraitBody: document.getElementById("portrait-body"),
+        portraitPrevButton: document.getElementById("portrait-prev-button"),
+        portraitNextButton: document.getElementById("portrait-next-button"),
         imageCreditsList: document.getElementById("image-credits-list"),
         toast: document.getElementById("toast"),
       };
@@ -1567,6 +1629,17 @@
         this.saveStringList("crystal-recent-v1", this.state.recent);
         this.renderProfile();
       });
+      this.dom.openPortraitButton.addEventListener("click", () => this.openPortrait());
+      this.dom.closePortraitButton.addEventListener("click", () => {
+        this.dom.portraitModal.hidden = true;
+      });
+      this.dom.portraitModal.addEventListener("click", (event) => {
+        if (event.target === this.dom.portraitModal) {
+          this.dom.portraitModal.hidden = true;
+        }
+      });
+      this.dom.portraitPrevButton.addEventListener("click", () => this.changePortraitStep(-1));
+      this.dom.portraitNextButton.addEventListener("click", () => this.changePortraitStep(1));
     }
 
     observeCanvases() {
@@ -2755,9 +2828,17 @@
       this.dom.profileFavoriteNote.textContent = this.state.favorites.length
         ? "已收藏"
         : "还没有收藏";
-      this.dom.profileResultNote.textContent = this.state.result
-        ? `上次结果：${this.state.result.primary.name} · ${this.state.result.support.name} · ${this.state.result.balance.name}`
-        : "还没有测配结果，先去完成一次水晶测配吧。";
+      const portraitText = this.state.portrait.result
+        ? `人格画像：${this.state.portrait.result.title}。`
+        : "";
+      this.dom.profileResultNote.textContent = [
+        portraitText,
+        this.state.result
+          ? `上次结果：${this.state.result.primary.name} · ${this.state.result.support.name} · ${this.state.result.balance.name}`
+          : portraitText
+            ? ""
+            : "还没有测配结果，先去完成一次水晶测配吧。",
+      ].join("");
       this.renderProfileList(
         this.dom.favoriteCrystalList,
         this.state.favorites,
@@ -2772,6 +2853,293 @@
         "你最近查看的水晶会记录在这里。",
         false,
       );
+    }
+
+    openPortrait() {
+      this.state.portrait = {
+        step: 0,
+        favorites: [],
+        zodiac: null,
+        element: null,
+        mbti: null,
+        result: null,
+      };
+      this.renderPortraitStep();
+      this.dom.portraitModal.hidden = false;
+    }
+
+    changePortraitStep(direction) {
+      const portrait = this.state.portrait;
+      if (direction > 0) {
+        if (portrait.step === 0 && !portrait.favorites.length) {
+          this.showToast("先选择至少一种喜欢的水晶");
+          return;
+        }
+        if (portrait.step === 1 && !portrait.zodiac) {
+          this.showToast("先选择你的星座");
+          return;
+        }
+        if (portrait.step === 2 && !portrait.element) {
+          this.showToast("先选择一种五行力量");
+          return;
+        }
+        if (portrait.step === 3) {
+          if (!portrait.mbti) {
+            this.showToast("先选择你的人格类型");
+            return;
+          }
+          this.generatePortrait();
+          return;
+        }
+        if (portrait.step === 4) {
+          this.applyPortraitRecipe();
+          return;
+        }
+        portrait.step = Math.min(4, portrait.step + 1);
+      } else {
+        portrait.step = Math.max(0, portrait.step - 1);
+      }
+      this.renderPortraitStep();
+    }
+
+    portraitAverage(ids) {
+      const crystals = ids.map((id) => CRYSTAL_MAP.get(id)).filter(Boolean);
+      if (!crystals.length) {
+        return Object.fromEntries(ENERGY_DIMENSIONS.map((dimension) => [dimension.key, 50]));
+      }
+      return Object.fromEntries(
+        ENERGY_DIMENSIONS.map((dimension) => [
+          dimension.key,
+          crystals.reduce((total, crystal) => total + crystal.energies[dimension.key], 0) /
+            crystals.length,
+        ]),
+      );
+    }
+
+    weightedPortraitEnergy(parts) {
+      const totalWeight = sum(parts.map((part) => part.weight));
+      return Object.fromEntries(
+        ENERGY_DIMENSIONS.map((dimension) => [
+          dimension.key,
+          parts.reduce(
+            (total, part) =>
+              total + (part.energy[dimension.key] || 0) * (part.weight / totalWeight),
+            0,
+          ),
+        ]),
+      );
+    }
+
+    portraitScore(crystal, target) {
+      return ENERGY_DIMENSIONS.reduce(
+        (total, dimension) =>
+          total + target[dimension.key] * crystal.energies[dimension.key],
+        0,
+      );
+    }
+
+    generatePortrait() {
+      const portrait = this.state.portrait;
+      const favoriteCrystals = portrait.favorites
+        .map((id) => CRYSTAL_MAP.get(id))
+        .filter(Boolean);
+      const zodiac = ZODIAC.find((item) => item.id === portrait.zodiac);
+      const element = ELEMENTS.find((item) => item.id === portrait.element);
+      const mbti = MBTI.find((item) => item.id === portrait.mbti);
+      if (!favoriteCrystals.length || !zodiac || !element || !mbti) return;
+
+      const energies = this.weightedPortraitEnergy([
+        { energy: this.portraitAverage(portrait.favorites), weight: 0.4 },
+        { energy: this.portraitAverage(zodiac.ids), weight: 0.2 },
+        { energy: this.portraitAverage(element.ids), weight: 0.2 },
+        { energy: this.portraitAverage(mbti.ids), weight: 0.2 },
+      ]);
+      const ranked = [...ENERGY_DIMENSIONS].sort(
+        (first, second) => energies[second.key] - energies[first.key],
+      );
+      const primaryDimension = ranked[0];
+      const secondaryDimension = ranked[1];
+      const lowestDimension = ranked[ranked.length - 1];
+      const profile = PORTRAIT_PROFILES[primaryDimension.key];
+
+      const primary = [...favoriteCrystals].sort(
+        (first, second) =>
+          this.portraitScore(second, energies) - this.portraitScore(first, energies),
+      )[0];
+      const remaining = CRYSTALS.filter((crystal) => crystal.id !== primary.id);
+      const support = [...remaining].sort(
+        (first, second) =>
+          this.portraitScore(second, energies) - this.portraitScore(first, energies),
+      )[0];
+      const balancePool = remaining.filter((crystal) => crystal.id !== support.id);
+      const balance = [...balancePool].sort((first, second) => {
+        const firstScore =
+          first.energies[lowestDimension.key] +
+          first.energies[ranked[ranked.length - 2].key] +
+          this.portraitScore(first, energies) * 0.18;
+        const secondScore =
+          second.energies[lowestDimension.key] +
+          second.energies[ranked[ranked.length - 2].key] +
+          this.portraitScore(second, energies) * 0.18;
+        return secondScore - firstScore;
+      })[0];
+
+      const recipe = [
+        { role: "主石", crystal: primary, count: 5, size: 8 },
+        { role: "辅石", crystal: support, count: 3, size: 8 },
+        { role: "平衡石", crystal: balance, count: 2, size: 6 },
+      ];
+      portrait.result = {
+        title: profile.title,
+        description: `${profile.copy} 你的第二明显特质是${secondaryDimension.label}，同时${lowestDimension.label}相对需要被照顾。`,
+        strength: `${profile.strength} ${secondaryDimension.label}也为你补充了另一层力量。`,
+        caution: profile.caution,
+        advice: `${profile.advice} 当前更适合先照顾“${lowestDimension.label}”，再继续放大“${primaryDimension.label}”。`,
+        energies,
+        dimensions: ranked,
+        primary,
+        support,
+        balance,
+        recipe,
+      };
+      portrait.step = 4;
+      this.renderPortraitStep();
+    }
+
+    renderPortraitOption(item, selected, type) {
+      if (type === "crystal") {
+        return `
+          <button class="portrait-option${selected ? " is-selected" : ""}" type="button" data-portrait-value="${item.id}">
+            ${this.gemThumbMarkup(item)}
+            <span>
+              <strong>${escapeHtml(item.name)}</strong>
+              <small>${escapeHtml(item.emotion)}</small>
+            </span>
+          </button>
+        `;
+      }
+      return `
+        <button class="portrait-option is-text${selected ? " is-selected" : ""}" type="button" data-portrait-value="${item.id}">
+          <span>
+            <strong>${escapeHtml(item.name)}</strong>
+            <small>${escapeHtml(item.short || item.emotion || "")}</small>
+          </span>
+        </button>
+      `;
+    }
+
+    renderPortraitStep() {
+      const portrait = this.state.portrait;
+      const stepCopy = [
+        "最多选择 3 种，跟随第一感觉即可。",
+        "选择你的太阳星座，或者最像你的星座。",
+        "选择此刻更想靠近的五行力量。",
+        "选择最接近你的 MBTI 人格类型。",
+        "这是根据你的偏好组合生成的水晶人格画像。",
+      ];
+      const stepTitle = [
+        "先选你喜欢的水晶",
+        "你的星座",
+        "此刻的五行",
+        "你的人格类型",
+        portrait.result?.title || "你的水晶人格",
+      ];
+      this.dom.portraitStepTitle.textContent = stepTitle[portrait.step];
+      this.dom.portraitStepCopy.textContent = stepCopy[portrait.step];
+      this.dom.portraitProgressBar.style.width = `${((portrait.step + 1) / 5) * 100}%`;
+      this.dom.portraitPrevButton.disabled = portrait.step === 0;
+      this.dom.portraitNextButton.textContent =
+        portrait.step === 3 ? "生成画像" : portrait.step === 4 ? "用这套配方开始串珠" : "下一步";
+
+      if (portrait.step === 0) {
+        this.dom.portraitBody.innerHTML = `<div class="portrait-grid">${CORE_CRYSTALS.map((crystal) =>
+          this.renderPortraitOption(crystal, portrait.favorites.includes(crystal.id), "crystal"),
+        ).join("")}</div>`;
+      } else if (portrait.step === 1) {
+        this.dom.portraitBody.innerHTML = `<div class="portrait-grid">${ZODIAC.map((item) =>
+          this.renderPortraitOption(item, portrait.zodiac === item.id, "text"),
+        ).join("")}</div>`;
+      } else if (portrait.step === 2) {
+        this.dom.portraitBody.innerHTML = `<div class="portrait-grid">${ELEMENTS.map((item) =>
+          this.renderPortraitOption(item, portrait.element === item.id, "text"),
+        ).join("")}</div>`;
+      } else if (portrait.step === 3) {
+        this.dom.portraitBody.innerHTML = `<div class="portrait-grid">${MBTI.map((item) =>
+          this.renderPortraitOption(item, portrait.mbti === item.id, "text"),
+        ).join("")}</div>`;
+      } else if (portrait.result) {
+        const result = portrait.result;
+        this.dom.portraitBody.innerHTML = `
+          <div class="portrait-result">
+            <p class="panel-kicker">你的画像</p>
+            <h3>${escapeHtml(result.title)}</h3>
+            <p>${escapeHtml(result.description)}</p>
+            <div class="portrait-result-grid">
+              <article><span>你的优势</span><p>${escapeHtml(result.strength)}</p></article>
+              <article><span>需要留意</span><p>${escapeHtml(result.caution)}</p></article>
+              <article><span>行动建议</span><p>${escapeHtml(result.advice)}</p></article>
+              <article><span>主能量</span><p>${escapeHtml(result.dimensions[0].label)} · ${escapeHtml(result.dimensions[1].label)}</p></article>
+            </div>
+            <div class="portrait-recommendations">
+              ${result.recipe
+                .map(
+                  (item, index) => `
+                    <div class="portrait-recommendation">
+                      ${this.gemThumbMarkup(item.crystal)}
+                      <span>
+                        <strong>${escapeHtml(item.role)} · ${escapeHtml(item.crystal.name)}</strong>
+                        <small>${index === 0 ? "呼应你的主能量" : index === 1 ? "补充你的第二能量" : "平衡你暂时不足的一面"}</small>
+                      </span>
+                    </div>
+                  `,
+                )
+                .join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      this.dom.portraitBody.querySelectorAll("[data-portrait-value]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const value = button.dataset.portraitValue;
+          if (portrait.step === 0) {
+            if (portrait.favorites.includes(value)) {
+              portrait.favorites = portrait.favorites.filter((id) => id !== value);
+            } else if (portrait.favorites.length < 3) {
+              portrait.favorites = [...portrait.favorites, value];
+            } else {
+              this.showToast("最多选择 3 种喜欢的水晶");
+              return;
+            }
+          } else if (portrait.step === 1) {
+            portrait.zodiac = value;
+          } else if (portrait.step === 2) {
+            portrait.element = value;
+          } else if (portrait.step === 3) {
+            portrait.mbti = value;
+          }
+          this.renderPortraitStep();
+        });
+      });
+    }
+
+    applyPortraitRecipe() {
+      const result = this.state.portrait.result;
+      if (!result) return;
+      this.state.studio.beads = result.recipe.flatMap((item) =>
+        Array.from({ length: item.count }, () => ({
+          kind: "stone",
+          stoneId: item.crystal.id,
+          size: item.size,
+        })),
+      );
+      this.state.studio.selectedStoneId = result.primary.id;
+      this.state.studio.selectedBeadIndex = null;
+      this.state.studio.editorOpen = false;
+      this.saveStudio();
+      this.dom.portraitModal.hidden = true;
+      this.switchView("studio");
+      this.showToast("人格画像配方已放进串珠台");
     }
 
     renderImageCredits() {
