@@ -3026,7 +3026,7 @@ a:focus-visible {
 
   .daily-quote {
     margin-top: 18px;
-    padding: 18px;
+    padding: 18px 18px 18px 44px;
   }
 
   .sequence-list {
