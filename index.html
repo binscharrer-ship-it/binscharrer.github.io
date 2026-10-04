@@ -221,6 +221,7 @@
                 </div>
 
                 <div class="recipe-strip" id="recipe-strip"></div>
+                <div class="purchase-plan" id="purchase-plan"></div>
 
                 <div class="result-section">
                   <div class="section-heading">
@@ -253,6 +254,8 @@
                   <button class="primary-action compact" id="use-recipe-button" type="button">
                     用这套配方开始串珠
                   </button>
+                  <button class="secondary-action" id="copy-purchase-button" type="button">复制清单给客服</button>
+                  <button class="secondary-action" id="purchase-result-button" type="button">购买咨询</button>
                   <button class="secondary-action" id="share-result-button" type="button">生成分享图</button>
                   <button class="secondary-action" id="reroll-button" type="button">重新选择</button>
                 </div>
@@ -454,6 +457,12 @@
                       <option value="all">全部场景</option>
                     </select>
                   </label>
+                  <label>
+                    <span>预算</span>
+                    <select id="library-budget-filter">
+                      <option value="all">全部预算</option>
+                    </select>
+                  </label>
                 </div>
                 <p class="library-result-note" id="library-result-note"></p>
               </div>
@@ -529,6 +538,19 @@
                   <span>珠径建议</span>
                   <p id="detail-size-note"></p>
                 </article>
+              </div>
+
+              <div class="detail-purchase-card">
+                <div>
+                  <span>参考价格</span>
+                  <strong id="detail-price-range"></strong>
+                  <small>按 8 mm、约 12 颗的日常手链估算</small>
+                </div>
+                <div>
+                  <span>天然特征</span>
+                  <p id="detail-natural-note"></p>
+                </div>
+                <button class="primary-action compact" id="detail-purchase-button" type="button">找客服确认库存</button>
               </div>
 
               <div class="library-action-row">
@@ -618,6 +640,24 @@
           保存图片
         </a>
         <p class="share-hint">手机端也可以长按图片保存。</p>
+      </div>
+    </div>
+
+    <div class="purchase-modal" id="purchase-modal" hidden>
+      <div class="purchase-modal-card">
+        <div class="purchase-modal-heading">
+          <div>
+            <p class="panel-kicker">购买咨询</p>
+            <h2>把这份清单发给商家</h2>
+          </div>
+          <button class="text-action" type="button" id="close-purchase-button">关闭</button>
+        </div>
+        <div class="purchase-summary" id="purchase-summary"></div>
+        <p class="purchase-disclaimer">参考价仅用于搭配估算，实际价格以商家库存、等级、珠径和天然特征为准。</p>
+        <div class="purchase-modal-actions">
+          <button class="primary-action compact" type="button" id="purchase-copy-button">复制给客服</button>
+          <button class="secondary-action" type="button" id="purchase-share-button">生成分享图</button>
+        </div>
       </div>
     </div>
 

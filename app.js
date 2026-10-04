@@ -1154,6 +1154,72 @@
     return hash >>> 0;
   }
 
+  const BUDGET_FILTERS = [
+    { id: "under50", label: "50元以下", min: 0, max: 50 },
+    { id: "50-200", label: "50-200元", min: 50, max: 200 },
+    { id: "200-500", label: "200-500元", min: 200, max: 500 },
+    { id: "500-1000", label: "500-1000元", min: 500, max: 1000 },
+    { id: "over1000", label: "1000元以上", min: 1000, max: Infinity },
+  ];
+
+  function singleBeadPrice(crystal, size = 8) {
+    const style = crystal.beadStyle || BEAD_STYLE_BY_ID[crystal.id] || "crystal";
+    const styleBase = {
+      clear: 3,
+      cloudy: 5,
+      crystal: 6,
+      banded: 5,
+      matrix: 8,
+      flakes: 8,
+      "cat-eye": 9,
+      spacer: 2,
+    }[style] || 6;
+    const common = ["clear", "rose", "amethyst", "white-agate", "red-agate"].includes(crystal.id);
+    const rarity = common ? 1 : 2 + (hashString(crystal.id) % 8);
+    const sizeFactor = { 6: 0.72, 8: 1, 10: 1.5, 12: 2.2 }[size] || 1;
+    return Math.max(1, Math.round((styleBase + rarity) * sizeFactor));
+  }
+
+  function estimatedBraceletPrice(crystal, size = 8, count = 12) {
+    return singleBeadPrice(crystal, size) * count;
+  }
+
+  function priceRange(crystal, size = 8, count = 12) {
+    const estimate = estimatedBraceletPrice(crystal, size, count);
+    return {
+      min: Math.max(1, Math.round(estimate * 0.86)),
+      max: Math.round(estimate * 1.16),
+    };
+  }
+
+  function formatPrice(value) {
+    return Number.isFinite(value) ? `¥${Math.round(value)}` : "面议";
+  }
+
+  function formatPriceRange(range) {
+    return `${formatPrice(range.min)}-${formatPrice(range.max).replace("¥", "")}`;
+  }
+
+  function budgetBucket(crystal) {
+    const estimate = estimatedBraceletPrice(crystal, 8, 12);
+    return (
+      BUDGET_FILTERS.find((filter) => estimate >= filter.min && estimate < filter.max)?.id ||
+      "over1000"
+    );
+  }
+
+  function recipePriceRange(recipe) {
+    const estimate = recipe.reduce(
+      (total, item) =>
+        total + singleBeadPrice(item.crystal, item.size) * item.count,
+      0,
+    );
+    return {
+      min: Math.max(1, Math.round(estimate * 0.86)),
+      max: Math.round(estimate * 1.16),
+    };
+  }
+
   function rgbaFromHex(hex, alpha) {
     const clean = hex.replace("#", "");
     const value = Number.parseInt(clean, 16);
@@ -1195,6 +1261,7 @@
           color: "all",
           feature: "all",
           scene: "all",
+          budget: "all",
         },
         favorites: this.loadStringList("crystal-favorites-v1"),
         recent: this.loadStringList("crystal-recent-v1"),
@@ -1207,6 +1274,7 @@
           mbti: null,
           result: null,
         },
+        purchaseRecipe: null,
         studio: {
           selectedStoneId: "amethyst",
           selectedSize: 8,
@@ -1297,12 +1365,15 @@
         primaryMeaning: document.getElementById("primary-crystal-meaning"),
         primaryTags: document.getElementById("primary-crystal-tags"),
         recipeStrip: document.getElementById("recipe-strip"),
+        purchasePlan: document.getElementById("purchase-plan"),
         resultEnergyChart: document.getElementById("result-energy-chart"),
         energyDominantLabel: document.getElementById("energy-dominant-label"),
         ritualList: document.getElementById("ritual-list"),
         quoteText: document.getElementById("quote-text"),
         quoteAuthor: document.getElementById("quote-author"),
         copyResultButton: document.getElementById("copy-result-button"),
+        copyPurchaseButton: document.getElementById("copy-purchase-button"),
+        purchaseResultButton: document.getElementById("purchase-result-button"),
         useRecipeButton: document.getElementById("use-recipe-button"),
         rerollButton: document.getElementById("reroll-button"),
         sizeSelector: document.getElementById("size-selector"),
@@ -1348,11 +1419,15 @@
         detailCare: document.getElementById("detail-care"),
         detailPairing: document.getElementById("detail-pairing"),
         detailSizeNote: document.getElementById("detail-size-note"),
+        detailPriceRange: document.getElementById("detail-price-range"),
+        detailNaturalNote: document.getElementById("detail-natural-note"),
+        detailPurchaseButton: document.getElementById("detail-purchase-button"),
         librarySearch: document.getElementById("library-search"),
         libraryScope: document.getElementById("library-scope"),
         libraryColorFilter: document.getElementById("library-color-filter"),
         libraryFeatureFilter: document.getElementById("library-feature-filter"),
         librarySceneFilter: document.getElementById("library-scene-filter"),
+        libraryBudgetFilter: document.getElementById("library-budget-filter"),
         libraryResultNote: document.getElementById("library-result-note"),
         wristSizeInput: document.getElementById("wrist-size-input"),
         wristResult: document.getElementById("wrist-result"),
@@ -1361,6 +1436,11 @@
         shareImage: document.getElementById("share-image"),
         closeShareButton: document.getElementById("close-share-button"),
         downloadShareImage: document.getElementById("download-share-image"),
+        purchaseModal: document.getElementById("purchase-modal"),
+        closePurchaseButton: document.getElementById("close-purchase-button"),
+        purchaseSummary: document.getElementById("purchase-summary"),
+        purchaseCopyButton: document.getElementById("purchase-copy-button"),
+        purchaseShareButton: document.getElementById("purchase-share-button"),
         profileFavoriteCount: document.getElementById("profile-favorite-count"),
         profileRecentCount: document.getElementById("profile-recent-count"),
         profileBeadCount: document.getElementById("profile-bead-count"),
@@ -1599,12 +1679,13 @@
         this.state.library.scope = button.dataset.scope;
         this.renderCrystalIndex();
       });
-      [this.dom.libraryColorFilter, this.dom.libraryFeatureFilter, this.dom.librarySceneFilter].forEach(
+      [this.dom.libraryColorFilter, this.dom.libraryFeatureFilter, this.dom.librarySceneFilter, this.dom.libraryBudgetFilter].forEach(
         (select) => {
           select.addEventListener("change", () => {
             this.state.library.color = this.dom.libraryColorFilter.value;
             this.state.library.feature = this.dom.libraryFeatureFilter.value;
             this.state.library.scene = this.dom.librarySceneFilter.value;
+            this.state.library.budget = this.dom.libraryBudgetFilter.value;
             this.renderCrystalIndex();
           });
         },
@@ -1621,6 +1702,22 @@
       });
       this.dom.shareModal.addEventListener("click", (event) => {
         if (event.target === this.dom.shareModal) this.dom.shareModal.hidden = true;
+      });
+      this.dom.copyPurchaseButton.addEventListener("click", () => this.copyPurchaseList());
+      this.dom.purchaseResultButton.addEventListener("click", () => this.openPurchaseModal());
+      this.dom.detailPurchaseButton.addEventListener("click", () => {
+        this.openPurchaseModal(this.buildDetailPurchaseRecipe());
+      });
+      this.dom.closePurchaseButton.addEventListener("click", () => {
+        this.dom.purchaseModal.hidden = true;
+      });
+      this.dom.purchaseModal.addEventListener("click", (event) => {
+        if (event.target === this.dom.purchaseModal) this.dom.purchaseModal.hidden = true;
+      });
+      this.dom.purchaseCopyButton.addEventListener("click", () => this.copyPurchaseList());
+      this.dom.purchaseShareButton.addEventListener("click", () => {
+        this.dom.purchaseModal.hidden = true;
+        this.openShareCard();
       });
       this.dom.profileStartTest.addEventListener("click", () => this.switchView("test"));
       this.dom.profileOpenStudio.addEventListener("click", () => this.switchView("studio"));
@@ -1908,6 +2005,7 @@
           this.dom.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       }
+      this.renderPurchasePlan(result.recipe);
       this.renderProfile();
     }
 
@@ -2646,9 +2744,14 @@
       fill(this.dom.libraryColorFilter, COLOR_FILTERS, "全部颜色");
       fill(this.dom.libraryFeatureFilter, FEATURE_FILTERS, "全部特征");
       fill(this.dom.librarySceneFilter, SCENE_FILTERS, "全部场景");
+      this.dom.libraryBudgetFilter.innerHTML = [
+        '<option value="all">全部预算</option>',
+        ...BUDGET_FILTERS.map((filter) => `<option value="${filter.id}">${filter.label}</option>`),
+      ].join("");
       this.dom.libraryColorFilter.value = this.state.library.color;
       this.dom.libraryFeatureFilter.value = this.state.library.feature;
       this.dom.librarySceneFilter.value = this.state.library.scene;
+      this.dom.libraryBudgetFilter.value = this.state.library.budget;
     }
 
     filteredCrystals() {
@@ -2668,6 +2771,9 @@
           return false;
         }
         if (this.state.library.scene !== "all" && sceneBucket(crystal) !== this.state.library.scene) {
+          return false;
+        }
+        if (this.state.library.budget !== "all" && budgetBucket(crystal) !== this.state.library.budget) {
           return false;
         }
         return true;
@@ -3088,7 +3194,9 @@
                       ${this.gemThumbMarkup(item.crystal)}
                       <span>
                         <strong>${escapeHtml(item.role)} · ${escapeHtml(item.crystal.name)}</strong>
-                        <small>${index === 0 ? "呼应你的主能量" : index === 1 ? "补充你的第二能量" : "平衡你暂时不足的一面"}</small>
+                        <small>${index === 0 ? "呼应你的主能量" : index === 1 ? "补充你的第二能量" : "平衡你暂时不足的一面"} · 参考 ${formatPriceRange(
+                          priceRange(item.crystal, item.size, item.count),
+                        )}</small>
                       </span>
                     </div>
                   `,
@@ -3175,6 +3283,7 @@
       this.dom.detailRitual.textContent = crystal.usage;
       this.renderDetailGallery(crystal);
       this.renderDetailExtras(crystal);
+      this.renderDetailPrice(crystal);
       this.renderFavoriteButton(crystal);
       this.renderEnergyChart(this.dom.detailEnergyChart, crystal.energies);
       requestAnimationFrame(() => this.renderDetailCanvas());
@@ -3199,6 +3308,122 @@
       context.clearRect(0, 0, width, height);
       const radius = Math.min(width * 0.37, height * 0.4);
       this.drawBead(context, width * 0.5, height * 0.5, radius, crystal, 0, false);
+    }
+
+    renderPurchasePlan(recipe = this.state.result?.recipe) {
+      if (!recipe?.length) {
+        this.dom.purchasePlan.innerHTML = "";
+        return;
+      }
+      const range = recipePriceRange(recipe);
+      this.dom.purchasePlan.innerHTML = `
+        <div class="purchase-plan-heading">
+          <div>
+            <p class="panel-kicker">推荐购买方案</p>
+            <h3>这套配方的参考预算</h3>
+          </div>
+          <span class="purchase-price">${formatPriceRange(range)}</span>
+        </div>
+        <div class="purchase-plan-grid">
+          ${recipe
+            .map(
+              (item) => `
+                <div class="purchase-item">
+                  ${this.gemThumbMarkup(item.crystal)}
+                  <span>
+                    <strong>${escapeHtml(item.role)} · ${escapeHtml(item.crystal.name)}</strong>
+                    <small>${item.size} mm × ${item.count} 颗 · 约 ${formatPrice(
+                      singleBeadPrice(item.crystal, item.size) * item.count,
+                    )}</small>
+                  </span>
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+        <p class="purchase-note">参考价按常见天然水晶珠估算，实际以商家库存、等级、珠径和天然特征为准。</p>
+      `;
+    }
+
+    purchaseSummaryMarkup(recipe) {
+      return recipe
+        .map(
+          (item) => `
+            <div class="purchase-summary-line">
+              <span>${escapeHtml(item.role)}</span>
+              <strong>${escapeHtml(item.crystal.name)} · ${item.size} mm × ${item.count} 颗</strong>
+            </div>
+          `,
+        )
+        .join("");
+    }
+
+    buildDetailPurchaseRecipe() {
+      const crystal = CRYSTAL_MAP.get(this.state.detailId) || CRYSTALS[0];
+      return [{ role: "日常手链", crystal, count: 12, size: 8 }];
+    }
+
+    openPurchaseModal(recipe = null) {
+      const activeRecipe = recipe || this.state.result?.recipe;
+      if (!activeRecipe?.length) {
+        this.showToast("先完成一次测配，再生成购买清单");
+        return;
+      }
+      this.state.purchaseRecipe = activeRecipe;
+      const range = recipePriceRange(activeRecipe);
+      const totalCount = activeRecipe.reduce((total, item) => total + item.count, 0);
+      this.dom.purchaseSummary.innerHTML = `
+        ${this.purchaseSummaryMarkup(activeRecipe)}
+        <div class="purchase-summary-line">
+          <span>总颗数</span>
+          <strong>${totalCount} 颗</strong>
+        </div>
+        <div class="purchase-summary-line">
+          <span>参考总价</span>
+          <strong>${formatPriceRange(range)}</strong>
+        </div>
+      `;
+      this.dom.purchaseModal.hidden = false;
+    }
+
+    copyPurchaseList() {
+      const recipe = this.state.purchaseRecipe || this.state.result?.recipe;
+      if (!recipe?.length) {
+        this.showToast("还没有可复制的购买清单");
+        return;
+      }
+      const range = recipePriceRange(recipe);
+      const text = [
+        "晶序推荐搭配清单",
+        ...recipe.map(
+          (item) =>
+            `${item.role}：${item.crystal.name} ${item.size} mm × ${item.count} 颗`,
+        ),
+        `参考总价：${formatPriceRange(range)}`,
+        "备注：请帮我确认天然特征、珠径、库存和实际价格。",
+      ].join("\n");
+      this.copyText(text, "购买清单已复制");
+    }
+
+    naturalNote(crystal) {
+      const style = crystal.beadStyle || BEAD_STYLE_BY_ID[crystal.id] || "crystal";
+      if (style === "clear") {
+        return "天然水晶可能有棉絮、冰裂、云雾和轻微色差，这些通常是自然特征，不是瑕疵。";
+      }
+      if (style === "matrix" || style === "flakes") {
+        return "天然矿点、色带和纹理分布会因珠子不同而变化，实际实物可能与图片存在差异。";
+      }
+      if (style === "cat-eye") {
+        return "猫眼和光带会随光线角度变化，天然珠子每一颗的光感都不会完全一样。";
+      }
+      return "天然水晶可能存在色差、纹理和细小矿坑，属于自然特征，请以商家实物说明为准。";
+    }
+
+    renderDetailPrice(crystal) {
+      const range = priceRange(crystal, 8, 12);
+      this.dom.detailPriceRange.textContent = formatPriceRange(range);
+      this.dom.detailNaturalNote.textContent = this.naturalNote(crystal);
+      this.dom.detailPurchaseButton.textContent = `找客服确认${crystal.name}库存`;
     }
 
     copyResult() {
