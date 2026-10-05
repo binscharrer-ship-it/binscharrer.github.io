@@ -1,0 +1,17 @@
+{
+  "name": "XG-BattSim 电池健康仿真",
+  "short_name": "BattSim",
+  "description": "电池健康、寿命与风险倾向的本地仿真工具。",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c1116",
+  "theme_color": "#111820",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

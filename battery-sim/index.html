@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111820">
+  <meta name="description" content="XG-BattSim 电池健康仿真工具，根据容量、循环次数、温度和倍率估算电池状态。">
+  <title>XG-BattSim 电池健康仿真</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">XG Energy Lab</p>
+        <h1>电池健康仿真</h1>
+      </div>
+      <span class="version">V1.0 Web</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div>
+          <p class="section-kicker">快速评估</p>
+          <h2>用现有参数估算剩余寿命与安全边界</h2>
+          <p>结果用于初步判断和记录对比，不替代专业检测设备。</p>
+        </div>
+        <label class="switch-row compact" for="simpleMode">
+          <span>
+            <strong>极简录入</strong>
+            <small>只填写核心参数</small>
+          </span>
+          <input id="simpleMode" type="checkbox">
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+      </section>
+
+      <form id="batteryForm" novalidate>
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">01</p>
+              <h2>电池参数</h2>
+            </div>
+            <span class="panel-note">铭牌与初测数据</span>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>标称容量 (Ah)</span>
+              <input name="capacity" type="number" min="0.1" step="0.1" value="50" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>标称电压 (V)</span>
+              <input name="nomVoltage" type="number" min="0.1" step="0.1" value="3.7" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>初始内阻 (mΩ)</span>
+              <input name="initResistance" type="number" min="0.01" step="0.01" value="2.5" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>初始 SOH (%)</span>
+              <input name="initSOH" type="number" min="1" max="100" step="1" value="100" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>电芯质量 (kg)</span>
+              <input name="mass" type="number" min="0.01" step="0.01" value="1.2" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>散热面积 (m²)</span>
+              <input name="surfArea" type="number" min="0.001" step="0.001" value="0.05" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>比热容 J/(kg·K)</span>
+              <input name="cp" type="number" min="1" step="1" value="900" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>换热系数 W/(m²·K)</span>
+              <input name="hConv" type="number" min="0.1" step="0.1" value="15" inputmode="decimal" required>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">02</p>
+              <h2>使用工况</h2>
+            </div>
+            <span class="panel-note">最近一个使用周期</span>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>化学体系</span>
+              <select name="chemistry">
+                <option value="NMC">NMC 三元锂</option>
+                <option value="LFP">LFP 磷酸铁锂</option>
+                <option value="NCA">NCA 镍钴铝</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>充放电倍率 (C)</span>
+              <input name="cRate" type="number" min="0.05" step="0.05" value="1" inputmode="decimal" required>
+            </label>
+            <label class="field">
+              <span>已循环次数</span>
+              <input name="cycles" type="number" min="1" step="1" value="500" inputmode="numeric" required>
+            </label>
+            <label class="field advanced">
+              <span>当前 SOC (%)</span>
+              <input name="soc" type="number" min="0" max="100" step="1" value="85" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>循环放电深度 (%)</span>
+              <input name="dod" type="number" min="1" max="100" step="1" value="80" inputmode="decimal" required>
+            </label>
+            <label class="field advanced">
+              <span>环境温度 (℃)</span>
+              <input name="ambTemp" type="number" min="-40" max="100" step="1" value="25" inputmode="decimal" required>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">03</p>
+              <h2>外观记录</h2>
+            </div>
+            <span class="panel-note">选填，只在本地显示</span>
+          </div>
+          <input id="photoInput" class="visually-hidden" type="file" accept="image/*" capture="environment">
+          <div id="photoEmpty" class="photo-empty">
+            <div>
+              <strong>拍照或上传电池照片</strong>
+              <p>记录铭牌、外观和鼓包情况，便于后续对比。</p>
+            </div>
+            <button id="choosePhoto" class="button button-secondary" type="button">选择照片</button>
+          </div>
+          <div id="photoPreview" class="photo-preview" hidden>
+            <img id="previewImage" alt="电池照片预览">
+            <button id="removePhoto" class="icon-button" type="button" aria-label="移除照片">×</button>
+          </div>
+        </section>
+
+        <section class="panel option-panel">
+          <div>
+            <p class="section-kicker">扩展估算</p>
+            <h2>启用启发式增强估算</h2>
+            <p>在基础模型上给出区间与风险提示，不是实际神经网络推理。</p>
+          </div>
+          <label class="switch-row" for="enhancedMode" aria-label="启用启发式增强估算">
+            <input id="enhancedMode" type="checkbox" checked>
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+        </section>
+
+        <p id="formError" class="form-error" role="alert" hidden></p>
+
+        <div class="action-row">
+          <button id="runButton" class="button button-primary" type="submit">开始仿真</button>
+          <button id="historyButton" class="button button-ghost" type="button">历史记录</button>
+        </div>
+      </form>
+
+      <section id="resultSection" class="result-section" hidden aria-live="polite">
+        <div id="verdict" class="verdict">
+          <span class="verdict-label">综合判断</span>
+          <strong id="verdictText">能够继续使用</strong>
+          <p id="verdictSub"></p>
+          <span id="verdictValue" class="verdict-value"></span>
+        </div>
+
+        <section class="panel result-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">结果</p>
+              <h2>健康度概览</h2>
+            </div>
+            <span id="modelTag" class="panel-note">集总参数模型</span>
+          </div>
+          <div class="metric-grid">
+            <article class="metric">
+              <strong id="finalSoh">--</strong>
+              <span>最终 SOH</span>
+            </article>
+            <article class="metric">
+              <strong id="capacityRetention">--</strong>
+              <span>容量保持率</span>
+            </article>
+            <article class="metric">
+              <strong id="resistanceGrowth">--</strong>
+              <span>内阻增长</span>
+            </article>
+            <article class="metric">
+              <strong id="maxTemperature">--</strong>
+              <span>最高温度</span>
+            </article>
+            <article class="metric">
+              <strong id="lifeCycles">--</strong>
+              <span>剩余循环</span>
+            </article>
+            <article class="metric">
+              <strong id="energyTotal">--</strong>
+              <span>累计能量</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="enhancedPanel" class="panel result-panel" hidden>
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">增强估算</p>
+              <h2>区间与风险提示</h2>
+            </div>
+            <span class="panel-note">启发式，不构成安全认证</span>
+          </div>
+          <div class="metric-grid">
+            <article class="metric">
+              <strong id="estimatedSoh">--</strong>
+              <span>估算 SOH</span>
+            </article>
+            <article class="metric">
+              <strong id="estimatedLife">--</strong>
+              <span>循环区间</span>
+            </article>
+            <article class="metric">
+              <strong id="riskLevel">--</strong>
+              <span>热风险等级</span>
+            </article>
+            <article class="metric">
+              <strong id="riskScore">--</strong>
+              <span>风险指数</span>
+            </article>
+          </div>
+          <div id="enhancedNote" class="callout"></div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">趋势</p>
+              <h2>SOH 衰减曲线</h2>
+            </div>
+            <span class="panel-note">按当前工况外推</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="sohChart" width="840" height="300" aria-label="SOH 随循环次数变化的折线图"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span><i class="legend-line"></i>SOH (%)</span>
+            <span id="chartRange"></span>
+          </div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">采样</p>
+              <h2>衰减数据</h2>
+            </div>
+            <span class="panel-note">每 10 个采样点展示一行</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>循环次数</th>
+                  <th>SOH (%)</th>
+                  <th>内阻 (mΩ)</th>
+                  <th>温度 (℃)</th>
+                </tr>
+              </thead>
+              <tbody id="resultTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel disclaimer">
+          <strong>使用边界</strong>
+          <p>本工具使用简化数学模型，适合做初步筛查、参数对比和趋势观察。电池出现鼓包、漏液、异味或异常发热时，应立即停止使用并交由专业人员处置。</p>
+        </section>
+
+        <div class="action-row">
+          <button id="printButton" class="button button-primary" type="button">打印或保存报告</button>
+          <button id="resetButton" class="button button-ghost" type="button">重新检测</button>
+        </div>
+      </section>
+
+      <section id="historyPanel" class="panel history-panel" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">本地存档</p>
+            <h2>检测历史</h2>
+          </div>
+          <button id="clearHistory" class="text-button" type="button">清空</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>XG-BattSim V1.0</span>
+      <span>数据仅保存在当前浏览器</span>
+    </footer>
+  </div>
+
+  <script src="assets/batteryCalc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
