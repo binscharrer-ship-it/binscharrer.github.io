@@ -1165,19 +1165,41 @@
   function singleBeadPrice(crystal, size = 8) {
     const style = crystal.beadStyle || BEAD_STYLE_BY_ID[crystal.id] || "crystal";
     const styleBase = {
-      clear: 3,
-      cloudy: 5,
-      crystal: 6,
-      banded: 5,
-      matrix: 8,
-      flakes: 8,
-      "cat-eye": 9,
-      spacer: 2,
-    }[style] || 6;
-    const common = ["clear", "rose", "amethyst", "white-agate", "red-agate"].includes(crystal.id);
-    const rarity = common ? 1 : 2 + (hashString(crystal.id) % 8);
+      clear: 2.6,
+      cloudy: 4.0,
+      crystal: 4.8,
+      banded: 3.8,
+      matrix: 6.2,
+      flakes: 6.0,
+      "cat-eye": 7.2,
+      spacer: 1.8,
+    }[style] || 5;
+    const name = crystal.name || "";
+    const tier = priceTierForCrystal(crystal);
+    const tierMultiplier = {
+      入门: 0.82,
+      轻奢: 1.22,
+      高阶: 2.35,
+      收藏: 5.4,
+    }[tier.label] || 1;
+    const hashRarity = hashString(crystal.id) % 5;
     const sizeFactor = { 6: 0.72, 8: 1, 10: 1.5, 12: 2.2 }[size] || 1;
-    return Math.max(1, Math.round((styleBase + rarity) * sizeFactor));
+    const special = /超七|钛晶|金发晶|铜发晶|绿幽灵|红纹石|彼得石/.test(name) ? 1.35 : 1;
+    return Math.max(1, Math.round((styleBase + hashRarity) * tierMultiplier * special * sizeFactor));
+  }
+
+  function priceTierForCrystal(crystal) {
+    const name = crystal.name || "";
+    if (/翡翠|祖母绿|沙弗莱|帕拉伊巴|红宝石|蓝宝石|和田玉|南红|蜜蜡/.test(name)) {
+      return { id: "collector", label: "收藏", color: "#a84f65" };
+    }
+    if (/超七|钛晶|金发晶|铜发晶|绿幽灵|红纹石|紫锂辉|摩根石|海蓝宝|拉长石|彼得石|阿塞|胶花/.test(name)) {
+      return { id: "premium", label: "高阶", color: "#9a6c32" };
+    }
+    if (/紫水晶|乌拉圭|巴西紫|粉晶|草莓|石榴|月光|青金|方钠|堇青|绿松|孔雀|发晶|兔毛|幽灵|托帕|碧玺|黄水晶|太阳石/.test(name)) {
+      return { id: "mid", label: "轻奢", color: "#4f8f8b" };
+    }
+    return { id: "entry", label: "入门", color: "#788a8b" };
   }
 
   function estimatedBraceletPrice(crystal, size = 8, count = 12) {
@@ -1386,6 +1408,8 @@
         studioCanvasEmpty: document.getElementById("studio-canvas-empty"),
         beadCount: document.getElementById("bead-count"),
         compositionStats: document.getElementById("composition-stats"),
+        braceletPrice: document.getElementById("bracelet-price"),
+        braceletPriceNote: document.getElementById("bracelet-price-note"),
         studioEnergyChart: document.getElementById("studio-energy-chart"),
         studioEnergyLabel: document.getElementById("studio-energy-label"),
         sequenceList: document.getElementById("sequence-list"),
@@ -1415,6 +1439,7 @@
         detailEnergyChart: document.getElementById("detail-energy-chart"),
         detailRitual: document.getElementById("detail-ritual"),
         addDetailButton: document.getElementById("add-detail-to-bracelet"),
+        shareDetailButton: document.getElementById("share-detail-button"),
         favoriteDetailButton: document.getElementById("favorite-detail-button"),
         detailCare: document.getElementById("detail-care"),
         detailPairing: document.getElementById("detail-pairing"),
@@ -1666,6 +1691,7 @@
         this.addBead();
         this.switchView("studio");
       });
+      this.dom.shareDetailButton.addEventListener("click", () => this.openDetailShareCard());
       this.dom.favoriteDetailButton.addEventListener("click", () => {
         this.toggleFavorite(this.state.detailId);
       });
@@ -2063,6 +2089,7 @@
             <span>
               <strong>${escapeHtml(crystal.name)}</strong>
               <small>${escapeHtml(crystal.emotion)}</small>
+              <em class="stone-price">8 mm 约 ${formatPrice(singleBeadPrice(crystal, 8))}/颗 · ${priceTierForCrystal(crystal).label}</em>
             </span>
           </button>
           `,
@@ -2132,9 +2159,23 @@
       const averageSize = beads.length
         ? beads.reduce((total, bead) => total + bead.size, 0) / beads.length
         : 0;
+      const priceEstimate = beads.reduce((total, bead) => {
+        const entity = beadEntity(bead);
+        return total + (entity ? singleBeadPrice(entity, bead.size) : 0);
+      }, 0);
+      const priceBounds = {
+        min: Math.max(0, Math.round(priceEstimate * 0.9)),
+        max: Math.round(priceEstimate * 1.12),
+      };
 
       this.dom.beadCount.textContent = `${beads.length} 颗`;
       this.dom.studioCanvasEmpty.hidden = beads.length > 0;
+      this.dom.braceletPrice.textContent = beads.length
+        ? formatPriceRange(priceBounds)
+        : "¥0";
+      this.dom.braceletPriceNote.textContent = beads.length
+        ? "按当前珠子、珠径和参考单价实时估算"
+        : "加入珠子后自动计算";
       this.dom.compositionStats.innerHTML = `
         <div class="stat-tile">
           <span>珠子总数</span>
@@ -2250,7 +2291,8 @@
                   ${this.gemThumbMarkup(item)}
                   <span>
                     <strong>${escapeHtml(item.name)}</strong>
-                    <small>${escapeHtml(item.emotion || item.tags.join(" · "))}</small>
+                    <small>${escapeHtml(item.emotion || item.tags.join(" · "))} · ${priceTierForCrystal(item).label}</small>
+                    <em class="stone-price">约 ${formatPrice(singleBeadPrice(item, item.size || 8))}/颗</em>
                   </span>
                 </button>
               `,
@@ -2800,7 +2842,7 @@
                   ${this.gemThumbMarkup(crystal)}
                   <span>
                     <strong>${escapeHtml(crystal.name)}</strong>
-                    <small>${escapeHtml(crystal.emotion)}</small>
+                    <small>${escapeHtml(crystal.emotion)} · ${priceTierForCrystal(crystal).label}</small>
                   </span>
                 </button>
               `,
@@ -3332,7 +3374,7 @@
                   ${this.gemThumbMarkup(item.crystal)}
                   <span>
                     <strong>${escapeHtml(item.role)} · ${escapeHtml(item.crystal.name)}</strong>
-                    <small>${item.size} mm × ${item.count} 颗 · 约 ${formatPrice(
+                    <small>${priceTierForCrystal(item.crystal).label} · ${item.size} mm × ${item.count} 颗 · 约 ${formatPrice(
                       singleBeadPrice(item.crystal, item.size) * item.count,
                     )}</small>
                   </span>
@@ -3421,7 +3463,7 @@
 
     renderDetailPrice(crystal) {
       const range = priceRange(crystal, 8, 12);
-      this.dom.detailPriceRange.textContent = formatPriceRange(range);
+      this.dom.detailPriceRange.textContent = `${formatPriceRange(range)} · ${priceTierForCrystal(crystal).label}`;
       this.dom.detailNaturalNote.textContent = this.naturalNote(crystal);
       this.dom.detailPurchaseButton.textContent = `找客服确认${crystal.name}库存`;
     }
@@ -3453,7 +3495,83 @@
       const imageUrl = this.createSharePoster(result);
       this.dom.shareImage.src = imageUrl;
       this.dom.downloadShareImage.href = imageUrl;
+      this.dom.downloadShareImage.setAttribute("download", "晶序水晶配方.png");
       this.dom.shareModal.hidden = false;
+    }
+
+    openDetailShareCard() {
+      const crystal = CRYSTAL_MAP.get(this.state.detailId);
+      if (!crystal) return;
+      const imageUrl = this.createDetailSharePoster(crystal);
+      this.dom.shareImage.src = imageUrl;
+      this.dom.downloadShareImage.href = imageUrl;
+      this.dom.downloadShareImage.setAttribute("download", `晶序图鉴-${crystal.name}.png`);
+      this.dom.shareModal.hidden = false;
+    }
+
+    createDetailSharePoster(crystal) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const context = canvas.getContext("2d");
+      const background = context.createLinearGradient(0, 0, 1080, 1350);
+      background.addColorStop(0, crystal.light);
+      background.addColorStop(0.48, "#fff9f8");
+      background.addColorStop(1, crystal.dark);
+      context.fillStyle = background;
+      context.fillRect(0, 0, 1080, 1350);
+
+      context.fillStyle = "rgba(255, 255, 255, 0.82)";
+      this.roundRect(context, 68, 72, 944, 1206, 36);
+      context.fill();
+      context.strokeStyle = "rgba(216, 201, 207, 0.72)";
+      context.lineWidth = 2;
+      context.stroke();
+
+      context.textAlign = "left";
+      context.fillStyle = "#463742";
+      context.font = '600 34px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText("晶序 · 水晶图鉴", 118, 148);
+      context.fillStyle = "#9a8a96";
+      context.font = '23px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`${crystal.emotion} · ${priceTierForCrystal(crystal).label}`, 118, 192);
+
+      this.drawPosterBead(context, 540, 430, 180, crystal, 0);
+
+      context.textAlign = "center";
+      context.fillStyle = "#463742";
+      context.font = '600 46px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(crystal.name, 540, 700);
+      context.fillStyle = "#9a8a96";
+      context.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(crystal.en, 540, 740);
+
+      context.fillStyle = "#756674";
+      context.font = '25px "Microsoft YaHei", "PingFang SC", sans-serif';
+      const meaning = this.wrapCanvasText(context, crystal.meaning, 750);
+      meaning.slice(0, 3).forEach((line, index) => {
+        context.fillText(line, 540, 810 + index * 37);
+      });
+
+      context.fillStyle = "#a84f65";
+      context.font = '600 30px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`参考价 ${formatPriceRange(priceRange(crystal, 8, 12))}`, 540, 950);
+      context.fillStyle = "#756674";
+      context.font = '23px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(crystal.tags.join(" · "), 540, 998);
+
+      context.fillStyle = "#6f6170";
+      context.font = '22px "Microsoft YaHei", "PingFang SC", sans-serif';
+      const natural = this.wrapCanvasText(context, this.naturalNote(crystal), 760);
+      natural.slice(0, 3).forEach((line, index) => {
+        context.fillText(line, 540, 1060 + index * 34);
+      });
+
+      context.fillStyle = "#9a8a96";
+      context.font = '20px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText("实际颜色、纹理和价格以商家实物为准", 540, 1234);
+      context.textAlign = "left";
+      return canvas.toDataURL("image/png");
     }
 
     createSharePoster(result) {
@@ -3514,27 +3632,36 @@
       context.fillStyle = "#756674";
       context.font = '26px "Microsoft YaHei", "PingFang SC", sans-serif';
       const meaning = this.wrapCanvasText(context, result.primary.meaning, 760);
-      meaning.slice(0, 3).forEach((line, index) => {
-        context.fillText(line, 540, 940 + index * 38);
+      meaning.slice(0, 2).forEach((line, index) => {
+        context.fillText(line, 540, 925 + index * 36);
       });
 
-      context.fillStyle = "#a84f65";
-      context.font = '600 27px "Microsoft YaHei", "PingFang SC", sans-serif';
-      context.fillText(
-        `主石 ${result.primary.name} · 辅石 ${result.support.name} · 平衡 ${result.balance.name}`,
-        540,
-        1064,
-      );
+      context.textAlign = "left";
+      context.fillStyle = "#463742";
+      context.font = '600 23px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText("配方清单", 150, 1018);
+      result.recipe.forEach((item, index) => {
+        const y = 1055 + index * 34;
+        context.fillStyle = "#756674";
+        context.font = '22px "Microsoft YaHei", "PingFang SC", sans-serif';
+        context.fillText(`${item.role} · ${item.crystal.name}`, 150, y);
+        context.textAlign = "right";
+        context.fillStyle = "#a84f65";
+        context.font = '600 22px "Microsoft YaHei", "PingFang SC", sans-serif';
+        context.fillText(`${item.count} 颗 · ${item.size} mm`, 930, y);
+        context.textAlign = "left";
+      });
 
+      context.textAlign = "center";
       context.fillStyle = "#756674";
-      context.font = 'italic 25px "Microsoft YaHei", "PingFang SC", sans-serif';
-      context.fillText(`“${result.quote.text}”`, 540, 1132);
-      context.font = '22px "Microsoft YaHei", "PingFang SC", sans-serif';
-      context.fillText(`—— ${result.quote.author}`, 540, 1172);
+      context.font = 'italic 24px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`“${result.quote.text}”`, 540, 1186);
+      context.font = '21px "Microsoft YaHei", "PingFang SC", sans-serif';
+      context.fillText(`—— ${result.quote.author}`, 540, 1221);
 
       context.fillStyle = "#9a8a96";
       context.font = '20px "Microsoft YaHei", "PingFang SC", sans-serif';
-      context.fillText("内容用于象征与自我关照，不替代专业建议", 540, 1232);
+      context.fillText("内容用于象征与自我关照，不替代专业建议", 540, 1272);
       context.textAlign = "left";
       return canvas.toDataURL("image/png");
     }

@@ -1133,6 +1133,17 @@ a:focus-visible {
   font-size: 10px;
 }
 
+.stone-price {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--coral);
+  font-size: 9px;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .gem-thumb {
   position: relative;
   width: 30px;
@@ -1479,6 +1490,42 @@ a:focus-visible {
   margin-top: 3px;
   font-size: 15px;
   font-weight: 500;
+}
+
+.bracelet-price-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(120deg, rgba(251, 229, 234, 0.72), rgba(224, 240, 237, 0.72));
+}
+
+.bracelet-price-bar span,
+.bracelet-price-bar small {
+  display: block;
+}
+
+.bracelet-price-bar span {
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.bracelet-price-bar small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.bracelet-price-bar strong {
+  color: var(--coral);
+  font-size: 24px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .studio-energy-section {
@@ -1898,6 +1945,8 @@ a:focus-visible {
 
 .library-action-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: flex-end;
   margin-top: 18px;
 }
@@ -3382,6 +3431,15 @@ a:focus-visible {
   .detail-care-grid,
   .profile-layout {
     grid-template-columns: 1fr;
+  }
+
+  .library-action-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .library-action-row > * {
+    width: 100%;
   }
 
   .library-scope button,
