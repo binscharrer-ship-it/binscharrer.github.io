@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="description" content="XG-BattSim 电池健康仿真与寿命评估工具，支持手机电池与动力电池模板" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="XG-BattSim" />
+    <title>XG-BattSim 电池健康仿真</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <strong>XG-BattSim</strong>
+            <small>电池健康仿真与寿命评估</small>
+          </div>
+        </div>
+        <span class="version">V1.0</span>
+      </header>
+
+      <main class="app-main">
+        <section class="hero">
+          <p class="eyebrow">电池健康仿真</p>
+          <h1>把电池状态，变成一份可读的评估报告</h1>
+          <p>支持 LFP、NMC、NCA、二手手机锂电池和车规动力电池模板。结果用于教学、仿真和初步参考，不替代专业检测设备。</p>
+          <div class="hero-tags" aria-label="应用特点">
+            <span>离线保存</span>
+            <span>手机适配</span>
+            <span>报告导出</span>
+          </div>
+        </section>
+
+        <section class="panel input-panel">
+          <div class="section-heading">
+            <div>
+              <p class="panel-kicker">输入参数</p>
+              <h2>选择模板并录入数据</h2>
+            </div>
+            <label class="simple-toggle">
+              <input type="checkbox" id="simple-mode" />
+              <span>极简模式</span>
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <label class="field field-wide">
+              <span>电池类型</span>
+              <select id="battery-type">
+                <option value="LFP">磷酸铁锂 LFP</option>
+                <option value="NMC" selected>三元锂 NMC</option>
+                <option value="NCA">镍钴铝 NCA</option>
+                <option value="Phone">二手手机锂电池</option>
+                <option value="EV">新能源车动力电池包</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>标称容量 Ah</span>
+              <input id="capacity" type="number" inputmode="decimal" value="50" />
+            </label>
+            <label class="field">
+              <span>标称电压 V</span>
+              <input id="nom-voltage" type="number" inputmode="decimal" value="3.7" />
+            </label>
+            <label class="field advanced">
+              <span>初始内阻 mΩ</span>
+              <input id="init-resistance" type="number" inputmode="decimal" value="2.5" />
+            </label>
+            <label class="field advanced">
+              <span>初始 SOH %</span>
+              <input id="init-soh" type="number" inputmode="decimal" value="100" />
+            </label>
+            <label class="field">
+              <span>循环次数</span>
+              <input id="cycles" type="number" inputmode="numeric" value="500" />
+            </label>
+            <label class="field">
+              <span>充放电倍率 C</span>
+              <input id="c-rate" type="number" inputmode="decimal" value="1" />
+            </label>
+            <label class="field advanced">
+              <span>电芯质量 kg</span>
+              <input id="mass" type="number" inputmode="decimal" value="1.2" />
+            </label>
+            <label class="field advanced">
+              <span>散热面积 m²</span>
+              <input id="surface-area" type="number" inputmode="decimal" value="0.05" />
+            </label>
+            <label class="field advanced">
+              <span>比热容 J/(kg·K)</span>
+              <input id="heat-capacity" type="number" inputmode="decimal" value="900" />
+            </label>
+            <label class="field advanced">
+              <span>换热系数 W/(m²·K)</span>
+              <input id="heat-transfer" type="number" inputmode="decimal" value="15" />
+            </label>
+            <label class="field advanced">
+              <span>当前 SOC %</span>
+              <input id="soc" type="number" inputmode="decimal" value="85" />
+            </label>
+            <label class="field advanced">
+              <span>放电深度 DOD %</span>
+              <input id="dod" type="number" inputmode="decimal" value="80" />
+            </label>
+            <label class="field">
+              <span>环境温度 ℃</span>
+              <input id="ambient-temperature" type="number" inputmode="decimal" value="25" />
+            </label>
+          </div>
+
+          <div class="photo-row">
+            <label class="photo-upload">
+              <input id="photo-input" type="file" accept="image/*" capture="environment" />
+              <span>拍照 / 上传电池外观</span>
+            </label>
+            <div class="photo-preview" id="photo-preview" hidden>
+              <img id="photo-image" alt="电池外观预览" />
+              <button class="text-button danger" id="clear-photo" type="button">移除照片</button>
+            </div>
+          </div>
+
+          <button class="primary-button" id="run-button" type="button">开始电池健康评估</button>
+          <p class="field-note">本工具为仿真计算，不构成安全认证、质保承诺或法律依据。</p>
+        </section>
+
+        <section class="panel history-panel">
+          <div class="section-heading">
+            <div>
+              <p class="panel-kicker">本机记录</p>
+              <h2>检测历史</h2>
+            </div>
+            <button class="text-button" id="clear-history" type="button">清空</button>
+          </div>
+          <div class="history-list" id="history-list"></div>
+        </section>
+
+        <section class="panel result-panel" id="result-panel" hidden>
+          <div class="section-heading result-heading">
+            <div>
+              <p class="panel-kicker">仿真结果</p>
+              <h2 id="result-title">健康评估报告</h2>
+            </div>
+            <span class="report-id" id="report-id"></span>
+          </div>
+
+          <div class="verdict-card" id="verdict-card">
+            <div>
+              <span class="verdict-kicker">综合评级</span>
+              <strong id="verdict-text">—</strong>
+              <p id="verdict-sub"></p>
+            </div>
+            <div class="verdict-value">
+              <small>预估残值</small>
+              <strong id="estimated-value">—</strong>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span>最终 SOH</span>
+              <strong id="metric-soh">—</strong>
+            </article>
+            <article class="metric-card">
+              <span>容量保持率</span>
+              <strong id="metric-capacity">—</strong>
+            </article>
+            <article class="metric-card">
+              <span>内阻增长</span>
+              <strong id="metric-resistance">—</strong>
+            </article>
+            <article class="metric-card">
+              <span>最高温度</span>
+              <strong id="metric-temperature">—</strong>
+            </article>
+            <article class="metric-card">
+              <span>剩余循环</span>
+              <strong id="metric-life">—</strong>
+            </article>
+            <article class="metric-card">
+              <span>累计能量</span>
+              <strong id="metric-energy">—</strong>
+            </article>
+          </div>
+
+          <div class="trend-card">
+            <div>
+              <p class="panel-kicker">趋势增强估算</p>
+              <h3 id="trend-title">趋势预测</h3>
+            </div>
+            <p id="trend-copy"></p>
+          </div>
+
+          <div class="chart-card">
+            <div class="section-heading">
+              <div>
+                <p class="panel-kicker">热失控仿真</p>
+                <h3>温升曲线</h3>
+              </div>
+              <span class="chart-note" id="runaway-note"></span>
+            </div>
+            <canvas id="thermal-canvas" width="720" height="360" aria-label="电池热失控温升仿真曲线"></canvas>
+            <p class="chart-axis">横轴：时间（秒）　纵轴：温度（℃）</p>
+          </div>
+
+          <div class="report-table-wrap">
+            <div class="section-heading">
+              <div>
+                <p class="panel-kicker">衰减趋势</p>
+                <h3>部分仿真数据</h3>
+              </div>
+            </div>
+            <div class="report-table-scroll">
+              <table class="report-table">
+                <thead>
+                  <tr>
+                    <th>循环次数</th>
+                    <th>SOH</th>
+                    <th>内阻</th>
+                    <th>温度</th>
+                  </tr>
+                </thead>
+                <tbody id="report-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="primary-button" id="print-button" type="button">打印 / 导出 PDF</button>
+            <button class="secondary-button" id="share-button" type="button">复制报告摘要</button>
+          </div>
+          <p class="report-disclaimer">
+            免责声明：本报告由仿真模型生成，结果仅供参考，不构成质保承诺、安全认证或法律依据。实际电池状态以专业检测设备实测为准。
+          </p>
+        </section>
+
+        <section class="panel model-panel">
+          <div>
+            <p class="panel-kicker">计算说明</p>
+            <h2>模型与边界</h2>
+          </div>
+          <p>计算采用集总参数老化模型、Arrhenius 温度加速、Power Law 循环损失、Bernardi 生热方程和守恒校验。趋势估算基于温度、内阻、循环与健康度综合修正，不宣称真实机器学习准确率。</p>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./batteryCalc.js" defer></script>
+    <script src="./reportBuilder.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
