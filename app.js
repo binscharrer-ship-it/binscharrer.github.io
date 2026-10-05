@@ -2089,7 +2089,7 @@
             <span>
               <strong>${escapeHtml(crystal.name)}</strong>
               <small>${escapeHtml(crystal.emotion)}</small>
-              <em class="stone-price">8 mm 约 ${formatPrice(singleBeadPrice(crystal, 8))}/颗 · ${priceTierForCrystal(crystal).label}</em>
+              <em class="stone-price">${formatPrice(singleBeadPrice(crystal, 8))}/颗 · ${priceTierForCrystal(crystal).label}</em>
             </span>
           </button>
           `,

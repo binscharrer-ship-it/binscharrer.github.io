@@ -1099,7 +1099,9 @@ a:focus-visible {
   align-items: center;
   gap: 9px;
   min-height: 52px;
+  min-width: 0;
   padding: 7px 8px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: #fff;
@@ -1133,8 +1135,16 @@ a:focus-visible {
   font-size: 10px;
 }
 
+.stone-option > span,
+.bead-picker-item > span,
+.portrait-option > span {
+  min-width: 0;
+  overflow: hidden;
+}
+
 .stone-price {
   display: block;
+  max-width: 100%;
   margin-top: 2px;
   overflow: hidden;
   color: var(--coral);
@@ -1431,7 +1441,9 @@ a:focus-visible {
   align-items: center;
   gap: 9px;
   min-height: 58px;
+  min-width: 0;
   padding: 8px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
@@ -2210,7 +2222,9 @@ a:focus-visible {
   align-items: center;
   gap: 8px;
   min-height: 56px;
+  min-width: 0;
   padding: 8px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
