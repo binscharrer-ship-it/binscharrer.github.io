@@ -5,6 +5,10 @@ on:
     branches:
       - main
     paths:
+      - "index.html"
+      - "styles.css"
+      - "app.js"
+      - "assets/**"
       - "cihu-union-platform/**"
       - "cihu-union-cloud/**"
       - "battery-h5/**"
@@ -35,6 +39,8 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir -p _site
+          cp index.html styles.css app.js _site/
+          cp -R assets _site/assets
           cp -R cihu-union-platform _site/cihu-union-platform
           cp -R cihu-union-cloud _site/cihu-union-cloud
           cp -R battery-h5 _site/battery-h5
