@@ -1,26 +1,26 @@
 :root {
   color-scheme: light;
-  --canvas: #fbf7f7;
-  --canvas-deep: #f1e9eb;
-  --surface: #fffdfd;
-  --surface-soft: #faf6f5;
-  --ink: #463742;
-  --ink-soft: #756674;
-  --muted: #9a8a96;
-  --line: #eadfe2;
-  --line-strong: #d8c9cf;
-  --teal: #4f8f8b;
-  --teal-deep: #356e6b;
-  --teal-soft: #e0f0ed;
-  --coral: #d9788a;
-  --coral-soft: #fbe5ea;
-  --gold: #c89b58;
-  --gold-soft: #f7ecd9;
-  --lavender: #a98bc7;
-  --lavender-soft: #f0e8f8;
-  --danger: #b64f5d;
-  --shadow: 0 18px 50px rgba(91, 62, 77, 0.10);
-  --shadow-soft: 0 8px 24px rgba(91, 62, 77, 0.07);
+  --canvas: #071221;
+  --canvas-deep: #0a1c33;
+  --surface: rgba(247, 252, 255, 0.88);
+  --surface-soft: rgba(229, 242, 252, 0.76);
+  --ink: #16324b;
+  --ink-soft: #42617d;
+  --muted: #718aa1;
+  --line: rgba(119, 178, 216, 0.28);
+  --line-strong: rgba(78, 145, 190, 0.46);
+  --teal: #4b9fc7;
+  --teal-deep: #2f7fa8;
+  --teal-soft: rgba(83, 177, 222, 0.16);
+  --coral: #a87bc7;
+  --coral-soft: rgba(207, 184, 239, 0.34);
+  --gold: #d2a454;
+  --gold-soft: rgba(247, 224, 177, 0.48);
+  --lavender: #7f9de3;
+  --lavender-soft: rgba(190, 209, 250, 0.44);
+  --danger: #b64f68;
+  --shadow: 0 24px 70px rgba(2, 12, 29, 0.34);
+  --shadow-soft: 0 12px 34px rgba(1, 12, 27, 0.22);
   font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
 }
 
@@ -30,7 +30,7 @@
 
 html {
   min-width: 320px;
-  background: var(--canvas);
+  background: #071221;
   scroll-behavior: smooth;
 }
 
@@ -38,9 +38,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(237, 243, 241, 0.9)),
-    var(--canvas);
+  background: #071221;
   color: var(--ink);
   font-size: 14px;
   line-height: 1.6;
@@ -3554,5 +3552,230 @@ a:focus-visible {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
+  }
+}
+
+/* Ice crystal queen background theme */
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+.app-shell::before {
+  position: fixed;
+  z-index: -2;
+  inset: -32px;
+  background: url("./assets/backgrounds/ice-queen-bg.webp") center 30% / cover no-repeat;
+  content: "";
+  filter: blur(7px) saturate(0.92) brightness(0.78);
+  transform: scale(1.06);
+  transform-origin: center;
+}
+
+.app-shell::after {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(125, 215, 255, 0.15), transparent 42%),
+    linear-gradient(180deg, rgba(3, 11, 24, 0.62), rgba(4, 15, 31, 0.72) 48%, rgba(3, 10, 22, 0.88));
+  content: "";
+  pointer-events: none;
+}
+
+.app-header {
+  border-bottom-color: rgba(139, 210, 244, 0.22);
+  background: rgba(5, 17, 34, 0.74);
+  box-shadow: 0 14px 40px rgba(0, 5, 16, 0.24);
+  backdrop-filter: blur(22px) saturate(1.15);
+}
+
+.brand-copy strong {
+  color: #f4fbff;
+  text-shadow: 0 2px 18px rgba(111, 216, 255, 0.28);
+}
+
+.brand-copy small,
+.header-note {
+  color: #9bb9ce;
+}
+
+.brand-gem {
+  border-color: rgba(145, 226, 255, 0.62);
+  background: linear-gradient(135deg, rgba(110, 214, 255, 0.26), rgba(119, 132, 231, 0.2));
+  box-shadow:
+    inset 0 0 18px rgba(198, 241, 255, 0.18),
+    0 0 24px rgba(94, 207, 255, 0.2);
+}
+
+.brand-gem::before,
+.brand-gem span {
+  border-color: rgba(178, 235, 255, 0.72);
+}
+
+.brand-gem::after {
+  background: #8ee4ff;
+  box-shadow: 0 0 10px rgba(129, 224, 255, 0.92);
+}
+
+.main-nav {
+  border-color: rgba(137, 203, 237, 0.23);
+  background: rgba(7, 24, 44, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.nav-button {
+  color: #a9c5d9;
+}
+
+.nav-button:hover {
+  background: rgba(113, 197, 236, 0.14);
+  color: #f4fbff;
+}
+
+.nav-button.is-active {
+  background: linear-gradient(135deg, #49a8d2, #6d82d4);
+  box-shadow: 0 8px 24px rgba(47, 144, 195, 0.3);
+}
+
+.view-heading h1 {
+  color: #f6fbff;
+  text-shadow: 0 4px 26px rgba(0, 7, 20, 0.5);
+}
+
+.view-heading p:not(.eyebrow) {
+  color: #c1d8e9;
+  text-shadow: 0 2px 14px rgba(0, 7, 20, 0.44);
+}
+
+.view-heading .eyebrow {
+  color: #8ce1ff;
+}
+
+.panel {
+  border-color: rgba(155, 211, 239, 0.34);
+  background: linear-gradient(145deg, rgba(248, 252, 255, 0.92), rgba(224, 239, 250, 0.84));
+  box-shadow:
+    0 24px 64px rgba(0, 10, 27, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(22px) saturate(1.14);
+}
+
+.healing-intro,
+.portrait-entry {
+  border-color: rgba(164, 220, 246, 0.4);
+  background: linear-gradient(120deg, rgba(240, 249, 255, 0.9), rgba(214, 232, 250, 0.8));
+  box-shadow: 0 16px 40px rgba(0, 10, 27, 0.2);
+  backdrop-filter: blur(18px);
+}
+
+.status-chip,
+.bead-count,
+.section-note {
+  border-color: rgba(144, 206, 237, 0.34);
+  background: rgba(240, 249, 255, 0.8);
+  color: #3f6382;
+  backdrop-filter: blur(14px);
+}
+
+.source-tabs {
+  border-color: rgba(132, 193, 226, 0.3);
+  background: rgba(223, 239, 250, 0.7);
+}
+
+.source-tab:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.choice-button,
+.secondary-action {
+  border-color: rgba(132, 193, 226, 0.32);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.choice-button:hover,
+.secondary-action:hover {
+  border-color: rgba(76, 158, 205, 0.55);
+  background: rgba(235, 247, 255, 0.9);
+}
+
+.primary-action {
+  background: linear-gradient(135deg, #3f9dc8, #657ed2);
+  box-shadow: 0 12px 28px rgba(35, 126, 180, 0.26);
+}
+
+.primary-action:hover:not(:disabled) {
+  background: linear-gradient(135deg, #328db9, #586fca);
+  box-shadow: 0 16px 34px rgba(35, 126, 180, 0.34);
+}
+
+.text-action {
+  color: #2f83b0;
+}
+
+.result-panel,
+.studio-preview-panel,
+.crystal-detail-panel {
+  background: linear-gradient(145deg, rgba(248, 252, 255, 0.94), rgba(218, 236, 249, 0.88));
+}
+
+.energy-chart,
+.composition-stats,
+.purchase-plan,
+.ritual-list,
+.recipe-strip {
+  border-color: rgba(126, 188, 222, 0.28);
+}
+
+.toast {
+  border-color: rgba(142, 220, 250, 0.3);
+  background: rgba(7, 23, 43, 0.92);
+  color: #e7f8ff;
+  box-shadow: 0 18px 42px rgba(0, 5, 17, 0.4);
+  backdrop-filter: blur(18px);
+}
+
+@media (max-width: 700px) {
+  .app-shell::before {
+    inset: -20px;
+    background-position: center 18%;
+    filter: blur(9px) saturate(0.9) brightness(0.74);
+  }
+
+  .app-shell::after {
+    background:
+      radial-gradient(circle at 50% 18%, rgba(126, 220, 255, 0.13), transparent 44%),
+      linear-gradient(180deg, rgba(3, 11, 24, 0.58), rgba(4, 15, 31, 0.72) 54%, rgba(3, 10, 22, 0.9));
+  }
+
+  .app-header {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .main-nav {
+    border-top-color: rgba(137, 211, 244, 0.24);
+    background: rgba(6, 20, 39, 0.88);
+    box-shadow: 0 -14px 38px rgba(0, 6, 18, 0.32);
+    backdrop-filter: blur(24px) saturate(1.18);
+  }
+
+  .nav-button {
+    color: #9fbbcf;
+  }
+
+  .nav-button.is-active {
+    background: rgba(86, 184, 225, 0.17);
+    color: #c9f1ff;
+    box-shadow: inset 0 0 0 1px rgba(142, 220, 250, 0.2);
+  }
+
+  .panel {
+    background: linear-gradient(145deg, rgba(248, 252, 255, 0.94), rgba(223, 239, 250, 0.88));
+    box-shadow:
+      0 14px 36px rgba(0, 8, 22, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.76);
   }
 }
