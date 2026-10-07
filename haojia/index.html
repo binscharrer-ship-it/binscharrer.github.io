@@ -103,6 +103,7 @@
           </label>
         </div>
 
+        <div id="quick-filters" class="quick-filters" aria-label="快捷筛选"></div>
         <nav id="category-strip" class="category-strip" aria-label="商品分类"></nav>
 
         <div id="product-grid" class="product-grid" aria-live="polite"></div>
@@ -140,18 +141,60 @@
         <span class="nav-icon">▦</span>
         <span>分类</span>
       </a>
+      <button id="mobile-favorites-button" type="button">
+        <span class="nav-icon">♡</span>
+        <span>收藏</span>
+        <span id="favorites-count" class="nav-badge" hidden>0</span>
+      </button>
       <button id="mobile-search-button" type="button">
         <span class="nav-icon">⌕</span>
         <span>搜索</span>
       </button>
     </nav>
 
+    <dialog id="product-dialog" class="product-dialog">
+      <div class="dialog-shell">
+        <button id="dialog-close" class="dialog-close" type="button" aria-label="关闭">
+          ×
+        </button>
+        <img id="dialog-image" alt="" />
+        <div class="dialog-content">
+          <div class="dialog-meta">
+            <span id="dialog-category" class="category-chip"></span>
+            <span id="dialog-sales" class="dialog-sales"></span>
+          </div>
+          <h2 id="dialog-title"></h2>
+          <div class="dialog-price-row">
+            <strong id="dialog-price"></strong>
+            <del id="dialog-original-price"></del>
+          </div>
+          <div class="dialog-coupon-row">
+            <span id="dialog-coupon" class="coupon-badge"></span>
+            <span class="promo-note">券后价以商品页为准</span>
+          </div>
+          <p id="dialog-tags" class="dialog-tags"></p>
+          <div class="dialog-actions">
+            <a id="dialog-buy" class="deal-button" target="_blank" rel="nofollow sponsored noopener">
+              立即购买
+            </a>
+            <button id="dialog-favorite" class="secondary-button" type="button">收藏</button>
+            <button id="dialog-share" class="secondary-button" type="button">分享</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <template id="product-card-template">
       <article class="product-card">
-        <a class="product-media" target="_blank" rel="nofollow sponsored noopener">
-          <img alt="" loading="lazy" />
-          <span class="image-fallback"></span>
-        </a>
+        <div class="product-media-shell">
+          <a class="product-media" href="#" aria-label="查看商品详情">
+            <img alt="" loading="lazy" />
+            <span class="image-fallback"></span>
+          </a>
+          <button class="favorite-button" type="button" aria-label="收藏商品">♡</button>
+        </div>
         <div class="product-body">
           <div class="product-meta">
             <span class="category-chip"></span>

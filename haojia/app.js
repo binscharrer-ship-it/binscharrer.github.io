@@ -3,6 +3,8 @@ const state = {
   query: "",
   category: "",
   sort: "score",
+  quick: "recommend",
+  favorites: new Set(JSON.parse(localStorage.getItem("haojia_favorites") || "[]")),
 };
 
 const categoryGroups = [
@@ -33,6 +35,7 @@ const elements = {
   search: document.querySelector("#search-input"),
   category: document.querySelector("#category-filter"),
   categoryStrip: document.querySelector("#category-strip"),
+  quickFilters: document.querySelector("#quick-filters"),
   sort: document.querySelector("#sort-select"),
   resultCount: document.querySelector("#result-count"),
   productCount: document.querySelector("#hero-product-count"),
@@ -40,7 +43,25 @@ const elements = {
   topCoupon: document.querySelector("#hero-top-coupon"),
   updatedAt: document.querySelector("#updated-at"),
   mobileSearch: document.querySelector("#mobile-search-button"),
+  mobileFavorites: document.querySelector("#mobile-favorites-button"),
+  favoritesCount: document.querySelector("#favorites-count"),
+  dialog: document.querySelector("#product-dialog"),
+  dialogClose: document.querySelector("#dialog-close"),
+  dialogImage: document.querySelector("#dialog-image"),
+  dialogCategory: document.querySelector("#dialog-category"),
+  dialogSales: document.querySelector("#dialog-sales"),
+  dialogTitle: document.querySelector("#dialog-title"),
+  dialogPrice: document.querySelector("#dialog-price"),
+  dialogOriginalPrice: document.querySelector("#dialog-original-price"),
+  dialogCoupon: document.querySelector("#dialog-coupon"),
+  dialogTags: document.querySelector("#dialog-tags"),
+  dialogBuy: document.querySelector("#dialog-buy"),
+  dialogFavorite: document.querySelector("#dialog-favorite"),
+  dialogShare: document.querySelector("#dialog-share"),
+  toast: document.querySelector("#toast"),
 };
+
+let activeProduct = null;
 
 function formatDate(value) {
   if (!value) return "尚未导入";
@@ -88,6 +109,8 @@ function filteredProducts() {
   const items = state.items.filter((item) => {
     if (item.status && item.status !== "active") return false;
     if (state.category && productGroup(item) !== state.category) return false;
+    if (state.quick === "coupon" && !(Number(item.coupon) > 0)) return false;
+    if (state.quick === "favorites" && !state.favorites.has(item.id)) return false;
     if (!query) return true;
     const haystack = [
       item.title,
@@ -106,7 +129,8 @@ function filteredProducts() {
     coupon: (a, b) => b.coupon - a.coupon,
     "price-asc": (a, b) => a.price - b.price,
   };
-  return items.sort(sorters[state.sort] || sorters.score);
+  const selectedSort = state.quick === "hot" ? "sales" : state.sort;
+  return items.sort(sorters[selectedSort] || sorters.score);
 }
 
 function updateCategoryOptions(items) {
@@ -138,6 +162,112 @@ function updateCategoryStrip(items) {
   });
 }
 
+function updateQuickFilters() {
+  const filters = [
+    ["recommend", "猜你喜欢"],
+    ["hot", "今日热榜"],
+    ["coupon", "有券专区"],
+    ["favorites", `我的收藏 ${state.favorites.size}`],
+  ];
+  elements.quickFilters.replaceChildren();
+  filters.forEach(([value, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.quick = value;
+    button.textContent = label;
+    button.classList.toggle("active", state.quick === value);
+    elements.quickFilters.append(button);
+  });
+}
+
+function saveFavorites() {
+  localStorage.setItem("haojia_favorites", JSON.stringify([...state.favorites]));
+  const count = state.favorites.size;
+  elements.favoritesCount.textContent = String(count);
+  elements.favoritesCount.hidden = count === 0;
+  updateQuickFilters();
+}
+
+function imageSource(imageUrl) {
+  if (!imageUrl) return "";
+  return imageUrl.startsWith("./") || imageUrl.startsWith("/")
+    ? imageUrl
+    : `./api/image?url=${encodeURIComponent(imageUrl)}`;
+}
+
+function showToast(message) {
+  elements.toast.textContent = message;
+  elements.toast.classList.add("show");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => {
+    elements.toast.classList.remove("show");
+  }, 1800);
+}
+
+function toggleFavorite(productId) {
+  if (state.favorites.has(productId)) {
+    state.favorites.delete(productId);
+    showToast("已取消收藏");
+  } else {
+    state.favorites.add(productId);
+    showToast("已加入收藏");
+  }
+  saveFavorites();
+  render();
+  if (activeProduct?.id === productId) updateDialogFavorite();
+}
+
+function updateDialogFavorite() {
+  if (!activeProduct) return;
+  const active = state.favorites.has(activeProduct.id);
+  elements.dialogFavorite.textContent = active ? "已收藏" : "收藏";
+  elements.dialogFavorite.classList.toggle("active", active);
+}
+
+function openProduct(item) {
+  activeProduct = item;
+  elements.dialogImage.src = imageSource(item.image_url);
+  elements.dialogImage.alt = item.title;
+  elements.dialogCategory.textContent = productGroup(item);
+  elements.dialogSales.textContent = `30日销量 ${compactNumber.format(item.sales_30d || 0)}`;
+  elements.dialogTitle.textContent = item.title;
+  elements.dialogPrice.textContent = currency.format(item.price || 0);
+  elements.dialogOriginalPrice.textContent =
+    item.original_price > item.price ? currency.format(item.original_price) : "";
+  elements.dialogCoupon.textContent =
+    item.coupon > 0 ? `优惠券 ${currency.format(item.coupon)}` : "暂无优惠券";
+  elements.dialogTags.textContent = (item.tags || []).slice(0, 5).join(" · ");
+  elements.dialogBuy.href = item.url;
+  updateDialogFavorite();
+  if (typeof elements.dialog.showModal === "function") {
+    elements.dialog.showModal();
+  } else {
+    elements.dialog.setAttribute("open", "");
+  }
+}
+
+async function shareProduct(item) {
+  const shareData = {
+    title: item.title,
+    text: `发现一个好价：${item.title}`,
+    url: item.url,
+  };
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      return;
+    } catch (error) {
+      if (error.name === "AbortError") return;
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(item.url);
+    showToast("链接已复制，可发给朋友");
+  } catch {
+    showToast("长按“立即购买”也可以分享");
+  }
+}
+
 function renderMetrics(items) {
   const active = items.filter((item) => !item.status || item.status === "active");
   elements.productCount.textContent = String(active.length);
@@ -158,8 +288,14 @@ function buildCard(item) {
   const fallback = card.querySelector(".image-fallback");
   const title = card.querySelector(".product-title");
   const dealButton = card.querySelector(".deal-button");
+  const favoriteButton = card.querySelector(".favorite-button");
 
-  media.href = item.url;
+  media.href = "#";
+  media.addEventListener("click", (event) => {
+    event.preventDefault();
+    openProduct(item);
+  });
+  title.addEventListener("click", () => openProduct(item));
   dealButton.href = item.url;
   title.textContent = item.title;
   card.querySelector(".category-chip").textContent = productGroup(item);
@@ -167,10 +303,7 @@ function buildCard(item) {
   merchant.textContent = item.merchant || "";
 
   if (item.image_url) {
-    image.src =
-      item.image_url.startsWith("./") || item.image_url.startsWith("/")
-        ? item.image_url
-        : `./api/image?url=${encodeURIComponent(item.image_url)}`;
+    image.src = imageSource(item.image_url);
     image.alt = item.title;
   } else {
     fallback.textContent = productGroup(item).slice(0, 1);
@@ -200,6 +333,11 @@ function buildCard(item) {
     tagList.append(chip);
   });
 
+  const favoriteActive = state.favorites.has(item.id);
+  favoriteButton.textContent = favoriteActive ? "♥" : "♡";
+  favoriteButton.classList.toggle("active", favoriteActive);
+  favoriteButton.addEventListener("click", () => toggleFavorite(item.id));
+
   return card;
 }
 
@@ -217,6 +355,8 @@ async function loadProducts() {
     state.items = Array.isArray(payload.items) ? payload.items : [];
     updateCategoryOptions(state.items);
     updateCategoryStrip(state.items);
+    updateQuickFilters();
+    saveFavorites();
     renderMetrics(state.items);
     elements.updatedAt.textContent = formatDate(payload.updated_at);
     render();
@@ -229,6 +369,8 @@ async function loadProducts() {
   state.items = Array.isArray(payload.items) ? payload.items : [];
   updateCategoryOptions(state.items);
   updateCategoryStrip(state.items);
+  updateQuickFilters();
+  saveFavorites();
   renderMetrics(state.items);
   elements.updatedAt.textContent = formatDate(payload.updated_at);
   render();
@@ -254,6 +396,17 @@ elements.categoryStrip.addEventListener("click", (event) => {
   render();
 });
 
+elements.quickFilters.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-quick]");
+  if (!button) return;
+  state.quick = button.dataset.quick || "recommend";
+  updateQuickFilters();
+  render();
+  if (state.quick === "favorites") {
+    elements.grid.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
 elements.mobileSearch.addEventListener("click", () => {
   elements.search.scrollIntoView({ behavior: "smooth", block: "center" });
   window.setTimeout(() => elements.search.focus(), 250);
@@ -264,7 +417,33 @@ elements.sort.addEventListener("change", (event) => {
   render();
 });
 
+elements.mobileFavorites.addEventListener("click", () => {
+  state.quick = "favorites";
+  updateQuickFilters();
+  render();
+  elements.grid.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+elements.dialogClose.addEventListener("click", () => elements.dialog.close());
+elements.dialog.addEventListener("click", (event) => {
+  if (event.target === elements.dialog) elements.dialog.close();
+});
+elements.dialogFavorite.addEventListener("click", () => {
+  if (activeProduct) toggleFavorite(activeProduct.id);
+});
+elements.dialogShare.addEventListener("click", () => {
+  if (activeProduct) shareProduct(activeProduct);
+});
+
 document.querySelector("#current-year").textContent = String(new Date().getFullYear());
+
+if (
+  "serviceWorker" in navigator &&
+  location.protocol.startsWith("http") &&
+  !["127.0.0.1", "localhost"].includes(location.hostname)
+) {
+  navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+}
 
 loadProducts().catch((error) => {
   elements.empty.hidden = false;
