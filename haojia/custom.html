@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17212c" />
+    <meta
+      name="description"
+      content="XG 物理底座产业定制：FPGA 算子、证据链、设备授权与行业方案配置。"
+    />
+    <title>产业定制 · 好价精选</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./custom.css" />
+  </head>
+  <body class="custom-page">
+    <header class="site-header">
+      <a class="brand" href="./">
+        <span class="brand-mark">省</span>
+        <span>
+          <strong>好价精选</strong>
+          <small>生活优惠 · 产业定制</small>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="主导航">
+        <a href="./">生活好价</a>
+        <a class="active" href="./custom.html">产业定制</a>
+      </nav>
+    </header>
+
+    <main class="custom-main">
+      <section class="custom-hero">
+        <div>
+          <p class="eyebrow">XG PHYSICAL BASE · INDUSTRY CUSTOM</p>
+          <h1>不是卖一段代码，而是交付可验证的物理能力。</h1>
+          <p>
+            从标准 FPGA 算子出发，按行业场景、目标板卡、延迟、冗余、
+            证据等级和设备授权周期生成定制需求单。
+          </p>
+        </div>
+        <div class="custom-stats">
+          <div><strong>10</strong><span>已发布算子</span></div>
+          <div><strong>5</strong><span>物理分类</span></div>
+          <div><strong>DNA</strong><span>授权绑定</span></div>
+        </div>
+      </section>
+
+      <section class="operator-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">VERIFIED OPERATORS</p>
+            <h2>标准算子目录</h2>
+          </div>
+          <p>详情只展示契约、PPA、WNS、DRC、黄金模型误差和证据等级。</p>
+        </div>
+        <nav id="operator-categories" class="operator-categories"></nav>
+        <div id="operator-grid" class="operator-grid"></div>
+      </section>
+
+      <section class="configurator-section" id="configurator">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">CUSTOM REQUIREMENT</p>
+            <h2>定制需求配置器</h2>
+          </div>
+          <p>生成可复制、可追踪的配置单；正式报价和 NRE 以工程评估为准。</p>
+        </div>
+
+        <form id="custom-form" class="custom-form">
+          <label>
+            <span>行业场景</span>
+            <select name="scenario">
+              <option value="industrial">工业控制</option>
+              <option value="low_altitude">低空经济</option>
+              <option value="medical_research">医疗科研</option>
+              <option value="precision">精密仪器</option>
+              <option value="lab">实验室验证</option>
+            </select>
+          </label>
+          <label>
+            <span>目标板卡</span>
+            <select name="board">
+              <option value="xc7a35ticsg324-1l">Basys 3 / Artix-7 35T</option>
+              <option value="xc7a35tcpg236-1">Arty A7-35T</option>
+              <option value="xc7z020clg400-1">Zynq-7020</option>
+              <option value="custom">其他板卡 / 自定义</option>
+            </select>
+          </label>
+          <label>
+            <span>最大延迟</span>
+            <select name="latency">
+              <option value="2">≤ 2 μs</option>
+              <option value="10">≤ 10 μs</option>
+              <option value="100" selected>≤ 100 μs</option>
+              <option value="1000">≤ 1 ms</option>
+            </select>
+          </label>
+          <label>
+            <span>冗余等级</span>
+            <select name="redundancy">
+              <option value="none">无冗余</option>
+              <option value="dmr">双模 DMR</option>
+              <option value="tmr">三模 TMR</option>
+            </select>
+          </label>
+
+          <fieldset class="operator-picker">
+            <legend>算子链</legend>
+            <div id="operator-picker"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>交付与授权</legend>
+            <div class="service-grid">
+              <label class="check-item"><input type="checkbox" name="deliverable" value="bitstream" checked />水印比特流</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="rtl" checked />生成 RTL</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="testbench" checked />Testbench</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="evidence" checked />证据包</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="hil" />板级联调</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="integration" />系统集成</label>
+            </div>
+          </fieldset>
+
+          <div class="form-actions custom-actions">
+            <button class="primary-button" type="submit">生成定制需求单</button>
+            <button id="copy-requirement" class="secondary-button" type="button" disabled>复制需求单</button>
+          </div>
+        </form>
+
+        <div id="requirement-result" class="requirement-result" hidden>
+          <div class="requirement-head">
+            <div>
+              <span>需求编号</span>
+              <strong id="requirement-code"></strong>
+            </div>
+            <div>
+              <span>算子授权参考价</span>
+              <strong id="requirement-price"></strong>
+            </div>
+          </div>
+          <pre id="requirement-json"></pre>
+          <p>
+            参考价仅包含所选算子的项目授权基准价，不含 NRE、板卡、系统集成、
+            差旅和现场实施费用。正式报价以工程评估和书面方案为准。
+          </p>
+        </div>
+      </section>
+
+      <section class="compliance-note">
+        <strong>边界说明</strong>
+        <p>
+          算子与参考方案仅供科研验证和工业控制使用，不构成医疗器械临床用途。
+          涉及医疗、航空、能源等安全关键场景时，必须由客户完成独立验证和合规审查。
+        </p>
+      </section>
+    </main>
+
+    <dialog id="operator-dialog" class="product-dialog operator-dialog">
+      <div class="dialog-shell">
+        <button id="operator-dialog-close" class="dialog-close" type="button" aria-label="关闭">×</button>
+        <div class="dialog-content">
+          <div class="dialog-meta">
+            <span id="operator-dialog-sku" class="category-chip"></span>
+            <span id="operator-dialog-evidence" class="evidence-pill"></span>
+          </div>
+          <h2 id="operator-dialog-title"></h2>
+          <p id="operator-dialog-summary" class="operator-description"></p>
+          <div id="operator-dialog-metrics" class="metric-detail-grid"></div>
+          <div class="dialog-actions">
+            <button id="operator-dialog-select" class="primary-button" type="button">加入定制需求</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./operator-catalog.js"></script>
+    <script src="./custom.js" defer></script>
+  </body>
+</html>

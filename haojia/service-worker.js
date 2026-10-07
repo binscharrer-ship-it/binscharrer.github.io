@@ -7,6 +7,10 @@ const APP_SHELL = [
   "./catalog.js",
   "./manifest.webmanifest",
   "./assets/favicon.svg",
+  "./custom.html",
+  "./custom.css",
+  "./custom.js",
+  "./operator-catalog.js",
 ];
 
 self.addEventListener("install", (event) => {
