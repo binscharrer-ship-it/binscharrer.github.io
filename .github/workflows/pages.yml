@@ -1,4 +1,4 @@
-name: Deploy Cihu Union Management
+name: Deploy GitHub Pages Projects
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
       - "cihu-union-platform/**"
       - "cihu-union-cloud/**"
       - "battery-h5/**"
+      - "haojia/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -44,6 +45,7 @@ jobs:
           cp -R cihu-union-platform _site/cihu-union-platform
           cp -R cihu-union-cloud _site/cihu-union-cloud
           cp -R battery-h5 _site/battery-h5
+          cp -R haojia _site/haojia
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -55,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}battery-h5/
+      url: ${{ steps.deployment.outputs.page_url }}haojia/
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

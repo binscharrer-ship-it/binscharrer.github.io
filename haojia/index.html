@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="每日优惠好物精选，集中查看券后价、优惠券和商品销量。"
+    />
+    <title>好价精选</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="返回首页">
+        <span class="brand-mark">省</span>
+        <span>
+          <strong>好价精选</strong>
+          <small>每日优惠好物</small>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="主导航">
+        <a href="#deals">今日优惠</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">每 日 严 选 · 优 惠 直 达</p>
+          <h1>今天值得买的实惠好货，都在这里。</h1>
+          <p class="hero-text">
+            帮你整理券后价和优惠力度，看到喜欢的直接去拼多多下单。
+            商品价格、库存与活动状态以拼多多页面为准。
+          </p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#deals">查看今日优惠</a>
+          </div>
+        </div>
+        <div class="hero-panel" aria-label="今日优惠概览">
+          <div class="panel-head">
+            <span>今日优惠概览</span>
+            <span class="live-dot">LIVE</span>
+          </div>
+          <div class="metric-row">
+            <div>
+              <strong id="hero-product-count">0</strong>
+              <span>今日好物</span>
+            </div>
+            <div>
+              <strong id="hero-hot-count">0</strong>
+              <span>带券商品</span>
+            </div>
+            <div>
+              <strong id="hero-top-coupon">¥0</strong>
+              <span>最高优惠</span>
+            </div>
+          </div>
+          <div class="panel-note">
+            <span class="pulse"></span>
+            数据更新时间：<time id="updated-at">尚未导入</time>
+          </div>
+        </div>
+      </section>
+
+      <section class="deals-section" id="deals">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">今日优惠精选</p>
+            <h2>先买更省，价格直看</h2>
+          </div>
+          <div class="result-count">
+            共 <strong id="result-count">0</strong> 件
+          </div>
+        </div>
+
+        <div class="toolbar" aria-label="商品筛选">
+          <label class="search-field">
+            <span class="search-icon">⌕</span>
+            <input
+              id="search-input"
+              type="search"
+              placeholder="搜索商品、店铺或标签"
+              autocomplete="off"
+            />
+          </label>
+          <label class="select-field">
+            <span>类目</span>
+            <select id="category-filter">
+              <option value="">全部类目</option>
+            </select>
+          </label>
+          <label class="select-field">
+            <span>排序</span>
+            <select id="sort-select">
+              <option value="score">综合推荐</option>
+              <option value="sales">30日销量</option>
+              <option value="coupon">优惠金额</option>
+              <option value="price-asc">券后价从低到高</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="product-grid" class="product-grid" aria-live="polite"></div>
+
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-visual" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <h3>今天的好价正在整理</h3>
+          <p>刷新页面看看新的优惠商品。</p>
+          <a class="primary-button" href="./">刷新看看</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>好价精选</strong>
+        <p>
+          部分商品链接为推广链接，购买不会影响你的实付价格。
+          商品信息、价格、优惠券和库存以拼多多页面为准。
+        </p>
+      </div>
+      <div class="footer-links">
+        <span>© <span id="current-year"></span> XG Commerce</span>
+      </div>
+    </footer>
+
+    <template id="product-card-template">
+      <article class="product-card">
+        <a class="product-media" target="_blank" rel="nofollow sponsored noopener">
+          <img alt="" loading="lazy" />
+          <span class="image-fallback"></span>
+        </a>
+        <div class="product-body">
+          <div class="product-meta">
+            <span class="category-chip"></span>
+            <span class="merchant"></span>
+          </div>
+          <h3 class="product-title"></h3>
+          <div class="price-line">
+            <span class="current-price"></span>
+            <del class="original-price"></del>
+          </div>
+          <div class="offer-line">
+            <span class="coupon-badge"></span>
+            <span class="promo-note">领券购买</span>
+          </div>
+          <div class="sales-row">
+            <span class="sales-text"></span>
+            <span class="rating-text"></span>
+          </div>
+          <div class="tag-list"></div>
+          <a class="deal-button" target="_blank" rel="nofollow sponsored noopener">
+            去拼多多看看
+          </a>
+        </div>
+      </article>
+    </template>
+
+    <script src="./catalog.js"></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
