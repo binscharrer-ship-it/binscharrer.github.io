@@ -12,11 +12,11 @@
 
   const SHOP_LINKS = [
     {
-      name: "晶序水晶 1号店",
+      name: "云琅珠宝",
       url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K",
     },
     {
-      name: "晶序水晶 2号店",
+      name: "瑶宝海",
       url: "https://mobile.yangkeduo.com/mall_page.html?ps=qIBZLgJJQu",
     },
     {
