@@ -10,6 +10,21 @@
     { key: "action", label: "行动", color: "#c79a3a" },
   ];
 
+  const SHOP_LINKS = [
+    {
+      name: "晶序水晶 1号店",
+      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K",
+    },
+    {
+      name: "晶序水晶 2号店",
+      url: "https://mobile.yangkeduo.com/mall_page.html?ps=qIBZLgJJQu",
+    },
+    {
+      name: "晶序水晶 3号店",
+      url: "https://mobile.yangkeduo.com/mall_page.html?ps=LCHvHkCwxD",
+    },
+  ];
+
   const BASE_CRYSTALS = [
     {
       id: "amethyst",
@@ -1329,6 +1344,7 @@
       this.renderImageCredits();
       this.loadRealBeadImages();
       this.observeCanvases();
+      this.renderShopLinks();
       this.renderProfile();
       window.__crystalApp = this;
     }
@@ -1466,6 +1482,8 @@
         purchaseSummary: document.getElementById("purchase-summary"),
         purchaseCopyButton: document.getElementById("purchase-copy-button"),
         purchaseShareButton: document.getElementById("purchase-share-button"),
+        purchaseShopLinks: document.getElementById("purchase-shop-links"),
+        profileShopLinks: document.getElementById("profile-shop-links"),
         profileFavoriteCount: document.getElementById("profile-favorite-count"),
         profileRecentCount: document.getElementById("profile-recent-count"),
         profileBeadCount: document.getElementById("profile-bead-count"),
@@ -3387,6 +3405,33 @@
       `;
     }
 
+    renderShopLinks() {
+      const markup = SHOP_LINKS.map(
+        (shop, index) => `
+          <article class="shop-link-card">
+            <span class="shop-link-mark">${String(index + 1).padStart(2, "0")}</span>
+            <span class="shop-link-copy">
+              <strong>${escapeHtml(shop.name)}</strong>
+              <small>拼多多水晶店铺 · 成品与定制搭配</small>
+            </span>
+            <span class="shop-link-actions">
+              <a class="secondary-action small" href="${escapeHtml(shop.url)}" target="_blank" rel="noopener noreferrer">进入店铺</a>
+              <button class="text-action" type="button" data-copy-shop="${escapeHtml(shop.url)}">复制链接</button>
+            </span>
+          </article>
+        `,
+      ).join("");
+
+      [this.dom.profileShopLinks, this.dom.purchaseShopLinks].forEach((container) => {
+        if (container) container.innerHTML = markup;
+      });
+      document.querySelectorAll("[data-copy-shop]").forEach((button) => {
+        button.addEventListener("click", () => {
+          this.copyText(button.dataset.copyShop, "店铺链接已复制");
+        });
+      });
+    }
+
     purchaseSummaryMarkup(recipe) {
       return recipe
         .map(
@@ -3442,6 +3487,9 @@
             `${item.role}：${item.crystal.name} ${item.size} mm × ${item.count} 颗`,
         ),
         `参考总价：${formatPriceRange(range)}`,
+        "",
+        "晶序水晶店铺：",
+        ...SHOP_LINKS.flatMap((shop) => [`${shop.name}：`, shop.url]),
         "备注：请帮我确认天然特征、珠径、库存和实际价格。",
       ].join("\n");
       this.copyText(text, "购买清单已复制");
