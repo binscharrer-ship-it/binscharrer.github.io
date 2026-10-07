@@ -59,6 +59,7 @@ function normalizeText(value) {
 }
 
 function productGroup(item) {
+  if (item.display_group) return item.display_group;
   const title = String(item.title || "");
   const rules = [
     [
@@ -71,7 +72,7 @@ function productGroup(item) {
     ],
     [
       "个护美妆",
-      /卫生巾|安心裤|睡裤|护理|洗面|洁面|面膜|护肤|沐浴|牙膏|湿巾|衣领净/,
+      /卫生巾|安心裤|护理|洗面|洁面|面膜|护肤|精华|乳液|面霜|身体乳|洗发|护发|防晒|卸妆|彩妆|口红|香水|眼影|粉底|沐浴|牙膏|湿巾|护手|精油|衣领净/,
     ],
     ["服饰鞋包", /袜|女装|男装|上衣|外套|裤|鞋|包/],
     ["居家日用", /卷纸|卫生纸|纸巾|洗衣|清洁|家用|家庭装|收纳|浴巾|家纺/],
