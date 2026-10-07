@@ -5,6 +5,15 @@ const state = {
   sort: "score",
 };
 
+const categoryGroups = [
+  "食品饮料",
+  "居家日用",
+  "母婴用品",
+  "个护美妆",
+  "服饰鞋包",
+  "其他好物",
+];
+
 const currency = new Intl.NumberFormat("zh-CN", {
   style: "currency",
   currency: "CNY",
@@ -23,12 +32,14 @@ const elements = {
   template: document.querySelector("#product-card-template"),
   search: document.querySelector("#search-input"),
   category: document.querySelector("#category-filter"),
+  categoryStrip: document.querySelector("#category-strip"),
   sort: document.querySelector("#sort-select"),
   resultCount: document.querySelector("#result-count"),
   productCount: document.querySelector("#hero-product-count"),
   hotCount: document.querySelector("#hero-hot-count"),
   topCoupon: document.querySelector("#hero-top-coupon"),
   updatedAt: document.querySelector("#updated-at"),
+  mobileSearch: document.querySelector("#mobile-search-button"),
 };
 
 function formatDate(value) {
@@ -47,16 +58,40 @@ function normalizeText(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function productGroup(item) {
+  const title = String(item.title || "");
+  const rules = [
+    [
+      "母婴用品",
+      /婴儿|宝宝|新生|奶嘴|纸尿裤|尿裤|抚触油|纱布浴巾|婴童/,
+    ],
+    [
+      "食品饮料",
+      /面包|吐司|零食|食品|营养|牛奶|酸奶|苹果|枣|姜|水果|拌面|泡面|奶茶|坚果/,
+    ],
+    [
+      "个护美妆",
+      /卫生巾|安心裤|睡裤|护理|洗面|洁面|面膜|护肤|沐浴|牙膏|湿巾|衣领净/,
+    ],
+    ["服饰鞋包", /袜|女装|男装|上衣|外套|裤|鞋|包/],
+    ["居家日用", /卷纸|卫生纸|纸巾|洗衣|清洁|家用|家庭装|收纳|浴巾|家纺/],
+  ];
+  for (const [group, pattern] of rules) {
+    if (pattern.test(title)) return group;
+  }
+  return "其他好物";
+}
+
 function filteredProducts() {
   const query = normalizeText(state.query);
   const items = state.items.filter((item) => {
     if (item.status && item.status !== "active") return false;
-    if (state.category && item.category !== state.category) return false;
+    if (state.category && productGroup(item) !== state.category) return false;
     if (!query) return true;
     const haystack = [
       item.title,
       item.merchant,
-      item.category,
+      productGroup(item),
       ...(item.tags || []),
     ]
       .join(" ")
@@ -75,9 +110,8 @@ function filteredProducts() {
 
 function updateCategoryOptions(items) {
   const current = elements.category.value;
-  const categories = [...new Set(items.map((item) => item.category).filter(Boolean))].sort(
-    (a, b) => a.localeCompare(b, "zh-CN"),
-  );
+  const available = new Set(items.map(productGroup));
+  const categories = categoryGroups.filter((category) => available.has(category));
   elements.category.innerHTML = '<option value="">全部类目</option>';
   categories.forEach((category) => {
     const option = document.createElement("option");
@@ -86,6 +120,21 @@ function updateCategoryOptions(items) {
     elements.category.append(option);
   });
   if (categories.includes(current)) elements.category.value = current;
+}
+
+function updateCategoryStrip(items) {
+  const available = new Set(items.map(productGroup));
+  const groups = categoryGroups.filter((category) => available.has(category));
+  elements.categoryStrip.replaceChildren();
+  ["推荐", ...groups].forEach((label) => {
+    const value = label === "推荐" ? "" : label;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.category = value;
+    button.textContent = label;
+    button.classList.toggle("active", value === state.category);
+    elements.categoryStrip.append(button);
+  });
 }
 
 function renderMetrics(items) {
@@ -112,7 +161,7 @@ function buildCard(item) {
   media.href = item.url;
   dealButton.href = item.url;
   title.textContent = item.title;
-  card.querySelector(".category-chip").textContent = item.category || "百货";
+  card.querySelector(".category-chip").textContent = productGroup(item);
   const merchant = card.querySelector(".merchant");
   merchant.textContent = item.merchant || "";
 
@@ -123,7 +172,7 @@ function buildCard(item) {
         : `./api/image?url=${encodeURIComponent(item.image_url)}`;
     image.alt = item.title;
   } else {
-    fallback.textContent = (item.category || "选品").slice(0, 1);
+    fallback.textContent = productGroup(item).slice(0, 1);
   }
 
   const currentPrice = card.querySelector(".current-price");
@@ -141,7 +190,7 @@ function buildCard(item) {
     `30日 ${compactNumber.format(item.sales_30d || 0)}`;
   card.querySelector(".rating-text").textContent = item.rating
     ? `评分 ${Number(item.rating).toFixed(1)}`
-    : "评分未填";
+    : "";
 
   const tagList = card.querySelector(".tag-list");
   (item.tags || []).slice(0, 3).forEach((tag) => {
@@ -166,6 +215,7 @@ async function loadProducts() {
     const payload = window.__HAOJIA_PRODUCTS__;
     state.items = Array.isArray(payload.items) ? payload.items : [];
     updateCategoryOptions(state.items);
+    updateCategoryStrip(state.items);
     renderMetrics(state.items);
     elements.updatedAt.textContent = formatDate(payload.updated_at);
     render();
@@ -177,6 +227,7 @@ async function loadProducts() {
   const payload = await response.json();
   state.items = Array.isArray(payload.items) ? payload.items : [];
   updateCategoryOptions(state.items);
+  updateCategoryStrip(state.items);
   renderMetrics(state.items);
   elements.updatedAt.textContent = formatDate(payload.updated_at);
   render();
@@ -189,7 +240,22 @@ elements.search.addEventListener("input", (event) => {
 
 elements.category.addEventListener("change", (event) => {
   state.category = event.target.value;
+  updateCategoryStrip(state.items);
   render();
+});
+
+elements.categoryStrip.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-category]");
+  if (!button) return;
+  state.category = button.dataset.category || "";
+  elements.category.value = state.category;
+  updateCategoryStrip(state.items);
+  render();
+});
+
+elements.mobileSearch.addEventListener("click", () => {
+  elements.search.scrollIntoView({ behavior: "smooth", block: "center" });
+  window.setTimeout(() => elements.search.focus(), 250);
 });
 
 elements.sort.addEventListener("change", (event) => {

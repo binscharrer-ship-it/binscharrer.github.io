@@ -3,15 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17212c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="好价精选" />
     <meta
       name="description"
       content="每日优惠好物精选，集中查看券后价、优惠券和商品销量。"
     />
     <title>好价精选</title>
     <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body id="top">
     <header class="site-header">
       <a class="brand" href="./" aria-label="返回首页">
         <span class="brand-mark">省</span>
@@ -102,6 +107,8 @@
           </label>
         </div>
 
+        <nav id="category-strip" class="category-strip" aria-label="商品分类"></nav>
+
         <div id="product-grid" class="product-grid" aria-live="polite"></div>
 
         <div id="empty-state" class="empty-state" hidden>
@@ -127,6 +134,21 @@
         <span>© <span id="current-year"></span> XG Commerce</span>
       </div>
     </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="手机端导航">
+      <a href="#top">
+        <span class="nav-icon">⌂</span>
+        <span>推荐</span>
+      </a>
+      <a href="#category-strip">
+        <span class="nav-icon">▦</span>
+        <span>分类</span>
+      </a>
+      <button id="mobile-search-button" type="button">
+        <span class="nav-icon">⌕</span>
+        <span>搜索</span>
+      </button>
+    </nav>
 
     <template id="product-card-template">
       <article class="product-card">
@@ -154,7 +176,7 @@
           </div>
           <div class="tag-list"></div>
           <a class="deal-button" target="_blank" rel="nofollow sponsored noopener">
-            去拼多多看看
+            立即购买
           </a>
         </div>
       </article>
