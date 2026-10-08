@@ -161,8 +161,10 @@ function generateRequirement() {
     operator_chain: selectedProducts.map((product) => product.id),
     operator_license_reference_cny: operatorPrice,
     deliverables: formData.getAll("deliverable"),
-    pricing_note: "参考价不含 NRE、板卡、系统集成、差旅和现场实施费用。",
-    compliance_note: "仅供科研验证和工业控制，不构成医疗器械临床用途。",
+    pricing_note:
+      "参考价不含 NRE、板卡、机械、流体、工艺、生产、后端实现、封装和认证费用。",
+    compliance_note:
+      "XG 仅授权前端 IP。客户负责自身板卡、机械、流体、工艺、生产、后端实现、封装和认证。",
   };
 }
 

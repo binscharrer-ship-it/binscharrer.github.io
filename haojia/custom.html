@@ -32,11 +32,12 @@
     <main class="custom-main">
       <section class="custom-hero">
         <div>
-          <p class="eyebrow">XG PHYSICAL BASE · INDUSTRY CUSTOM</p>
-          <h1>不是卖一段代码，而是交付可验证的物理能力。</h1>
+          <p class="eyebrow">XG FRONT-END IP LICENSING</p>
+          <h1>只交付前端 IP，不承担整机、产线和工艺。</h1>
           <p>
-            从标准 FPGA 算子出发，按行业场景、目标板卡、延迟、冗余、
-            证据等级和设备授权周期生成定制需求单。
+            XG 提供数字样机、可综合 RTL、时序闭环报告、寄存器映射、
+            驱动程序、集成包和可审计证据。客户负责自身板卡、机械、流体、
+            工艺、生产、后端实现、封装和认证。
           </p>
         </div>
         <div class="custom-stats">
@@ -113,12 +114,13 @@
           <fieldset>
             <legend>交付与授权</legend>
             <div class="service-grid">
-              <label class="check-item"><input type="checkbox" name="deliverable" value="bitstream" checked />水印比特流</label>
-              <label class="check-item"><input type="checkbox" name="deliverable" value="rtl" checked />生成 RTL</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="digital_mockup" checked />数字样机</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="rtl" checked />可综合 RTL</label>
               <label class="check-item"><input type="checkbox" name="deliverable" value="testbench" checked />Testbench</label>
-              <label class="check-item"><input type="checkbox" name="deliverable" value="evidence" checked />证据包</label>
-              <label class="check-item"><input type="checkbox" name="deliverable" value="hil" />板级联调</label>
-              <label class="check-item"><input type="checkbox" name="deliverable" value="integration" />系统集成</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="register_map" checked />寄存器映射</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="driver" />驱动程序</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="evidence" checked />时序/DRC证据包</label>
+              <label class="check-item"><input type="checkbox" name="deliverable" value="integration_package" />集成包</label>
             </div>
           </fieldset>
 
@@ -141,8 +143,9 @@
           </div>
           <pre id="requirement-json"></pre>
           <p>
-            参考价仅包含所选算子的项目授权基准价，不含 NRE、板卡、系统集成、
-            差旅和现场实施费用。正式报价以工程评估和书面方案为准。
+            参考价仅包含所选前端 IP 的项目授权基准价，不含 NRE、板卡、
+            机械、流体、工艺、生产、后端实现、封装和认证费用。正式报价以
+            工程评估和书面方案为准。
           </p>
         </div>
       </section>
@@ -151,7 +154,9 @@
         <strong>边界说明</strong>
         <p>
           算子与参考方案仅供科研验证和工业控制使用，不构成医疗器械临床用途。
-          涉及医疗、航空、能源等安全关键场景时，必须由客户完成独立验证和合规审查。
+          XG 不提供工厂建设、化工工艺总包、湿实验、产线交付、后端物理流程、
+          流片、封装、量产或认证。涉及医疗、航空、能源等安全关键场景时，
+          必须由客户完成独立验证和合规审查。
         </p>
       </section>
     </main>
