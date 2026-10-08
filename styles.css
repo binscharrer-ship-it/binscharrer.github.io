@@ -3876,6 +3876,107 @@ a:focus-visible {
   grid-column: 1 / -1;
 }
 
+.store-match-panel {
+  margin-top: 18px;
+}
+
+.store-match-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.store-match-heading h3 {
+  margin: 3px 0 0;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.store-match-groups {
+  display: grid;
+  gap: 12px;
+}
+
+.store-match-group {
+  padding: 12px;
+  border: 1px solid rgba(121, 185, 219, 0.27);
+  border-radius: 8px;
+  background: rgba(241, 249, 255, 0.64);
+}
+
+.store-match-role {
+  margin-bottom: 8px;
+  color: #2f7196;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.store-match-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.store-match-option {
+  display: block;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(122, 184, 217, 0.25);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.store-match-option:hover {
+  border-color: rgba(65, 151, 198, 0.48);
+  background: rgba(233, 247, 255, 0.92);
+}
+
+.store-match-store {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  margin-bottom: 5px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--teal-soft);
+  color: var(--teal-deep);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.store-match-option strong,
+.store-match-option small {
+  display: block;
+}
+
+.store-match-option strong {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+}
+
+.store-match-option small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.store-match-empty {
+  padding: 12px;
+  border: 1px dashed rgba(117, 181, 218, 0.36);
+  border-radius: 8px;
+  background: rgba(242, 249, 255, 0.58);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
 @media (max-width: 700px) {
   .shop-link-card {
     grid-template-columns: auto minmax(0, 1fr);
@@ -3890,5 +3991,13 @@ a:focus-visible {
 
   .shop-link-actions > * {
     width: 100%;
+  }
+
+  .store-match-heading {
+    display: block;
+  }
+
+  .store-match-options {
+    grid-template-columns: 1fr;
   }
 }

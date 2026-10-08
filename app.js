@@ -10,20 +10,12 @@
     { key: "action", label: "行动", color: "#c79a3a" },
   ];
 
-  const SHOP_LINKS = [
-    {
-      name: "云琅珠宝",
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K",
-    },
-    {
-      name: "瑶宝海",
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=qIBZLgJJQu",
-    },
-    {
-      name: "晶序水晶 3号店",
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=LCHvHkCwxD",
-    },
-  ];
+  const STORE_DATA = window.CRYSTAL_STORE_DATA || { stores: [], products: [] };
+  const SHOP_LINKS = STORE_DATA.stores.map((store) => ({
+    ...store,
+    name: store.name,
+    url: store.url,
+  }));
 
   const BASE_CRYSTALS = [
     {
@@ -1404,6 +1396,7 @@
         primaryTags: document.getElementById("primary-crystal-tags"),
         recipeStrip: document.getElementById("recipe-strip"),
         purchasePlan: document.getElementById("purchase-plan"),
+        resultStoreMatch: document.getElementById("result-store-match"),
         resultEnergyChart: document.getElementById("result-energy-chart"),
         energyDominantLabel: document.getElementById("energy-dominant-label"),
         ritualList: document.getElementById("ritual-list"),
@@ -1482,6 +1475,7 @@
         purchaseSummary: document.getElementById("purchase-summary"),
         purchaseCopyButton: document.getElementById("purchase-copy-button"),
         purchaseShareButton: document.getElementById("purchase-share-button"),
+        purchaseStoreMatches: document.getElementById("purchase-store-matches"),
         purchaseShopLinks: document.getElementById("purchase-shop-links"),
         profileShopLinks: document.getElementById("profile-shop-links"),
         profileFavoriteCount: document.getElementById("profile-favorite-count"),
@@ -2050,6 +2044,7 @@
         });
       }
       this.renderPurchasePlan(result.recipe);
+      this.renderStoreMatches(result.recipe, this.dom.resultStoreMatch);
       this.renderProfile();
     }
 
@@ -3405,6 +3400,155 @@
       `;
     }
 
+    energySimilarity(sourceCrystal, targetCrystal) {
+      if (!sourceCrystal || !targetCrystal) return 0;
+      const total = ENERGY_DIMENSIONS.reduce((sum, dimension) => {
+        const source = Number(sourceCrystal.energies?.[dimension.key] || 0);
+        const target = Number(targetCrystal.energies?.[dimension.key] || 0);
+        return sum + Math.abs(source - target);
+      }, 0);
+      return 1 - total / (ENERGY_DIMENSIONS.length * 100);
+    }
+
+    colorSimilarity(sourceColor, targetColor) {
+      const normalize = (value) => String(value || "").replace("#", "");
+      const toRgb = (value) => {
+        const hex = normalize(value).padEnd(6, "0").slice(0, 6);
+        return [
+          parseInt(hex.slice(0, 2), 16) || 0,
+          parseInt(hex.slice(2, 4), 16) || 0,
+          parseInt(hex.slice(4, 6), 16) || 0,
+        ];
+      };
+      const toHsl = (value) => {
+        const [red, green, blue] = toRgb(value).map((channel) => channel / 255);
+        const max = Math.max(red, green, blue);
+        const min = Math.min(red, green, blue);
+        const lightness = (max + min) / 2;
+        if (max === min) return { hue: 0, saturation: 0, lightness };
+        const delta = max - min;
+        const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+        let hue = 0;
+        if (max === red) hue = ((green - blue) / delta + (green < blue ? 6 : 0)) * 60;
+        else if (max === green) hue = ((blue - red) / delta + 2) * 60;
+        else hue = ((red - green) / delta + 4) * 60;
+        return { hue, saturation, lightness };
+      };
+
+      const source = toHsl(sourceColor);
+      const target = toHsl(targetColor);
+      if (source.saturation < 0.12 || target.saturation < 0.12) {
+        const lightnessGap = Math.abs(source.lightness - target.lightness);
+        return Math.max(0.35, 0.72 - lightnessGap);
+      }
+      const rawDifference = Math.abs(source.hue - target.hue);
+      const hueDifference = Math.min(rawDifference, 360 - rawDifference);
+      return 1 - hueDifference / 180;
+    }
+
+    bestProductMatchForStore(store, recommendedCrystal, exactOnly = false) {
+      let best = null;
+      STORE_DATA.products
+        .filter((product) => product.storeId === store.id)
+        .forEach((product) => {
+          product.crystalIds.forEach((crystalId) => {
+            const candidate = CRYSTAL_MAP.get(crystalId);
+            if (!candidate) return;
+            const exact = crystalId === recommendedCrystal.id;
+            if (exactOnly && !exact) return;
+            const energySimilarity = exact
+              ? 1
+              : this.energySimilarity(candidate, recommendedCrystal);
+            const colorSimilarity = exact
+              ? 1
+              : this.colorSimilarity(candidate.light || candidate.color, recommendedCrystal.light || recommendedCrystal.color);
+            const similarity = exact
+              ? 1
+              : energySimilarity * 0.72 + colorSimilarity * 0.28;
+            if (!exact && similarity < 0.86) return;
+            if (!best || similarity > best.similarity) {
+              best = {
+                store,
+                product,
+                candidate,
+                similarity,
+                exact,
+              };
+            }
+          });
+        });
+      return best;
+    }
+
+    storeMatchesForRecipe(recipe) {
+      return recipe.map((item) => ({
+        item,
+        matches: (() => {
+          const exactMatches = SHOP_LINKS.map((store) =>
+            this.bestProductMatchForStore(store, item.crystal, true),
+          ).filter(Boolean);
+          if (exactMatches.length) return exactMatches;
+          return SHOP_LINKS.map((store) =>
+            this.bestProductMatchForStore(store, item.crystal),
+          ).filter(Boolean);
+        })(),
+      }));
+    }
+
+    renderStoreMatches(recipe, container) {
+      if (!container) return;
+      const groups = this.storeMatchesForRecipe(recipe || []);
+      if (!groups.length || !groups.some((group) => group.matches.length)) {
+        container.innerHTML = `
+          <div class="store-match-empty">
+            暂无自动匹配款，可直接把清单发给客服寻找相似情绪力量的水晶。
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="store-match-heading">
+          <div>
+            <p class="panel-kicker">店铺现货匹配</p>
+            <h3>推荐水晶对应的店铺款式</h3>
+          </div>
+          <span class="section-note">按情绪力量相近度</span>
+        </div>
+        <div class="store-match-groups">
+          ${groups
+            .map((group) => {
+              if (!group.matches.length) return "";
+              return `
+                <div class="store-match-group">
+                  <div class="store-match-role">
+                    ${escapeHtml(group.item.role)} · ${escapeHtml(group.item.crystal.name)}
+                  </div>
+                  <div class="store-match-options">
+                    ${group.matches
+                      .map(
+                        (match) => `
+                          <a class="store-match-option" href="${escapeHtml(match.store.url)}" target="_blank" rel="noopener noreferrer">
+                            <span class="store-match-store">${escapeHtml(match.store.name)}</span>
+                            <strong>${escapeHtml(match.product.name)}</strong>
+                            <small>${
+                              match.exact
+                                ? "同类水晶款，进店确认库存"
+                                : `与${escapeHtml(group.item.crystal.name)}情绪力量相近`
+                            }</small>
+                          </a>
+                        `,
+                      )
+                      .join("")}
+                  </div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `;
+    }
+
     renderShopLinks() {
       const markup = SHOP_LINKS.map(
         (shop, index) => `
@@ -3412,7 +3556,7 @@
             <span class="shop-link-mark">${String(index + 1).padStart(2, "0")}</span>
             <span class="shop-link-copy">
               <strong>${escapeHtml(shop.name)}</strong>
-              <small>拼多多水晶店铺 · 成品与定制搭配</small>
+              <small>${escapeHtml(shop.note || "拼多多水晶店铺 · 成品与定制搭配")}</small>
             </span>
             <span class="shop-link-actions">
               <a class="secondary-action small" href="${escapeHtml(shop.url)}" target="_blank" rel="noopener noreferrer">进入店铺</a>
@@ -3470,6 +3614,7 @@
           <strong>${formatPriceRange(range)}</strong>
         </div>
       `;
+      this.renderStoreMatches(activeRecipe, this.dom.purchaseStoreMatches);
       this.dom.purchaseModal.hidden = false;
     }
 
