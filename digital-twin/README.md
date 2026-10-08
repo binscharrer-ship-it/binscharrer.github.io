@@ -4,6 +4,12 @@
 
 ## 打开
 
+永久公网地址：
+
+```text
+https://binscharrer-ship-it.github.io/binscharrer.github.io/digital-twin/
+```
+
 本地服务已经启动：
 
 ```text
