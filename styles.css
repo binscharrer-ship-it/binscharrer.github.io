@@ -202,6 +202,15 @@ a:focus-visible {
   text-align: right;
 }
 
+.header-note a {
+  color: #9fdcff;
+  text-decoration: none;
+}
+
+.header-note a:hover {
+  color: #d8f2ff;
+}
+
 .app-main {
   width: min(1480px, 100%);
   margin: 0 auto;

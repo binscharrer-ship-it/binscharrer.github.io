@@ -11,6 +11,11 @@ const APP_SHELL = [
   "./custom.css",
   "./custom.js",
   "./operator-catalog.js",
+  "./crystal.html",
+  "./crystal.css",
+  "./crystal.js",
+  "./crystal-store-data.js",
+  "./assets/crystal-special-bg.webp",
 ];
 
 self.addEventListener("install", (event) => {

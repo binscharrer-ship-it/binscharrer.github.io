@@ -333,6 +333,58 @@ main {
   background: #edf7f5;
 }
 
+.crystal-entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  margin: 34px clamp(20px, 7vw, 110px) 0;
+  padding: 26px 30px;
+  border: 1px solid #cdd9ea;
+  border-radius: 8px;
+  background:
+    linear-gradient(110deg, rgba(94, 159, 193, 0.1), rgba(122, 107, 168, 0.08)),
+    white;
+}
+
+.crystal-entry-mark {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: linear-gradient(145deg, #5e9fc1, #7a6ba8);
+  box-shadow: 0 10px 26px rgba(83, 127, 173, 0.22);
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.crystal-entry h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.crystal-entry p:not(.eyebrow) {
+  margin: 7px 0 0;
+  color: #596b78;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.crystal-entry-link {
+  display: inline-flex;
+  min-height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  border-radius: 7px;
+  color: white;
+  background: linear-gradient(135deg, #4f8fb0, #74649e);
+  font-weight: 800;
+}
+
 .industry-entry h2 {
   margin: 0;
   font-size: 26px;
@@ -1393,6 +1445,21 @@ td {
     padding: 20px;
   }
 
+  .crystal-entry {
+    grid-template-columns: auto minmax(0, 1fr);
+    margin: 20px 12px 0;
+    padding: 20px;
+  }
+
+  .crystal-entry h2 {
+    font-size: 21px;
+  }
+
+  .crystal-entry-link {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+  }
+
   .industry-entry h2 {
     font-size: 22px;
   }
@@ -1561,7 +1628,7 @@ td {
     bottom: 10px;
     left: 10px;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     min-height: 58px;
     padding: 5px;
     border: 1px solid rgba(223, 228, 231, 0.92);

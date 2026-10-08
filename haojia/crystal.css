@@ -1,0 +1,402 @@
+.crystal-page {
+  background: #eef4f7;
+}
+
+.crystal-header {
+  background: rgba(245, 250, 252, 0.94);
+}
+
+.crystal-main {
+  width: min(1320px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 30px 0 80px;
+}
+
+.crystal-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  gap: 42px;
+  align-items: center;
+  min-height: 460px;
+  padding: 54px;
+  overflow: hidden;
+  border-radius: 12px;
+  color: white;
+  background:
+    linear-gradient(105deg, rgba(4, 13, 29, 0.9), rgba(4, 18, 36, 0.52)),
+    url("./assets/crystal-special-bg.webp") center / cover;
+  box-shadow: 0 24px 60px rgba(7, 18, 33, 0.2);
+}
+
+.crystal-hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+
+.crystal-hero h1 {
+  margin: 0;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.1;
+}
+
+.crystal-hero p:not(.eyebrow) {
+  max-width: 680px;
+  margin: 20px 0 0;
+  color: #d0e0ea;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.crystal-hero small {
+  display: block;
+  margin-top: 18px;
+  color: #9fb4c4;
+}
+
+.crystal-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 750;
+}
+
+.crystal-hero-gem {
+  position: relative;
+  display: grid;
+  width: 300px;
+  height: 300px;
+  margin: auto;
+  place-items: center;
+}
+
+.crystal-hero-gem span {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border: 2px solid rgba(185, 231, 255, 0.78);
+  transform: rotate(45deg);
+  box-shadow:
+    inset 0 0 40px rgba(156, 219, 255, 0.25),
+    0 0 55px rgba(81, 174, 231, 0.2);
+}
+
+.crystal-hero-gem span:nth-child(2) {
+  width: 125px;
+  height: 125px;
+  border-color: rgba(231, 181, 241, 0.82);
+  transform: rotate(18deg);
+}
+
+.crystal-hero-gem span:nth-child(3) {
+  width: 82px;
+  height: 82px;
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: rotate(70deg);
+}
+
+.crystal-hero-gem strong {
+  position: relative;
+  z-index: 2;
+  font-size: 28px;
+  letter-spacing: 0.18em;
+  text-shadow: 0 3px 20px rgba(151, 224, 255, 0.55);
+}
+
+.crystal-features {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.crystal-features article {
+  padding: 22px;
+  border: 1px solid #d8e3e8;
+  border-radius: 9px;
+  background: white;
+  box-shadow: 0 10px 28px rgba(21, 46, 66, 0.05);
+}
+
+.crystal-features article > span {
+  color: #4f89aa;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.crystal-features h2 {
+  margin: 12px 0 8px;
+  font-size: 20px;
+}
+
+.crystal-features p {
+  min-height: 66px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.crystal-features a {
+  display: inline-block;
+  margin-top: 14px;
+  color: #2f7196;
+  font-weight: 800;
+}
+
+.crystal-products-section,
+.crystal-stores-section,
+.crystal-entry-banner {
+  margin-top: 42px;
+}
+
+.crystal-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 20px;
+}
+
+.crystal-section-head h2 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.crystal-section-head > p {
+  max-width: 500px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+.crystal-products {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.crystal-product {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid #d7e2e7;
+  border-radius: 9px;
+  background: white;
+}
+
+.crystal-product-visual {
+  position: relative;
+  display: grid;
+  height: 130px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--gem) 45%, white), transparent 46%),
+    #edf4f7;
+}
+
+.crystal-product-visual::before {
+  width: 64px;
+  height: 64px;
+  border: 2px solid rgba(255, 255, 255, 0.84);
+  background: var(--gem);
+  box-shadow:
+    inset 0 0 20px rgba(255, 255, 255, 0.42),
+    0 12px 30px color-mix(in srgb, var(--gem) 38%, transparent);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.crystal-product-store {
+  margin-top: 13px;
+  color: #4f7890;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.crystal-product h3 {
+  min-height: 44px;
+  margin: 7px 0 6px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.crystal-product p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.crystal-product a {
+  min-height: 38px;
+  margin-top: auto;
+  padding-top: 13px;
+  color: #2f7196;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.crystal-stores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.crystal-store-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid #d2e1e7;
+  border-radius: 9px;
+  background: white;
+}
+
+.crystal-store-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: linear-gradient(145deg, #5e9fc1, #7a6ba8);
+  font-weight: 850;
+}
+
+.crystal-store-card strong,
+.crystal-store-card small {
+  display: block;
+}
+
+.crystal-store-card small {
+  margin-top: 4px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.crystal-store-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 8px;
+}
+
+.crystal-store-actions a,
+.crystal-store-actions button {
+  display: inline-flex;
+  min-height: 36px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbdee6;
+  border-radius: 6px;
+  color: #245d7c;
+  background: #f4fafc;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.crystal-entry-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 30px;
+  border-radius: 10px;
+  color: white;
+  background: #101d31;
+}
+
+.crystal-entry-banner h2 {
+  margin: 0;
+  font-size: 27px;
+}
+
+.crystal-entry-banner p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: #aebdca;
+}
+
+.crystal-entry-banner > a {
+  display: inline-flex;
+  min-height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 0 18px;
+  border-radius: 7px;
+  color: #102435;
+  background: #d9f0ff;
+  font-weight: 850;
+}
+
+@media (max-width: 1000px) {
+  .crystal-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .crystal-hero-gem {
+    display: none;
+  }
+
+  .crystal-features,
+  .crystal-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .crystal-main {
+    width: calc(100% - 20px);
+    padding-top: 16px;
+  }
+
+  .crystal-hero {
+    min-height: 0;
+    padding: 32px 20px;
+  }
+
+  .crystal-hero h1 {
+    font-size: 34px;
+  }
+
+  .crystal-features,
+  .crystal-products,
+  .crystal-stores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crystal-section-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .crystal-section-head > p {
+    text-align: left;
+  }
+
+  .crystal-entry-banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .crystal-entry-banner > a {
+    justify-content: center;
+  }
+
+  .crystal-bottom-nav {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}

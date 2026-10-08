@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#071221" />
+    <meta
+      name="description"
+      content="晶序水晶专场：水晶测配、自由串珠、水晶图鉴与店铺现货入口。"
+    />
+    <title>晶序水晶专场 · 好价精选</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./crystal.css" />
+  </head>
+  <body class="crystal-page" id="top">
+    <header class="site-header crystal-header">
+      <a class="brand" href="./">
+        <span class="brand-mark">省</span>
+        <span>
+          <strong>好价精选</strong>
+          <small>生活好价 · 产业定制 · 水晶专场</small>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="主导航">
+        <a href="./">生活好价</a>
+        <a href="./custom.html">产业定制</a>
+        <a class="active" href="./crystal.html">水晶专场</a>
+      </nav>
+    </header>
+
+    <main class="crystal-main">
+      <section class="crystal-hero">
+        <div class="crystal-hero-copy">
+          <p class="eyebrow">晶序 · 水晶专场</p>
+          <h1>先测配，再串珠，最后按配方去找现货。</h1>
+          <p>
+            根据星座、五行、人格或最近状态匹配水晶配方，自由选择珠径，
+            再进入晶序店铺查看成品与现货。
+          </p>
+          <div class="hero-actions">
+            <a class="primary-button" href="../">开始水晶测配</a>
+            <a class="crystal-secondary" href="#crystal-stores">查看店铺现货</a>
+          </div>
+          <small>水晶内容用于日常自我关照与仪式感，非医疗建议。</small>
+        </div>
+        <div class="crystal-hero-gem" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <strong>晶序</strong>
+        </div>
+      </section>
+
+      <section class="crystal-features">
+        <article>
+          <span>01</span>
+          <h2>1 秒水晶测配</h2>
+          <p>从星座、五行、人格或最近状态出发，得到主石与辅助石配方。</p>
+          <a href="../">进入测配</a>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>自由串珠台</h2>
+          <p>选择 6 / 8 / 10 / 12 mm 珠径，实时预览手链、颗数与组合能量。</p>
+          <a href="../">打开串珠</a>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>水晶图鉴</h2>
+          <p>按颜色、特征、场景和预算理解水晶，再决定是否靠近。</p>
+          <a href="../">查看图鉴</a>
+        </article>
+        <article>
+          <span>04</span>
+          <h2>店铺现货匹配</h2>
+          <p>根据配方匹配店铺商品，微信内可复制链接再打开拼多多。</p>
+          <a href="#crystal-stores">查看现货</a>
+        </article>
+      </section>
+
+      <section class="crystal-products-section">
+        <div class="crystal-section-head">
+          <div>
+            <p class="eyebrow">STORE MATCH</p>
+            <h2>晶序店铺现货</h2>
+          </div>
+          <p>商品库存、等级、珠径和天然特征以店铺页面为准。</p>
+        </div>
+        <div id="crystal-products" class="crystal-products"></div>
+      </section>
+
+      <section id="crystal-stores" class="crystal-stores-section">
+        <div class="crystal-section-head">
+          <div>
+            <p class="eyebrow">CRYSTAL SHOPS</p>
+            <h2>三家水晶店铺</h2>
+          </div>
+          <p>点击进入店铺；微信内打不开时，可复制链接后到浏览器打开。</p>
+        </div>
+        <div id="crystal-stores-grid" class="crystal-stores-grid"></div>
+      </section>
+
+      <section class="crystal-entry-banner">
+        <div>
+          <p class="eyebrow">FULL EXPERIENCE</p>
+          <h2>完整晶序应用仍在原入口</h2>
+          <p>测配、自由串珠、水晶图鉴、收藏和分享卡片都在晶序主应用中。</p>
+        </div>
+        <a href="../">打开完整晶序</a>
+      </section>
+    </main>
+
+    <nav class="mobile-bottom-nav crystal-bottom-nav" aria-label="手机端导航">
+      <a href="./"><span class="nav-icon">⌂</span><span>推荐</span></a>
+      <a href="#crystal-stores"><span class="nav-icon">◈</span><span>店铺</span></a>
+      <a class="active" href="./crystal.html"><span class="nav-icon">✦</span><span>水晶</span></a>
+      <a href="./custom.html"><span class="nav-icon">◇</span><span>定制</span></a>
+      <a href="../"><span class="nav-icon">↗</span><span>测配</span></a>
+    </nav>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./crystal-store-data.js"></script>
+    <script src="./crystal.js" defer></script>
+  </body>
+</html>
