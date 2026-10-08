@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XG 数字样机可视化控制台</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">XG PHYSICAL FOUNDATION</p>
+        <h1>数字样机可视化控制台</h1>
+        <p class="subtitle">FPGA 时序证据 → 老板一眼看懂的流量、安全和交付状态</p>
+      </div>
+      <div class="mode-switch" aria-label="数字样机模式">
+        <button id="mode-micro" class="mode-button active" type="button">微流控 40:1</button>
+        <button id="mode-ice" class="mode-button" type="button">内燃机 150MHz</button>
+      </div>
+    </header>
+
+    <section class="run-strip">
+      <div class="run-state">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="run-state-label">READY / 数字样机待运行</span>
+      </div>
+      <div class="run-actions">
+        <button id="play-button" class="primary-action" type="button">运行演示</button>
+        <button id="reset-button" type="button">复位</button>
+      </div>
+    </section>
+
+    <main class="dashboard-grid">
+      <section class="panel flow-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">LIVE MAPPING</p>
+            <h2 id="flow-title">MI:DCI 动态配比</h2>
+          </div>
+          <div id="ratio-badge" class="ratio-badge">40:1</div>
+        </div>
+        <div class="bar-stage">
+          <div class="bar-column">
+            <div class="bar-track">
+              <div id="bar-a" class="bar-fill bar-a"></div>
+            </div>
+            <strong id="bar-a-label">MI 主路</strong>
+            <span id="bar-a-value">9756</span>
+          </div>
+          <div class="bar-column">
+            <div class="bar-track">
+              <div id="bar-b" class="bar-fill bar-b"></div>
+            </div>
+            <strong id="bar-b-label">DCI 副路</strong>
+            <span id="bar-b-value">244</span>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div>
+            <span>比例误差</span>
+            <strong id="ratio-error">0.037523%</strong>
+          </div>
+          <div>
+            <span>控制周期</span>
+            <strong id="control-period">100 MHz</strong>
+          </div>
+          <div>
+            <span>数字通道偏斜</span>
+            <strong id="channel-skew">0 clocks</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel waveform-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">VIVADO XSIM REPLAY</p>
+            <h2>真实 VCD 波形回放</h2>
+          </div>
+          <span id="time-readout" class="time-readout">0 ns</span>
+        </div>
+        <canvas id="waveform-canvas" width="1400" height="460"></canvas>
+        <div class="scrub-wrap">
+          <input id="scrubber" type="range" min="0" max="1000" value="0" aria-label="回放进度">
+          <div class="scrub-labels">
+            <span>0</span>
+            <span id="duration-label">--</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel safety-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">PHYSICAL SHIELD</p>
+            <h2>物理安全罩</h2>
+          </div>
+        </div>
+        <div id="safety-shield" class="safety-shield safe">
+          <div class="shield-core">
+            <span id="shield-state">SAFE</span>
+            <small id="shield-caption">WNS 为正，安全门待机</small>
+          </div>
+        </div>
+        <div class="status-stack">
+          <div class="status-line">
+            <span>WNS</span>
+            <strong id="wns-value">+1.848 ns</strong>
+          </div>
+          <div class="status-line">
+            <span>DRC</span>
+            <strong id="drc-value">0 Checks</strong>
+          </div>
+          <div class="status-line">
+            <span>Fmax / 时钟目标</span>
+            <strong id="fmax-value">100 MHz</strong>
+          </div>
+          <div class="status-line">
+            <span>资源占用</span>
+            <strong id="resource-value">LUT 2.28% / DSP 0</strong>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel event-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">EVENT TRACE</p>
+            <h2>事件解释</h2>
+          </div>
+          <span id="event-status" class="event-status">等待演示</span>
+        </div>
+        <div id="event-list" class="event-list"></div>
+      </section>
+    </main>
+
+    <footer class="sales-strip">
+      <p>
+        我们不需要客户懂 FPGA，只要他们能看懂红绿灯和流量动画。
+        这就是前端 IP 授权的降维交付形态。
+      </p>
+      <span>数字样机只证明前端 IP，真实机械、流体、ECU 和工艺验证由客户完成。</span>
+    </footer>
+  </div>
+
+  <div id="alarm-flash" class="alarm-flash" aria-hidden="true"></div>
+
+  <script src="data/dashboard-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
