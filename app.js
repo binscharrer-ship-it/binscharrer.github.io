@@ -3446,7 +3446,7 @@
       return 1 - hueDifference / 180;
     }
 
-    bestProductMatchForStore(store, recommendedCrystal, exactOnly = false) {
+    bestProductMatchForStore(store, recommendedCrystal, exactOnly = false, force = false) {
       let best = null;
       STORE_DATA.products
         .filter((product) => product.storeId === store.id)
@@ -3465,7 +3465,7 @@
             const similarity = exact
               ? 1
               : energySimilarity * 0.72 + colorSimilarity * 0.28;
-            if (!exact && similarity < 0.86) return;
+            if (!exact && !force && similarity < 0.86) return;
             if (!best || similarity > best.similarity) {
               best = {
                 store,
@@ -3473,6 +3473,7 @@
                 candidate,
                 similarity,
                 exact,
+                fallback: !exact && force,
               };
             }
           });
@@ -3488,8 +3489,12 @@
             this.bestProductMatchForStore(store, item.crystal, true),
           ).filter(Boolean);
           if (exactMatches.length) return exactMatches;
-          return SHOP_LINKS.map((store) =>
+          const similarMatches = SHOP_LINKS.map((store) =>
             this.bestProductMatchForStore(store, item.crystal),
+          ).filter(Boolean);
+          if (similarMatches.length) return similarMatches;
+          return SHOP_LINKS.map((store) =>
+            this.bestProductMatchForStore(store, item.crystal, false, true),
           ).filter(Boolean);
         })(),
       }));
@@ -3528,13 +3533,15 @@
                     ${group.matches
                       .map(
                         (match) => `
-                          <a class="store-match-option" href="${escapeHtml(match.store.url)}" target="_blank" rel="noopener noreferrer">
+                          <a class="store-match-option" href="${escapeHtml(match.product.url || match.store.url)}" target="_blank" rel="noopener noreferrer">
                             <span class="store-match-store">${escapeHtml(match.store.name)}</span>
                             <strong>${escapeHtml(match.product.name)}</strong>
                             <small>${
                               match.exact
                                 ? "同类水晶款，进店确认库存"
-                                : `与${escapeHtml(group.item.crystal.name)}情绪力量相近`
+                                : match.fallback
+                                  ? `当前能量最接近款，与${escapeHtml(group.item.crystal.name)}方向相近`
+                                  : `与${escapeHtml(group.item.crystal.name)}情绪力量相近`
                             }</small>
                           </a>
                         `,

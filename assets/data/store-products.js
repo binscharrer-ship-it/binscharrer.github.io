@@ -24,19 +24,19 @@ window.CRYSTAL_STORE_DATA = {
       storeId: "yunlang",
       name: "天然红胶花水晶爱心耳扣",
       crystalIds: ["red-flower"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=991545358833"
     },
     {
       storeId: "yunlang",
       name: "天然蜜蜡圆珠耳环",
       crystalIds: ["market-yellow-18"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=1009355174864"
     },
     {
       storeId: "yunlang",
       name: "蓝水翡翠镂空雕花套链",
       crystalIds: ["market-green-19"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=992556900599"
     },
     {
       storeId: "yunlang",
@@ -54,13 +54,13 @@ window.CRYSTAL_STORE_DATA = {
       storeId: "yunlang",
       name: "天然白水晶随形方牌耳坠",
       crystalIds: ["clear"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=992178324688"
     },
     {
       storeId: "yunlang",
       name: "天然紫水晶耳钩",
       crystalIds: ["amethyst"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=992568114827"
     },
     {
       storeId: "yunlang",
@@ -72,7 +72,7 @@ window.CRYSTAL_STORE_DATA = {
       storeId: "yunlang",
       name: "天然和田玉碧玉蛋面戒指",
       crystalIds: ["market-white-13", "market-green-19"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=wKhpQIYh7K"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=992916483453"
     },
     {
       storeId: "yaobaohai",
@@ -96,19 +96,19 @@ window.CRYSTAL_STORE_DATA = {
       storeId: "yaobaohai",
       name: "天然粉水晶多宝可爱粉嫩手串",
       crystalIds: ["rose"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=qIBZLgJJQu"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=1011996212635"
     },
     {
       storeId: "yaobaohai",
       name: "和田玉小冰豆耳饰",
       crystalIds: ["market-white-13"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=qIBZLgJJQu"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=1011996549549"
     },
     {
       storeId: "yaobaohai",
       name: "天然紫阿塞紫骸骨手串紫水晶",
       crystalIds: ["amethyst", "market-purple-11"],
-      url: "https://mobile.yangkeduo.com/mall_page.html?ps=qIBZLgJJQu"
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=1011996797112"
     }
   ]
 };
