@@ -23,6 +23,12 @@ const ui = {
   modeNoise: document.getElementById("mode-noise"),
   dashboardGrid: document.querySelector(".dashboard-grid"),
   noisePanel: document.getElementById("noise-embed-panel"),
+  noiseFrame: document.getElementById("noise-embed-frame"),
+  noiseLiveStrip: document.getElementById("noise-live-strip"),
+  noiseLiveShield: document.getElementById("noise-live-shield"),
+  noiseLiveResponse: document.getElementById("noise-live-response"),
+  noiseLiveEvents: document.getElementById("noise-live-events"),
+  noiseLiveEvidence: document.getElementById("noise-live-evidence"),
   flowTitle: document.getElementById("flow-title"),
   ratioBadge: document.getElementById("ratio-badge"),
   barA: document.getElementById("bar-a"),
@@ -407,6 +413,25 @@ ui.resetButton.addEventListener("click", () => {
 ui.modeMicro.addEventListener("click", () => setMode("microfluidic"));
 ui.modeIce.addEventListener("click", () => setMode("ice"));
 ui.modeNoise.addEventListener("click", () => setMode("noise"));
+window.addEventListener("message", (event) => {
+  if (!event.data || event.data.type !== "XG_NOISE_STATE") return;
+  if (event.source !== ui.noiseFrame.contentWindow) return;
+
+  const latched = Boolean(event.data.latched);
+  ui.noiseLiveStrip.classList.toggle("latched", latched);
+  ui.noiseLiveShield.textContent = latched ? "LATCHED" : "SAFE";
+  ui.noiseLiveResponse.textContent = `${Number(event.data.responseNs || 0).toFixed(1)} ns`;
+  ui.noiseLiveEvents.textContent = String((event.data.events || []).length);
+  ui.noiseLiveEvidence.textContent = event.data.evidenceLevel || "INTERACTIVE_MODEL";
+  state.noiseEvents = event.data.events || [];
+
+  ui.safetyShield.classList.toggle("alarm", latched);
+  ui.shieldState.textContent = latched ? "ALARM" : "SAFE";
+  ui.shieldCaption.textContent = latched
+    ? "工业噪声触发单向故障锁存"
+    : "工业噪声参数未触发锁存";
+  ui.statusDot.className = `status-dot ${latched ? "alarm" : ""}`;
+});
 ui.scrubber.addEventListener("input", (event) => {
   state.playing = false;
   cancelAnimationFrame(state.animationFrame);

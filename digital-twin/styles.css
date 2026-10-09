@@ -171,6 +171,42 @@ h2 {
   background: #f7f9fc;
 }
 
+.noise-live-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: #0f1b28;
+}
+
+.noise-live-strip span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.noise-live-strip strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.noise-live-strip.latched {
+  background: #351111;
+  box-shadow: inset 0 0 0 2px rgba(255, 95, 87, 0.55);
+}
+
+.noise-live-strip.latched strong {
+  color: var(--red);
+}
+
+@media (max-width: 900px) {
+  .noise-live-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .panel {
   border: 1px solid var(--line);
   background: var(--surface);
