@@ -94,7 +94,7 @@ function renderSummary() {
   const source = currentSource();
   const metrics = source.metrics;
   ui.sourceName.textContent = source.name;
-  ui.sourceEvidence.textContent = state.series.evidenceLevel;
+  ui.sourceEvidence.textContent = `INTERACTIVE_MODEL / base=${source.evidence_level}`;
   ui.scenarioCount.textContent = String(metrics.scenarios ?? metrics.noise_scenarios ?? 256);
   ui.autoRecovery.textContent = String(metrics.auto_recovery ?? 0);
   ui.metricLimit.textContent = String(source.metric_limit);
