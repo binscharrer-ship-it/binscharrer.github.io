@@ -46,6 +46,20 @@ industrial-noise-lab.html
 - Bit Flip
 - UART Loss
 
+参数范围：
+
+```text
+Clock Jitter          0-500 ps
+Jitter Frequency      0.1-100 MHz
+Power Bounce          0-200% digital amplitude
+Bounce Frequency      0.1-100 MHz
+Bit Flip Probability  0-100%
+UART Loss Probability 0-100%
+Random Seed           integer
+```
+
+支持当前参数导出 JSON/CSV，并提供完整的 10,000 场景 CSV/JSON 下载。
+
 数据由以下脚本生成：
 
 ```powershell

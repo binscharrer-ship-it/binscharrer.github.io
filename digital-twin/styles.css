@@ -154,6 +154,23 @@ h2 {
   gap: 14px;
 }
 
+.hidden {
+  display: none;
+}
+
+.noise-embed-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.noise-embed-panel iframe {
+  display: block;
+  width: 100%;
+  min-height: 1180px;
+  border: 0;
+  background: #f7f9fc;
+}
+
 .panel {
   border: 1px solid var(--line);
   background: var(--surface);
@@ -472,4 +489,3 @@ h2 {
     height: 260px;
   }
 }
-

@@ -20,6 +20,9 @@ const ui = {
   resetButton: document.getElementById("reset-button"),
   modeMicro: document.getElementById("mode-micro"),
   modeIce: document.getElementById("mode-ice"),
+  modeNoise: document.getElementById("mode-noise"),
+  dashboardGrid: document.querySelector(".dashboard-grid"),
+  noisePanel: document.getElementById("noise-embed-panel"),
   flowTitle: document.getElementById("flow-title"),
   ratioBadge: document.getElementById("ratio-badge"),
   barA: document.getElementById("bar-a"),
@@ -79,9 +82,18 @@ function setMode(mode) {
   cancelAnimationFrame(state.animationFrame);
   ui.modeMicro.classList.toggle("active", mode === "microfluidic");
   ui.modeIce.classList.toggle("active", mode === "ice");
+  ui.modeNoise.classList.toggle("active", mode === "noise");
+  ui.dashboardGrid.classList.toggle("hidden", mode === "noise");
+  ui.noisePanel.classList.toggle("hidden", mode !== "noise");
   ui.playButton.textContent = "运行演示";
   ui.statusDot.className = "status-dot";
   ui.runStateLabel.textContent = "READY / 数字样机待运行";
+
+  if (mode === "noise") {
+    ui.runStateLabel.textContent = "NOISE LAB / 数字噪声注入";
+    ui.eventStatus.textContent = "噪声注入";
+    return;
+  }
 
   const meta = currentData().meta;
   ui.wnsValue.textContent = `+${meta.post_route_wns_ns} ns`;
@@ -322,6 +334,7 @@ function drawWaveform() {
 }
 
 function updateFrame(position) {
+  if (state.mode === "noise") return;
   state.position = Math.max(0, Math.min(1, position));
   const data = currentData();
   const timeNs = state.position * data.duration_ns;
@@ -351,6 +364,10 @@ function animationLoop(timestamp) {
 }
 
 function startOrPause() {
+  if (state.mode === "noise") {
+    ui.runStateLabel.textContent = "NOISE LAB / 参数在噪声模块内调整";
+    return;
+  }
   if (state.playing) {
     state.playing = false;
     cancelAnimationFrame(state.animationFrame);
@@ -389,6 +406,7 @@ ui.resetButton.addEventListener("click", () => {
 });
 ui.modeMicro.addEventListener("click", () => setMode("microfluidic"));
 ui.modeIce.addEventListener("click", () => setMode("ice"));
+ui.modeNoise.addEventListener("click", () => setMode("noise"));
 ui.scrubber.addEventListener("input", (event) => {
   state.playing = false;
   cancelAnimationFrame(state.animationFrame);

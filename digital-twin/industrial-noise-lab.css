@@ -43,6 +43,15 @@ input {
   padding-bottom: 20px;
 }
 
+.embedded .noise-header {
+  display: none;
+}
+
+.embedded .noise-shell {
+  width: calc(100% - 24px);
+  padding-top: 18px;
+}
+
 .eyebrow {
   margin: 0 0 6px;
   color: var(--amber);
@@ -108,7 +117,9 @@ h2 {
 .summary-panel,
 .wave-panel,
 .metric-panel,
-.event-panel {
+.event-panel,
+.control-panel,
+.response-strip {
   border: 1px solid var(--line);
   background: var(--panel);
   border-radius: 8px;
@@ -143,8 +154,103 @@ h2 {
 
 .wave-panel,
 .metric-panel,
-.event-panel {
+.event-panel,
+.control-panel,
+.response-strip {
   padding: 18px;
+}
+
+.control-panel {
+  margin-top: 14px;
+}
+
+.control-note {
+  max-width: 360px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.control-grid label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.control-grid label span {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.control-grid input[type="range"] {
+  width: 100%;
+  accent-color: var(--blue);
+}
+
+.control-grid input[type="number"] {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.control-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.control-actions button,
+.control-actions a {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+#apply-noise {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.response-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.response-strip span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.response-strip strong {
+  font-size: 24px;
+}
+
+.response-strip.latched strong {
+  color: var(--red);
 }
 
 .panel-head {
@@ -242,7 +348,9 @@ h2 {
 @media (max-width: 900px) {
   .source-tabs,
   .summary-grid,
-  .workbench {
+  .workbench,
+  .control-grid,
+  .response-strip {
     grid-template-columns: 1fr;
   }
 
