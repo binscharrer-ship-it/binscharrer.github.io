@@ -219,6 +219,10 @@
   transform: rotate(45deg);
 }
 
+.crystal-product-visual:has(img)::before {
+  display: none;
+}
+
 .crystal-product-store {
   margin-top: 13px;
   color: #4f7890;
