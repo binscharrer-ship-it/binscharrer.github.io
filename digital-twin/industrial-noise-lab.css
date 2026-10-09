@@ -1,0 +1,265 @@
+:root {
+  --ink: #17202b;
+  --muted: #647286;
+  --line: #d8dee7;
+  --paper: #f7f9fc;
+  --panel: #ffffff;
+  --blue: #1f6feb;
+  --amber: #d97706;
+  --red: #c2413b;
+  --green: #177a55;
+  --violet: #7551b5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.noise-shell {
+  width: min(1600px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+}
+
+.noise-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 20px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--amber);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: clamp(30px, 4vw, 56px);
+  line-height: 1;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 21px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+
+.back-link,
+.source-tab {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
+  padding: 11px 16px;
+  text-decoration: none;
+}
+
+.source-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.source-tab {
+  cursor: pointer;
+}
+
+.source-tab.active {
+  border-color: var(--blue);
+  color: #fff;
+  background: var(--blue);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.summary-panel,
+.wave-panel,
+.metric-panel,
+.event-panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 8px;
+}
+
+.summary-panel {
+  padding: 16px;
+}
+
+.summary-panel p,
+.summary-panel span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.summary-panel p {
+  margin-bottom: 8px;
+}
+
+.summary-panel strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 25px;
+}
+
+.workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.7fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.wave-panel,
+.metric-panel,
+.event-panel {
+  padding: 18px;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cursor-label {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 7px 10px;
+  color: var(--blue);
+  font-variant-numeric: tabular-nums;
+}
+
+#noise-canvas {
+  width: 100%;
+  height: 500px;
+  display: block;
+  border: 1px solid #253447;
+  border-radius: 5px;
+  background: #0b1420;
+}
+
+#noise-scrubber {
+  width: 100%;
+  margin-top: 14px;
+  accent-color: var(--blue);
+}
+
+.metric-list {
+  margin: 0;
+}
+
+.metric-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.metric-list dt {
+  color: var(--muted);
+}
+
+.metric-list dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.boundary-note {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.event-panel {
+  margin-top: 14px;
+}
+
+.noise-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  color: var(--muted);
+}
+
+.noise-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.noise-legend i {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.noise-legend .clock { background: var(--amber); }
+.noise-legend .power { background: var(--red); }
+.noise-legend .bit { background: var(--violet); }
+.noise-legend .uart { background: var(--blue); }
+.noise-legend .metric { background: var(--green); }
+
+@media (max-width: 900px) {
+  .source-tabs,
+  .summary-grid,
+  .workbench {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .workbench {
+    display: grid;
+  }
+
+  .noise-header {
+    display: block;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 18px;
+  }
+}

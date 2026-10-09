@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XG 工业噪声实验室</title>
+  <link rel="stylesheet" href="industrial-noise-lab.css">
+</head>
+<body>
+  <main class="noise-shell">
+    <header class="noise-header">
+      <div>
+        <p class="eyebrow">DIGITAL NOISE INJECTION</p>
+        <h1>工业噪声实验室</h1>
+        <p class="subtitle">同一套确定性噪声矩阵，回放到 FC-002、微流控和内燃机数字样机。</p>
+      </div>
+      <a class="back-link" href="index.html">返回数字孪生控制台</a>
+    </header>
+
+    <nav id="noise-source-tabs" class="source-tabs" aria-label="数字样机选择"></nav>
+
+    <section class="summary-grid">
+      <article class="summary-panel">
+        <p>数字样机</p>
+        <strong id="source-name">--</strong>
+        <span id="source-evidence">--</span>
+      </article>
+      <article class="summary-panel">
+        <p>噪声场景</p>
+        <strong id="scenario-count">--</strong>
+        <span>确定性生成</span>
+      </article>
+      <article class="summary-panel">
+        <p>自动恢复</p>
+        <strong id="auto-recovery">--</strong>
+        <span>必须为 0</span>
+      </article>
+      <article class="summary-panel">
+        <p>指标上限</p>
+        <strong id="metric-limit">--</strong>
+        <span id="metric-label">--</span>
+      </article>
+    </section>
+
+    <section class="workbench">
+      <div class="wave-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">VIRTUAL SCOPE</p>
+            <h2>数字噪声波形</h2>
+          </div>
+          <span id="cursor-label" class="cursor-label">0 ns</span>
+        </div>
+        <canvas id="noise-canvas" width="1600" height="720"></canvas>
+        <input id="noise-scrubber" type="range" min="0" max="255" value="0" aria-label="噪声时间轴">
+      </div>
+
+      <aside class="metric-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">MODEL BOUNDARY</p>
+            <h2>噪声指标</h2>
+          </div>
+        </div>
+        <dl id="metric-list" class="metric-list"></dl>
+        <p class="boundary-note">
+          数字噪声注入只验证前端 IP 与模型鲁棒性。湿实验、真实流体、
+          发动机、ECU、执行器、线束和适航认证由客户或 ODM 完成。
+        </p>
+      </aside>
+    </section>
+
+    <section class="event-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">NOISE SOURCES</p>
+          <h2>注入源</h2>
+        </div>
+      </div>
+      <div class="noise-legend">
+        <span><i class="clock"></i>Clock Jitter</span>
+        <span><i class="power"></i>Power Bounce</span>
+        <span><i class="bit"></i>Bit Flip</span>
+        <span><i class="uart"></i>UART Loss</span>
+        <span><i class="metric"></i>Model Metric</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/industrial-noise-data.js"></script>
+  <script src="industrial-noise-lab.js"></script>
+</body>
+</html>
