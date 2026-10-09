@@ -25,7 +25,7 @@ function renderProducts() {
       card.className = "crystal-product";
       card.innerHTML = `
         <div class="crystal-product-visual" style="--gem:${product.color}">
-          ${product.image ? `<img src="${product.image}" alt="${product.crystal}" loading="lazy" style="position:relative;z-index:2;width:100%;height:100%;object-fit:cover" />` : ""}
+          ${product.image ? `<img src="${product.image}" alt="${product.crystal}" loading="lazy" style="position:relative;z-index:2;width:100%;height:100%;padding:10px;box-sizing:border-box;object-fit:contain" />` : ""}
         </div>
         <span class="crystal-product-store">${store?.name || "晶序店铺"}</span>
         <h3>${product.name}</h3>
