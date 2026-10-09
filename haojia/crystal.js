@@ -24,7 +24,9 @@ function renderProducts() {
       const store = storeById[product.storeId];
       card.className = "crystal-product";
       card.innerHTML = `
-        <div class="crystal-product-visual" style="--gem:${product.color}"></div>
+        <div class="crystal-product-visual" style="--gem:${product.color}">
+          ${product.image ? `<img src="${product.image}" alt="${product.crystal}" loading="lazy" style="position:relative;z-index:2;width:100%;height:100%;object-fit:cover" />` : ""}
+        </div>
         <span class="crystal-product-store">${store?.name || "晶序店铺"}</span>
         <h3>${product.name}</h3>
         <p>${product.crystal} · 颜色与天然特征以店铺页面为准</p>

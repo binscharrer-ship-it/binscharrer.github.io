@@ -25,6 +25,7 @@ window.XG_CRYSTAL_DATA = {
       name: "天然红胶花水晶爱心耳扣",
       crystal: "红胶花",
       color: "#c76c67",
+      image: "../assets/beads/core-gallery/red-flower-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=991545358833",
     },
     {
@@ -32,6 +33,7 @@ window.XG_CRYSTAL_DATA = {
       name: "天然蜜蜡圆珠耳环",
       crystal: "蜜蜡",
       color: "#d9a43f",
+      image: "../assets/beads/core-gallery/yellow-flower-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=1009355174864",
     },
     {
@@ -39,6 +41,7 @@ window.XG_CRYSTAL_DATA = {
       name: "蓝水翡翠镂空雕花套链",
       crystal: "翡翠",
       color: "#3e8f82",
+      image: "../assets/beads/core-gallery/green-phantom-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=992556900599",
     },
     {
@@ -46,6 +49,7 @@ window.XG_CRYSTAL_DATA = {
       name: "天然白水晶随形方牌耳坠",
       crystal: "白水晶",
       color: "#b9d6dc",
+      image: "../assets/beads/core-gallery/clear-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=992178324688",
     },
     {
@@ -53,6 +57,7 @@ window.XG_CRYSTAL_DATA = {
       name: "天然紫水晶耳钩",
       crystal: "紫水晶",
       color: "#866fae",
+      image: "../assets/beads/core-gallery/amethyst-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=992568114827",
     },
     {
@@ -60,6 +65,7 @@ window.XG_CRYSTAL_DATA = {
       name: "天然粉水晶多宝可爱粉嫩手串",
       crystal: "粉水晶",
       color: "#d38daa",
+      image: "../assets/beads/core-gallery/rose-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=1011996212635",
     },
     {
@@ -67,6 +73,7 @@ window.XG_CRYSTAL_DATA = {
       name: "和田玉小冰豆耳饰",
       crystal: "和田玉",
       color: "#d7d8bd",
+      image: "../assets/beads/core-gallery/moonstone-0.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=1011996549549",
     },
     {
@@ -74,6 +81,7 @@ window.XG_CRYSTAL_DATA = {
       name: "天然紫阿塞紫骸骨手串紫水晶",
       crystal: "紫水晶",
       color: "#745b9d",
+      image: "../assets/beads/core-gallery/amethyst-1.jpg",
       url: "https://mobile.yangkeduo.com/goods.html?goods_id=1011996797112",
     },
   ],
