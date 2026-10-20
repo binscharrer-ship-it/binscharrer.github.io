@@ -13,6 +13,12 @@ const categoryGroups = [
   "母婴用品",
   "个护美妆",
   "服饰鞋包",
+  "鞋靴",
+  "厨房电器",
+  "健康护理",
+  "汽车用品",
+  "数码配件",
+  "饰品",
   "其他好物",
 ];
 
@@ -27,6 +33,9 @@ const compactNumber = new Intl.NumberFormat("zh-CN", {
   notation: "compact",
   maximumFractionDigits: 1,
 });
+
+const brandPattern =
+  /骆驼|飞利浦|南极人|恒源祥|洁丽雅|蓝月亮|立白|维达|心相印|苏菲|护舒宝|七度空间|高露洁|云南白药|冷酸灵|舒肤佳|潘婷|海飞丝|飘柔|力士|多芬|妮维雅|大宝|百雀羚|自然堂|珀莱雅|韩束|欧莱雅|清风|洁柔|得宝|超能|奥妙|汰渍|滴露|威露士|六神|隆力奇|凡士林|曼秀雷敦|海天|李锦记|安踏|美的|欧姆龙|小米|农夫山泉|绿联|倍思|中国黄金|周六福/;
 
 const elements = {
   grid: document.querySelector("#product-grid"),
@@ -85,6 +94,15 @@ function normalizeText(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function dealLabel(item) {
+  const coupon = Number(item.coupon || 0);
+  const price = Number(item.price || 0);
+  const original = Number(item.original_price || 0);
+  if (coupon > 0 && coupon < price) return `券 ${currency.format(coupon)}`;
+  if (original > price) return `直降 ${currency.format(original - price)}`;
+  return "今日好价";
+}
+
 function productGroup(item) {
   if (item.display_group) return item.display_group;
   const title = String(item.title || "");
@@ -101,6 +119,7 @@ function productGroup(item) {
       "个护美妆",
       /卫生巾|安心裤|护理|洗面|洁面|面膜|护肤|精华|乳液|面霜|身体乳|洗发|护发|防晒|卸妆|彩妆|口红|香水|眼影|粉底|沐浴|牙膏|湿巾|护手|精油|衣领净/,
     ],
+    ["鞋靴", /运动鞋|休闲鞋|板鞋|老爹鞋|拖鞋|徒步鞋|登山鞋|靴/],
     ["服饰鞋包", /袜|女装|男装|上衣|外套|裤|鞋|包/],
     ["居家日用", /卷纸|卫生纸|纸巾|洗衣|清洁|家用|家庭装|收纳|浴巾|家纺/],
   ];
@@ -117,6 +136,13 @@ function filteredProducts() {
     if (state.category && productGroup(item) !== state.category) return false;
     if (state.quick === "coupon" && !(Number(item.coupon) > 0)) return false;
     if (state.quick === "favorites" && !state.favorites.has(item.id)) return false;
+    if (state.quick === "ordered" && !(Number(item.order_count) > 0)) return false;
+    if (state.quick === "brand") {
+      const hasBrand = Object.prototype.hasOwnProperty.call(item, "brand")
+        ? Boolean(item.brand)
+        : brandPattern.test(String(item.title || ""));
+      if (!hasBrand) return false;
+    }
     if (!query) return true;
     const haystack = [
       item.title,
@@ -130,7 +156,10 @@ function filteredProducts() {
   });
 
   const sorters = {
-    score: () => 0,
+    score: (a, b) =>
+      Number(b.order_count || 0) - Number(a.order_count || 0) ||
+      Number(b.hot_score || 0) - Number(a.hot_score || 0) ||
+      Number(b.sales_30d || 0) - Number(a.sales_30d || 0),
     sales: (a, b) => b.sales_30d - a.sales_30d,
     coupon: (a, b) => b.coupon - a.coupon,
     "price-asc": (a, b) => a.price - b.price,
@@ -173,6 +202,8 @@ function updateQuickFilters() {
     ["recommend", "猜你喜欢"],
     ["hot", "今日热榜"],
     ["coupon", "有券专区"],
+    ["ordered", "真实成交"],
+    ["brand", "大牌好物"],
     ["favorites", `我的收藏 ${state.favorites.size}`],
   ];
   elements.quickFilters.replaceChildren();
@@ -233,13 +264,19 @@ function openProduct(item) {
   elements.dialogImage.src = imageSource(item.image_url);
   elements.dialogImage.alt = item.title;
   elements.dialogCategory.textContent = productGroup(item);
-  elements.dialogSales.textContent = `30日销量 ${compactNumber.format(item.sales_30d || 0)}`;
+  const orderNote = Number(item.order_count) > 0 ? " · 已有成交" : "";
+  elements.dialogSales.textContent =
+    `30日销量 ${compactNumber.format(item.sales_30d || 0)}${orderNote}`;
   elements.dialogTitle.textContent = item.title;
   elements.dialogPrice.textContent = currency.format(item.price || 0);
   elements.dialogOriginalPrice.textContent =
     item.original_price > item.price ? currency.format(item.original_price) : "";
-  elements.dialogCoupon.textContent =
-    item.coupon > 0 ? `优惠券 ${currency.format(item.coupon)}` : "暂无优惠券";
+  const validCoupon = item.coupon > 0 && item.coupon < item.price;
+  elements.dialogCoupon.textContent = validCoupon
+    ? `优惠券 ${currency.format(item.coupon)}`
+    : item.original_price > item.price
+      ? `已直降 ${currency.format(item.original_price - item.price)}`
+      : "今日好价";
   elements.dialogTags.textContent = (item.tags || []).slice(0, 5).join(" · ");
   elements.dialogBuy.href = item.url;
   updateDialogFavorite();
@@ -278,11 +315,18 @@ function renderMetrics(items) {
   elements.hotCount.textContent = String(
     active.filter((item) => Number(item.coupon) > 0).length,
   );
-  const topCoupon = active.reduce(
-    (highest, item) => Math.max(highest, Number(item.coupon) || 0),
+  const topSaving = active.reduce(
+    (highest, item) =>
+      Math.max(
+        highest,
+        Math.max(
+          0,
+          Number(item.original_price || 0) - Number(item.price || 0),
+        ),
+      ),
     0,
   );
-  elements.topCoupon.textContent = `¥${topCoupon.toFixed(topCoupon % 1 ? 2 : 0)}`;
+  elements.topCoupon.textContent = `¥${topSaving.toFixed(topSaving % 1 ? 2 : 0)}`;
 }
 
 function renderHeroShowcase(items) {
@@ -291,7 +335,9 @@ function renderHeroShowcase(items) {
     .filter((item) => (!item.status || item.status === "active") && item.image_url)
     .sort(
       (a, b) =>
-        Number(b.coupon || 0) - Number(a.coupon || 0) ||
+        Number(b.order_count || 0) - Number(a.order_count || 0) ||
+        Number(b.original_price || 0) - Number(b.price || 0) -
+          (Number(a.original_price || 0) - Number(a.price || 0)) ||
         Number(b.sales_30d || 0) - Number(a.sales_30d || 0),
     );
   const featured = [];
@@ -325,7 +371,7 @@ function renderHeroShowcase(items) {
         <strong>${item.title}</strong>
         <div class="hero-feature-price">
           <b>${currency.format(item.price || 0)}</b>
-          ${item.coupon > 0 ? `<small>券 ${currency.format(item.coupon)}</small>` : ""}
+          <small>${dealLabel(item)}</small>
         </div>
         <span class="hero-feature-cta">立即去看看 →</span>
       </div>
@@ -407,7 +453,7 @@ function buildCard(item) {
   }
 
   const coupon = card.querySelector(".coupon-badge");
-  coupon.textContent = item.coupon > 0 ? `券 ${currency.format(item.coupon)}` : "暂无券";
+  coupon.textContent = dealLabel(item);
   card.querySelector(".sales-text").textContent =
     `30日 ${compactNumber.format(item.sales_30d || 0)}`;
   card.querySelector(".rating-text").textContent = item.rating
@@ -415,6 +461,12 @@ function buildCard(item) {
     : "";
 
   const tagList = card.querySelector(".tag-list");
+  if (Number(item.order_count) > 0) {
+    const orderBadge = document.createElement("span");
+    orderBadge.className = "order-badge";
+    orderBadge.textContent = "有人买过";
+    tagList.append(orderBadge);
+  }
   (item.tags || []).slice(0, 3).forEach((tag) => {
     const chip = document.createElement("span");
     chip.textContent = tag;
@@ -473,6 +525,8 @@ elements.search.addEventListener("input", (event) => {
 
 elements.category.addEventListener("change", (event) => {
   state.category = event.target.value;
+  state.quick = "recommend";
+  updateQuickFilters();
   updateCategoryStrip(state.items);
   render();
 });
@@ -481,7 +535,9 @@ elements.categoryStrip.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-category]");
   if (!button) return;
   state.category = button.dataset.category || "";
+  state.quick = "recommend";
   elements.category.value = state.category;
+  updateQuickFilters();
   updateCategoryStrip(state.items);
   render();
 });

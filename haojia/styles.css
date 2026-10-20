@@ -750,6 +750,12 @@ main {
   font-size: 11px;
 }
 
+.tag-list .order-badge {
+  color: #8a321f;
+  background: #ffe3d7;
+  font-weight: 800;
+}
+
 .deal-button {
   margin-top: auto;
   color: white;
@@ -2475,5 +2481,20 @@ body {
 
   .hero-feature-cta {
     font-size: 9px;
+  }
+
+  .quick-filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .quick-filters button {
+    width: 100%;
+    min-width: 0;
+    padding: 0 8px;
   }
 }
