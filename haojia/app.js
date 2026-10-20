@@ -137,6 +137,9 @@ function filteredProducts() {
     if (state.quick === "coupon" && !(Number(item.coupon) > 0)) return false;
     if (state.quick === "favorites" && !state.favorites.has(item.id)) return false;
     if (state.quick === "ordered" && !(Number(item.order_count) > 0)) return false;
+    if (state.quick === "winter" && !(item.tags || []).includes("秋冬")) {
+      return false;
+    }
     if (state.quick === "compare" && !item.compare_group) return false;
     if (state.quick === "large" && !(Number(item.price) >= 199)) return false;
     if (state.quick === "brand") {
@@ -160,6 +163,8 @@ function filteredProducts() {
   const sorters = {
     score: (a, b) =>
       Number(b.order_count || 0) - Number(a.order_count || 0) ||
+      Number((b.tags || []).includes("秋冬")) -
+        Number((a.tags || []).includes("秋冬")) ||
       Number(b.hot_score || 0) - Number(a.hot_score || 0) ||
       Number(b.sales_30d || 0) - Number(a.sales_30d || 0),
     sales: (a, b) => b.sales_30d - a.sales_30d,
@@ -206,6 +211,7 @@ function updateQuickFilters() {
     ["hot", "今日热榜"],
     ["coupon", "有券专区"],
     ["ordered", "真实成交"],
+    ["winter", "秋冬精选"],
     ["compare", "同款比价"],
     ["large", "大件好物"],
     ["brand", "大牌好物"],
@@ -345,6 +351,8 @@ function renderHeroShowcase(items) {
     .sort(
       (a, b) =>
         Number(b.order_count || 0) - Number(a.order_count || 0) ||
+        Number((b.tags || []).includes("秋冬")) -
+          Number((a.tags || []).includes("秋冬")) ||
         Number(b.original_price || 0) - Number(b.price || 0) -
           (Number(a.original_price || 0) - Number(a.price || 0)) ||
         Number(b.sales_30d || 0) - Number(a.sales_30d || 0),
