@@ -35,35 +35,35 @@
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">每日严选 · 优惠直达</p>
-          <h1>不写“全网最低”，只标真实到手价</h1>
+          <div class="hero-editorial-label">
+            <span>XG SELECT</span>
+            <span>每日编辑精选</span>
+          </div>
+          <h1>今天值得买的好东西，<em>先看这几件。</em></h1>
+          <p class="hero-text">
+            从高销量与高优惠商品中，挑出更适合直接下单的日常好货。
+            不写“全网最低”，只标真实券后价。
+          </p>
           <div class="hero-actions">
-            <a class="primary-button" href="#deals">查看今日优惠</a>
+            <a class="primary-button" href="#deals">看今日精选</a>
+            <a class="hero-secondary-button" href="#quick-filters">有券专区</a>
+          </div>
+          <div class="hero-trust-row">
+            <span>真实券后价</span>
+            <span>每日更新</span>
+            <span>官方推广链接</span>
           </div>
         </div>
-        <div class="hero-panel" aria-label="今日优惠概览">
-          <div class="panel-head">
-            <span>今日优惠概览</span>
-            <span class="live-dot">LIVE</span>
-          </div>
-          <div class="metric-row">
-            <div>
-              <strong id="hero-product-count">0</strong>
-              <span>今日好物</span>
-            </div>
-            <div>
-              <strong id="hero-hot-count">0</strong>
-              <span>带券商品</span>
-            </div>
-            <div>
-              <strong id="hero-top-coupon">¥0</strong>
-              <span>最高优惠</span>
-            </div>
-          </div>
-          <div class="panel-note">
-            <span class="pulse"></span>
-            数据更新时间：<time id="updated-at">尚未导入</time>
-          </div>
+        <div id="hero-showcase" class="hero-showcase" aria-label="今日编辑精选商品">
+          <div class="hero-showcase-skeleton"></div>
+          <div class="hero-showcase-skeleton"></div>
+          <div class="hero-showcase-skeleton"></div>
+        </div>
+        <div class="hero-bottom-bar">
+          <div><strong id="hero-product-count">0</strong><span>今日好物</span></div>
+          <div><strong id="hero-hot-count">0</strong><span>带券商品</span></div>
+          <div><strong id="hero-top-coupon">¥0</strong><span>最高优惠</span></div>
+          <div class="hero-update"><span class="pulse"></span>更新于 <time id="updated-at">尚未导入</time></div>
         </div>
       </section>
 

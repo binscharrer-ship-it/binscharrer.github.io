@@ -41,6 +41,7 @@ const elements = {
   productCount: document.querySelector("#hero-product-count"),
   hotCount: document.querySelector("#hero-hot-count"),
   topCoupon: document.querySelector("#hero-top-coupon"),
+  heroShowcase: document.querySelector("#hero-showcase"),
   updatedAt: document.querySelector("#updated-at"),
   mobileSearch: document.querySelector("#mobile-search-button"),
   mobileFavorites: document.querySelector("#mobile-favorites-button"),
@@ -284,6 +285,56 @@ function renderMetrics(items) {
   elements.topCoupon.textContent = `¥${topCoupon.toFixed(topCoupon % 1 ? 2 : 0)}`;
 }
 
+function renderHeroShowcase(items) {
+  if (!elements.heroShowcase) return;
+  const ranked = items
+    .filter((item) => (!item.status || item.status === "active") && item.image_url)
+    .sort(
+      (a, b) =>
+        Number(b.coupon || 0) - Number(a.coupon || 0) ||
+        Number(b.sales_30d || 0) - Number(a.sales_30d || 0),
+    );
+  const featured = [];
+  const seenGroups = new Set();
+  for (const item of ranked) {
+    const group = productGroup(item);
+    if (seenGroups.has(group)) continue;
+    seenGroups.add(group);
+    featured.push(item);
+    if (featured.length === 3) break;
+  }
+  if (featured.length < 3) {
+    for (const item of ranked) {
+      if (featured.includes(item)) continue;
+      featured.push(item);
+      if (featured.length === 3) break;
+    }
+  }
+  if (!featured.length) {
+    elements.heroShowcase.innerHTML =
+      '<div class="hero-showcase-empty">今日精选正在更新</div>';
+    return;
+  }
+
+  const card = (item, index) => `
+    <a class="hero-feature-card ${index === 0 ? "hero-feature-main" : "hero-feature-small"}"
+       href="${item.url}" target="_blank" rel="nofollow sponsored noopener">
+      <img src="${imageSource(item.image_url)}" alt="${item.title}" ${index === 0 ? 'loading="eager"' : 'loading="lazy"'} />
+      <div class="hero-feature-copy">
+        <span class="hero-feature-rank">${index === 0 ? "编辑首选" : `0${index + 1} / 今日精选`}</span>
+        <strong>${item.title}</strong>
+        <div class="hero-feature-price">
+          <b>${currency.format(item.price || 0)}</b>
+          ${item.coupon > 0 ? `<small>券 ${currency.format(item.coupon)}</small>` : ""}
+        </div>
+      </div>
+    </a>
+  `;
+  elements.heroShowcase.innerHTML = featured
+    .map((item, index) => card(item, index))
+    .join("");
+}
+
 function renderProfileFavorites() {
   const items = state.items.filter((item) => state.favorites.has(item.id));
   elements.profileFavoriteNote.textContent = items.length
@@ -394,6 +445,7 @@ async function loadProducts() {
     updateQuickFilters();
     saveFavorites();
     renderMetrics(state.items);
+    renderHeroShowcase(state.items);
     elements.updatedAt.textContent = formatDate(payload.updated_at);
     render();
     return;
@@ -408,6 +460,7 @@ async function loadProducts() {
   updateQuickFilters();
   saveFavorites();
   renderMetrics(state.items);
+  renderHeroShowcase(state.items);
   elements.updatedAt.textContent = formatDate(payload.updated_at);
   render();
 }

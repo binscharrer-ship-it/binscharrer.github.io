@@ -1,4 +1,4 @@
-const CACHE_NAME = "haojia-shell-v2";
+const CACHE_NAME = "haojia-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
