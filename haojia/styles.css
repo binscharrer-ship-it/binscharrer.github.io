@@ -668,6 +668,16 @@ main {
   font-weight: 750;
 }
 
+.compare-chip {
+  padding: 4px 6px;
+  border-radius: 5px;
+  color: #6b4610;
+  background: #fff0c7;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .merchant {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -753,6 +763,12 @@ main {
 .tag-list .order-badge {
   color: #8a321f;
   background: #ffe3d7;
+  font-weight: 800;
+}
+
+.tag-list .compare-badge {
+  color: #6b4610;
+  background: #fff0c7;
   font-weight: 800;
 }
 

@@ -137,6 +137,8 @@ function filteredProducts() {
     if (state.quick === "coupon" && !(Number(item.coupon) > 0)) return false;
     if (state.quick === "favorites" && !state.favorites.has(item.id)) return false;
     if (state.quick === "ordered" && !(Number(item.order_count) > 0)) return false;
+    if (state.quick === "compare" && !item.compare_group) return false;
+    if (state.quick === "large" && !(Number(item.price) >= 199)) return false;
     if (state.quick === "brand") {
       const hasBrand = Object.prototype.hasOwnProperty.call(item, "brand")
         ? Boolean(item.brand)
@@ -163,6 +165,7 @@ function filteredProducts() {
     sales: (a, b) => b.sales_30d - a.sales_30d,
     coupon: (a, b) => b.coupon - a.coupon,
     "price-asc": (a, b) => a.price - b.price,
+    "price-desc": (a, b) => b.price - a.price,
   };
   const selectedSort = state.quick === "hot" ? "sales" : state.sort;
   return items.sort(sorters[selectedSort] || sorters.score);
@@ -203,6 +206,8 @@ function updateQuickFilters() {
     ["hot", "今日热榜"],
     ["coupon", "有券专区"],
     ["ordered", "真实成交"],
+    ["compare", "同款比价"],
+    ["large", "大件好物"],
     ["brand", "大牌好物"],
     ["favorites", `我的收藏 ${state.favorites.size}`],
   ];
@@ -277,7 +282,11 @@ function openProduct(item) {
     : item.original_price > item.price
       ? `已直降 ${currency.format(item.original_price - item.price)}`
       : "今日好价";
-  elements.dialogTags.textContent = (item.tags || []).slice(0, 5).join(" · ");
+  const dialogTags = [...(item.tags || [])];
+  if (item.compare_group) {
+    dialogTags.unshift(`同款比价 · ${item.compare_label || "方案"}`);
+  }
+  elements.dialogTags.textContent = dialogTags.slice(0, 6).join(" · ");
   elements.dialogBuy.href = item.url;
   updateDialogFavorite();
   if (typeof elements.dialog.showModal === "function") {
@@ -433,6 +442,12 @@ function buildCard(item) {
   dealButton.href = item.url;
   title.textContent = item.title;
   card.querySelector(".category-chip").textContent = productGroup(item);
+  if (item.compare_group) {
+    const compareChip = document.createElement("span");
+    compareChip.className = "compare-chip";
+    compareChip.textContent = `同款${String(item.compare_label || "").replace("方案 ", "")}`;
+    card.querySelector(".product-meta").prepend(compareChip);
+  }
   const merchant = card.querySelector(".merchant");
   merchant.textContent = item.merchant || "";
 
@@ -461,6 +476,12 @@ function buildCard(item) {
     : "";
 
   const tagList = card.querySelector(".tag-list");
+  if (item.compare_group) {
+    const compareBadge = document.createElement("span");
+    compareBadge.className = "compare-badge";
+    compareBadge.textContent = `同款比价 · ${item.compare_label || "方案"}`;
+    tagList.append(compareBadge);
+  }
   if (Number(item.order_count) > 0) {
     const orderBadge = document.createElement("span");
     orderBadge.className = "order-badge";
