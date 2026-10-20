@@ -45,6 +45,11 @@ const elements = {
   mobileSearch: document.querySelector("#mobile-search-button"),
   mobileFavorites: document.querySelector("#mobile-favorites-button"),
   favoritesCount: document.querySelector("#favorites-count"),
+  mobileProfile: document.querySelector("#mobile-profile-button"),
+  profileDialog: document.querySelector("#profile-dialog"),
+  profileDialogClose: document.querySelector("#profile-dialog-close"),
+  profileFavoriteList: document.querySelector("#profile-favorite-list"),
+  profileFavoriteNote: document.querySelector("#profile-favorite-note"),
   dialog: document.querySelector("#product-dialog"),
   dialogClose: document.querySelector("#dialog-close"),
   dialogImage: document.querySelector("#dialog-image"),
@@ -182,10 +187,8 @@ function updateQuickFilters() {
 
 function saveFavorites() {
   localStorage.setItem("haojia_favorites", JSON.stringify([...state.favorites]));
-  const count = state.favorites.size;
-  elements.favoritesCount.textContent = String(count);
-  elements.favoritesCount.hidden = count === 0;
   updateQuickFilters();
+  if (elements.profileDialog?.open) renderProfileFavorites();
 }
 
 function imageSource(imageUrl) {
@@ -279,6 +282,39 @@ function renderMetrics(items) {
     0,
   );
   elements.topCoupon.textContent = `¥${topCoupon.toFixed(topCoupon % 1 ? 2 : 0)}`;
+}
+
+function renderProfileFavorites() {
+  const items = state.items.filter((item) => state.favorites.has(item.id));
+  elements.profileFavoriteNote.textContent = items.length
+    ? `已收藏 ${items.length} 件商品`
+    : "还没有收藏商品。";
+  elements.profileFavoriteList.replaceChildren(
+    ...items.map((item) => {
+      const row = document.createElement("article");
+      row.className = "profile-favorite-item";
+      row.innerHTML = `
+        <div class="profile-favorite-media">${
+          item.image_url
+            ? `<img src="${imageSource(item.image_url)}" alt="" loading="lazy" />`
+            : ""
+        }</div>
+        <div class="profile-favorite-copy">
+          <span>${productGroup(item)}</span>
+          <strong>${item.title}</strong>
+          <small>${currency.format(item.price || 0)}</small>
+        </div>
+        <div class="profile-favorite-actions">
+          <a href="${item.url}" target="_blank" rel="nofollow sponsored noopener">去看看</a>
+          <button type="button">移除</button>
+        </div>
+      `;
+      row.querySelector("button").addEventListener("click", () =>
+        toggleFavorite(item.id),
+      );
+      return row;
+    }),
+  );
 }
 
 function buildCard(item) {
