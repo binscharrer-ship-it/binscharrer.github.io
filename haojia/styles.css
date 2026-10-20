@@ -1988,7 +1988,7 @@ td {
 
 .hero h1 {
   max-width: 760px;
-  font-size: clamp(43px, 5vw, 72px);
+  font-size: clamp(40px, 4vw, 54px);
   line-height: 1.06;
 }
 
@@ -2312,5 +2312,168 @@ td {
   .hero-showcase-skeleton {
     animation: none;
     transition: none;
+  }
+}
+/* Premium warm-color storefront */
+:root {
+  --surface: #fbf5ee;
+  --paper: #fffdf9;
+  --ink: #241d1a;
+  --muted: #756862;
+  --red: #df443e;
+  --red-dark: #a82b2b;
+  --gold: #d89628;
+}
+
+body {
+  background:
+    linear-gradient(90deg, rgba(84, 52, 33, 0.035) 1px, transparent 1px) 0 0 / 34px
+      34px,
+    var(--surface);
+}
+
+.brand strong,
+.hero h1,
+.section-head h2,
+.industry-entry h2,
+.crystal-entry h2,
+.crystal-hero h1,
+.crystal-section-head h2,
+.custom-hero h1,
+.section-heading h2 {
+  font-family:
+    "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff8ee;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 19px,
+      rgba(255, 255, 255, 0.035) 19px,
+      rgba(255, 255, 255, 0.035) 20px
+    ),
+    linear-gradient(125deg, #ee6251 0%, #df443e 58%, #ca313e 100%);
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-editorial-label {
+  color: #ffe8bf;
+}
+
+.hero-editorial-label span:first-child {
+  border-color: rgba(255, 225, 140, 0.72);
+  color: #ffe18c;
+}
+
+.hero h1 {
+  color: #fffaf1;
+  text-shadow: 0 3px 18px rgba(112, 22, 26, 0.16);
+}
+
+.hero h1 em {
+  color: #ffe18c;
+}
+
+.hero .hero-text {
+  color: #ffe7d7;
+}
+
+.hero .primary-button {
+  color: #721b1c;
+  background: #ffe18c;
+  box-shadow: 0 12px 28px rgba(109, 20, 26, 0.22);
+}
+
+.hero .primary-button:hover {
+  color: #641617;
+  background: #ffd66d;
+}
+
+.hero-secondary-button {
+  color: #fff9f2;
+  border-color: rgba(255, 250, 239, 0.5);
+  background: rgba(255, 250, 239, 0.1);
+}
+
+.hero-trust-row {
+  color: #ffe4d4;
+}
+
+.hero-trust-row span::before {
+  color: #ffe18c;
+}
+
+.hero-feature-card {
+  border: 1px solid rgba(255, 245, 229, 0.34);
+  box-shadow: 0 26px 54px rgba(104, 17, 24, 0.24);
+}
+
+.hero-feature-rank {
+  color: #ffe18c;
+}
+
+.hero-feature-price b {
+  color: #ffe18c;
+  font-family: "DIN Alternate", "Arial Narrow", "Microsoft YaHei", sans-serif;
+}
+
+.hero-feature-cta {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 248, 232, 0.42);
+  border-radius: 5px;
+  color: #fff8eb;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.hero-bottom-bar {
+  border-top-color: rgba(255, 245, 229, 0.28);
+}
+
+.hero-bottom-bar strong {
+  color: #fff8ee;
+  font-family: "DIN Alternate", "Arial Narrow", "Microsoft YaHei", sans-serif;
+}
+
+.hero-bottom-bar span,
+.hero-update {
+  color: #ffe2d2;
+}
+
+.hero-update .pulse {
+  background: #ffe18c;
+  box-shadow: 0 0 0 5px rgba(255, 225, 140, 0.16);
+}
+
+.current-price {
+  font-family: "DIN Alternate", "Arial Narrow", "Microsoft YaHei", sans-serif;
+  font-weight: 900;
+}
+
+.section-head .eyebrow,
+.industry-entry .eyebrow,
+.crystal-entry .eyebrow {
+  color: #c63336;
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 35px;
+  }
+
+  .hero-feature-cta {
+    font-size: 9px;
   }
 }

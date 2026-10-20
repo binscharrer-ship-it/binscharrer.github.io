@@ -327,6 +327,7 @@ function renderHeroShowcase(items) {
           <b>${currency.format(item.price || 0)}</b>
           ${item.coupon > 0 ? `<small>券 ${currency.format(item.coupon)}</small>` : ""}
         </div>
+        <span class="hero-feature-cta">立即去看看 →</span>
       </div>
     </a>
   `;
