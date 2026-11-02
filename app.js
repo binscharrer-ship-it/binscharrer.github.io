@@ -3210,7 +3210,7 @@
       this.dom.portraitProgressBar.style.width = `${((portrait.step + 1) / 5) * 100}%`;
       this.dom.portraitPrevButton.disabled = portrait.step === 0;
       this.dom.portraitNextButton.textContent =
-        portrait.step === 3 ? "生成画像" : portrait.step === 4 ? "用这套配方开始串珠" : "下一步";
+        portrait.step === 3 ? "生成画像" : portrait.step === 4 ? "用此配方串珠" : "下一步";
 
       if (portrait.step === 0) {
         this.dom.portraitBody.innerHTML = `<div class="portrait-grid">${CORE_CRYSTALS.map((crystal) =>
