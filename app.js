@@ -3984,7 +3984,6 @@
     }
   }
 
-  const ACCESS_STORAGE_KEY = "jingxu-access-v1";
   const ACCESS_DIGEST = "ee98d945";
 
   function accessDigest(value) {
@@ -4011,15 +4010,6 @@
     const error = document.getElementById("access-gate-error");
     if (!gate || !form || !input || !error) return;
 
-    try {
-      if (localStorage.getItem(ACCESS_STORAGE_KEY) === ACCESS_DIGEST) {
-        unlockAccessGate();
-        return;
-      }
-    } catch {
-      // The gate still works for the current page even when storage is unavailable.
-    }
-
     input.addEventListener("input", () => {
       input.value = input.value.replace(/\D/g, "").slice(0, 4);
       error.textContent = "";
@@ -4041,11 +4031,6 @@
         return;
       }
 
-      try {
-        localStorage.setItem(ACCESS_STORAGE_KEY, ACCESS_DIGEST);
-      } catch {
-        // Unlocking for this page does not depend on storage.
-      }
       error.textContent = "";
       input.value = "";
       unlockAccessGate();
