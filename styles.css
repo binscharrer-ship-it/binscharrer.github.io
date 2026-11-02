@@ -2889,6 +2889,162 @@ a:focus-visible {
   }
 }
 
+.access-gate {
+  display: none;
+}
+
+body.access-locked {
+  overflow: hidden;
+}
+
+body.access-locked .app-shell {
+  display: none;
+}
+
+body.access-locked .access-gate {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  place-items: center;
+  padding:
+    max(24px, env(safe-area-inset-top))
+    max(18px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom))
+    max(18px, env(safe-area-inset-left));
+  background: #071221;
+}
+
+body.access-locked .access-gate::before {
+  position: fixed;
+  inset: -28px;
+  background: url("./assets/backgrounds/ice-queen-bg.webp") center 34% / cover no-repeat;
+  content: "";
+  filter: blur(14px) saturate(0.9) brightness(0.58);
+  transform: scale(1.08);
+}
+
+body.access-locked .access-gate::after {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 22%, rgba(119, 217, 255, 0.16), transparent 44%),
+    linear-gradient(180deg, rgba(3, 12, 26, 0.56), rgba(3, 11, 24, 0.86));
+  content: "";
+  pointer-events: none;
+}
+
+.access-gate-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 430px);
+  padding: clamp(26px, 7vw, 42px) clamp(20px, 6vw, 34px);
+  border: 1px solid rgba(160, 225, 252, 0.36);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(17, 40, 67, 0.92), rgba(8, 24, 45, 0.9));
+  box-shadow:
+    0 32px 90px rgba(0, 5, 18, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  text-align: center;
+  backdrop-filter: blur(26px) saturate(1.16);
+}
+
+.access-gate-gem {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 22px;
+}
+
+.access-gate-card .panel-kicker {
+  color: #8ce1ff;
+}
+
+.access-gate-card h1 {
+  margin: 8px 0 10px;
+  color: #f5fbff;
+  font-size: clamp(26px, 7vw, 34px);
+  font-weight: 500;
+  line-height: 1.2;
+  text-shadow: 0 5px 28px rgba(63, 191, 255, 0.22);
+}
+
+.access-gate-copy {
+  margin: 0 auto 24px;
+  color: #bdd7e8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.access-gate-form {
+  display: grid;
+  gap: 11px;
+  text-align: left;
+}
+
+.access-gate-form label {
+  color: #d7ecf8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.access-gate-form input {
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 14px;
+  border: 1px solid rgba(125, 204, 239, 0.4);
+  border-radius: 8px;
+  outline: 0;
+  background: rgba(3, 16, 34, 0.68);
+  color: #f6fcff;
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+.access-gate-form input:focus {
+  border-color: #8ce1ff;
+  box-shadow: 0 0 0 4px rgba(107, 207, 246, 0.14);
+}
+
+.access-gate-form .primary-action {
+  min-height: 50px;
+  margin-top: 2px;
+}
+
+.access-gate-error {
+  min-height: 20px;
+  margin: 10px 0 0;
+  color: #ff9aa8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.access-gate-note {
+  margin: 12px 0 0;
+  color: #718fa7;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.access-gate.is-shaking .access-gate-card {
+  animation: access-gate-shake 260ms ease;
+}
+
+@keyframes access-gate-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-7px);
+  }
+  75% {
+    transform: translateX(7px);
+  }
+}
+
 @media (max-width: 430px) {
   .view-heading h1 {
     font-size: 30px;

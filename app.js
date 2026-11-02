@@ -3984,5 +3984,76 @@
     }
   }
 
+  const ACCESS_STORAGE_KEY = "jingxu-access-v1";
+  const ACCESS_DIGEST = "ee98d945";
+
+  function accessDigest(value) {
+    let hash = 2166136261;
+    const source = `jingxu-access-v1:${value}:ice`;
+    for (let index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16);
+  }
+
+  function unlockAccessGate() {
+    document.body.classList.remove("access-locked");
+    const gate = document.getElementById("access-gate");
+    if (gate) gate.hidden = true;
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function initAccessGate() {
+    const gate = document.getElementById("access-gate");
+    const form = document.getElementById("access-gate-form");
+    const input = document.getElementById("access-password");
+    const error = document.getElementById("access-gate-error");
+    if (!gate || !form || !input || !error) return;
+
+    try {
+      if (localStorage.getItem(ACCESS_STORAGE_KEY) === ACCESS_DIGEST) {
+        unlockAccessGate();
+        return;
+      }
+    } catch {
+      // The gate still works for the current page even when storage is unavailable.
+    }
+
+    input.addEventListener("input", () => {
+      input.value = input.value.replace(/\D/g, "").slice(0, 4);
+      error.textContent = "";
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!/^\d{4}$/.test(value)) {
+        error.textContent = "请输入完整的四位数字密码";
+        return;
+      }
+      if (accessDigest(value) !== ACCESS_DIGEST) {
+        error.textContent = "密码不正确，请检查后再试";
+        gate.classList.remove("is-shaking");
+        void gate.offsetWidth;
+        gate.classList.add("is-shaking");
+        input.select();
+        return;
+      }
+
+      try {
+        localStorage.setItem(ACCESS_STORAGE_KEY, ACCESS_DIGEST);
+      } catch {
+        // Unlocking for this page does not depend on storage.
+      }
+      error.textContent = "";
+      input.value = "";
+      unlockAccessGate();
+    });
+
+    window.setTimeout(() => input.focus(), 80);
+  }
+
+  initAccessGate();
   new CrystalApp();
 })();

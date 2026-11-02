@@ -12,11 +12,12 @@
       name="description"
       content="晶序：根据星座、五行、MBTI 或近期状态匹配水晶，自由选择毫米珠子并实时串出专属手链。"
     />
+    <meta name="robots" content="noindex, nofollow" />
     <title>晶序 | 水晶匹配与自由串珠</title>
     <link rel="preload" as="image" href="./assets/backgrounds/ice-queen-bg.webp" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body class="access-locked">
     <svg class="svg-defs" aria-hidden="true">
       <defs>
         <symbol id="crystal-spirit" viewBox="0 0 160 160">
@@ -70,7 +71,33 @@
         </linearGradient>
       </defs>
     </svg>
-    <div class="app-shell">
+    <section class="access-gate" id="access-gate" aria-labelledby="access-gate-title">
+      <div class="access-gate-card">
+        <span class="brand-gem access-gate-gem" aria-hidden="true"><span></span></span>
+        <p class="panel-kicker">晶序 · 私享入口</p>
+        <h1 id="access-gate-title">先输入访问口令</h1>
+        <p class="access-gate-copy">输入购买后获得的四位数字，打开你的水晶搭配空间。</p>
+        <form class="access-gate-form" id="access-gate-form">
+          <label for="access-password">四位访问密码</label>
+          <input
+            id="access-password"
+            name="password"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]{4}"
+            maxlength="4"
+            autocomplete="off"
+            aria-describedby="access-gate-error"
+            required
+          />
+          <button class="primary-action" type="submit">进入晶序</button>
+        </form>
+        <p class="access-gate-error" id="access-gate-error" role="status" aria-live="polite"></p>
+        <p class="access-gate-note">仅用于访问体验，不代表正式内容授权或支付凭证。</p>
+      </div>
+    </section>
+
+    <div class="app-shell" id="app-shell">
       <header class="app-header">
         <a class="brand" href="#test" aria-label="晶序首页">
           <span class="brand-gem" aria-hidden="true">
