@@ -4,8 +4,11 @@ const state = {
   category: "",
   sort: "score",
   quick: "recommend",
+  visibleCount: window.matchMedia("(max-width: 640px)").matches ? 12 : 24,
   favorites: new Set(JSON.parse(localStorage.getItem("haojia_favorites") || "[]")),
 };
+
+const pageSize = window.matchMedia("(max-width: 640px)").matches ? 12 : 24;
 
 const categoryGroups = [
   "食品饮料",
@@ -51,6 +54,7 @@ const elements = {
   quickFilters: document.querySelector("#quick-filters"),
   sort: document.querySelector("#sort-select"),
   resultCount: document.querySelector("#result-count"),
+  loadMore: document.querySelector("#load-more-button"),
   productCount: document.querySelector("#hero-product-count"),
   hotCount: document.querySelector("#hero-hot-count"),
   topCoupon: document.querySelector("#hero-top-coupon"),
@@ -96,6 +100,15 @@ function formatDate(value) {
 
 function normalizeText(value) {
   return String(value || "").trim().toLowerCase();
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function dealLabel(item) {
@@ -385,16 +398,21 @@ function renderHeroShowcase(items) {
 
   const card = (item, index) => `
     <a class="hero-feature-card ${index === 0 ? "hero-feature-main" : "hero-feature-small"}"
-       href="${item.url}" target="_blank" rel="nofollow sponsored noopener">
-      <img src="${imageSource(item.image_url)}" alt="${item.title}" ${index === 0 ? 'loading="eager"' : 'loading="lazy"'} />
+       href="${escapeHtml(item.url)}" target="_blank" rel="nofollow sponsored noopener">
+      <div class="hero-feature-media">
+        <img src="${escapeHtml(imageSource(item.image_url))}" alt="${escapeHtml(item.title)}" loading="eager" />
+      </div>
       <div class="hero-feature-copy">
-        <span class="hero-feature-rank">${index === 0 ? "编辑首选" : `0${index + 1} / 今日精选`}</span>
-        <strong>${item.title}</strong>
+        <span class="hero-feature-rank">${index === 0 ? "今日首选" : "编辑也推荐"}</span>
+        <strong>${escapeHtml(item.title)}</strong>
         <div class="hero-feature-price">
           <b>${currency.format(item.price || 0)}</b>
           <small>${dealLabel(item)}</small>
         </div>
-        <span class="hero-feature-cta">立即去看看 →</span>
+        <span class="hero-feature-cta">
+          查看详情
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
       </div>
     </a>
   `;
@@ -507,8 +525,8 @@ function buildCard(item) {
   });
 
   const favoriteActive = state.favorites.has(item.id);
-  favoriteButton.textContent = favoriteActive ? "♥" : "♡";
   favoriteButton.classList.toggle("active", favoriteActive);
+  favoriteButton.setAttribute("aria-pressed", String(favoriteActive));
   favoriteButton.addEventListener("click", () => toggleFavorite(item.id));
 
   return card;
@@ -516,10 +534,14 @@ function buildCard(item) {
 
 function render() {
   const items = filteredProducts();
-  elements.grid.replaceChildren(...items.map(buildCard));
+  const visibleItems = items.slice(0, state.visibleCount);
+  elements.grid.replaceChildren(...visibleItems.map(buildCard));
   elements.resultCount.textContent = String(items.length);
   elements.grid.hidden = items.length === 0;
   elements.empty.hidden = items.length !== 0;
+  elements.loadMore.hidden = visibleItems.length >= items.length;
+  elements.loadMore.querySelector("small").textContent =
+    `已显示 ${visibleItems.length} / ${items.length}`;
 }
 
 async function loadProducts() {
@@ -553,12 +575,14 @@ async function loadProducts() {
 
 elements.search.addEventListener("input", (event) => {
   state.query = event.target.value;
+  state.visibleCount = pageSize;
   render();
 });
 
 elements.category.addEventListener("change", (event) => {
   state.category = event.target.value;
   state.quick = "recommend";
+  state.visibleCount = pageSize;
   updateQuickFilters();
   updateCategoryStrip(state.items);
   render();
@@ -569,6 +593,7 @@ elements.categoryStrip.addEventListener("click", (event) => {
   if (!button) return;
   state.category = button.dataset.category || "";
   state.quick = "recommend";
+  state.visibleCount = pageSize;
   elements.category.value = state.category;
   updateQuickFilters();
   updateCategoryStrip(state.items);
@@ -579,6 +604,7 @@ elements.quickFilters.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-quick]");
   if (!button) return;
   state.quick = button.dataset.quick || "recommend";
+  state.visibleCount = pageSize;
   updateQuickFilters();
   render();
   if (state.quick === "favorites") {
@@ -593,11 +619,18 @@ elements.mobileSearch.addEventListener("click", () => {
 
 elements.sort.addEventListener("change", (event) => {
   state.sort = event.target.value;
+  state.visibleCount = pageSize;
+  render();
+});
+
+elements.loadMore.addEventListener("click", () => {
+  state.visibleCount += pageSize;
   render();
 });
 
 elements.mobileFavorites.addEventListener("click", () => {
   state.quick = "favorites";
+  state.visibleCount = pageSize;
   updateQuickFilters();
   render();
   elements.grid.scrollIntoView({ behavior: "smooth", block: "start" });

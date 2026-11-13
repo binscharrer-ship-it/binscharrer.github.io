@@ -37,8 +37,8 @@ function syncCardFavorite(title, active) {
     if (cardTitle !== title) return;
     const button = card.querySelector(".favorite-button");
     if (!button) return;
-    button.textContent = active ? "♥" : "♡";
     button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 }
 

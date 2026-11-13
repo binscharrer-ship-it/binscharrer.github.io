@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#17212c" />
+    <meta name="theme-color" content="#f2e9dd" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="好价精选" />
@@ -19,10 +19,10 @@
   <body id="top">
     <header class="site-header">
       <a class="brand" href="./" aria-label="返回首页">
-        <span class="brand-mark">省</span>
+        <span class="brand-mark">好</span>
         <span>
           <strong>好价精选</strong>
-          <small>每日优惠好物</small>
+          <small>认真挑，放心买</small>
         </span>
       </a>
       <nav class="top-nav" aria-label="主导航">
@@ -36,21 +36,20 @@
       <section class="hero">
         <div class="hero-copy">
           <div class="hero-editorial-label">
-            <span>XG SELECT</span>
-            <span>每日编辑精选</span>
+            <span>今日严选</span>
+            <span>价格核对后再上架</span>
           </div>
-          <h1>今天值得买的好东西<br /><em>先看这几件。</em></h1>
+          <h1>不是便宜就买<br /><em>是值得才买。</em></h1>
           <p class="hero-text">
-            从高销量与高优惠商品中，挑出更适合直接下单的日常好货。
-            不写“全网最低”，只标真实券后价。
+            每天从销量、口碑和优惠里筛一轮。只把真实券后价、日常用得上的东西放到这里。
           </p>
           <div class="hero-actions">
-            <a class="primary-button" href="#deals">看今日精选</a>
-            <a class="hero-secondary-button" href="#quick-filters">有券专区</a>
+            <a class="primary-button" href="#deals">挑今日好物</a>
+            <a class="hero-secondary-button" href="#quick-filters">按分类看看</a>
           </div>
           <div class="hero-trust-row">
-            <span>真实券后价</span>
-            <span>每日更新</span>
+            <span>实价筛选</span>
+            <span>每日复核</span>
             <span>官方推广链接</span>
           </div>
         </div>
@@ -67,40 +66,42 @@
         </div>
       </section>
 
-      <section class="crystal-entry">
-        <div class="crystal-entry-mark" aria-hidden="true">晶</div>
-        <div>
-          <p class="eyebrow">晶序 · 水晶专场</p>
-          <h2>测配、串珠、图鉴与水系店铺现货入口</h2>
-          <p>
-            输入星座、五行、人格或近期状态，匹配水晶配方，再按配方查看店铺现货。
-          </p>
-        </div>
-        <a class="crystal-entry-link" href="./crystal.html">
-          进入水晶专场 <span>→</span>
-        </a>
-      </section>
+      <div class="entry-grid">
+        <section class="crystal-entry">
+          <div class="crystal-entry-mark" aria-hidden="true">晶</div>
+          <div class="entry-copy">
+            <p class="eyebrow">晶序 · 水晶专场</p>
+            <h2>按状态，选一串属于自己的珠子</h2>
+            <p>从星座、五行与近期状态出发，再看配方和店铺现货。</p>
+          </div>
+          <a class="crystal-entry-link" href="./crystal.html">
+            去看看
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </section>
 
-      <section class="industry-entry">
-        <div>
-          <p class="eyebrow">XG FRONT-END IP LICENSING · 企业定制</p>
-          <p>
-            XG 仅授权数字样机、可综合 RTL、时序证据包等前端 IP；
-            客户负责自身板卡、机械、流体、工艺、生产与认证。可按行业场景、
-            目标器件、延迟、冗余、证据等级和授权周期生成需求单。
-          </p>
-        </div>
-        <a class="industry-link" href="./custom.html">
-          进入产业定制中心
-          <span>→</span>
-        </a>
-      </section>
+        <section class="industry-entry">
+          <span class="entry-index" aria-hidden="true">02</span>
+          <div class="entry-copy">
+            <p class="eyebrow">企业定制 · 前端 IP 授权</p>
+            <h2>把场景需求，整理成可交付的前端 IP 包</h2>
+            <p>
+              XG 授权数字样机、可综合 RTL、时序证据包等前端 IP；
+              客户负责自身板卡、机械、流体、工艺、生产与认证。
+            </p>
+          </div>
+          <a class="industry-link" href="./custom.html">
+            查看定制
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </section>
+      </div>
 
       <section class="deals-section" id="deals">
         <div class="section-head">
           <div>
-            <p class="eyebrow">今日优惠精选</p>
-            <h2>先买更省，价格直看</h2>
+            <p class="eyebrow">今日好物</p>
+            <h2>慢慢挑，价格都写在明面上</h2>
           </div>
           <div class="result-count">
             共 <strong id="result-count">0</strong> 件
@@ -109,7 +110,9 @@
 
         <div class="toolbar" aria-label="商品筛选">
           <label class="search-field">
-            <span class="search-icon">⌕</span>
+            <span class="search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+            </span>
             <input
               id="search-input"
               type="search"
@@ -139,6 +142,12 @@
         <nav id="category-strip" class="category-strip" aria-label="商品分类"></nav>
 
         <div id="product-grid" class="product-grid" aria-live="polite"></div>
+        <div class="load-more-wrap">
+          <button id="load-more-button" class="load-more-button" type="button">
+            再看一批
+            <small>每次 24 件</small>
+          </button>
+        </div>
 
         <div id="empty-state" class="empty-state" hidden>
           <div class="empty-visual" aria-hidden="true">
@@ -166,20 +175,28 @@
 
     <nav class="mobile-bottom-nav" aria-label="手机端导航">
       <a href="#top">
-        <span class="nav-icon">⌂</span>
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" /></svg>
+        </span>
         <span>推荐</span>
       </a>
       <a href="./crystal.html">
-        <span class="nav-icon">◈</span>
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m12 3 8 6-8 12L4 9zM4 9h16M12 3 9 9l3 12 3-12z" /></svg>
+        </span>
         <span>水晶</span>
       </a>
       <a href="./custom.html">
-        <span class="nav-icon">✦</span>
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4" /><circle cx="7" cy="7" r="2" /><circle cx="15" cy="12" r="2" /><circle cx="12" cy="17" r="2" /></svg>
+        </span>
         <span>定制</span>
       </a>
       <button id="mobile-profile-button" type="button">
-        <span class="nav-icon">♡</span>
-        <span>我的</span>
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z" /></svg>
+        </span>
+        <span>收藏</span>
       </button>
     </nav>
     <button id="mobile-favorites-button" type="button" hidden></button>
@@ -188,9 +205,11 @@
 
     <dialog id="profile-dialog" class="profile-dialog">
       <div class="profile-dialog-shell">
-        <button id="profile-dialog-close" class="dialog-close" type="button" aria-label="关闭">×</button>
+        <button id="profile-dialog-close" class="dialog-close" type="button" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        </button>
         <div class="profile-dialog-head">
-          <p class="eyebrow">MY PICKS</p>
+          <p class="eyebrow">收藏清单</p>
           <h2>我的收藏</h2>
           <p id="profile-favorite-note">还没有收藏商品。</p>
         </div>
@@ -201,7 +220,7 @@
     <dialog id="product-dialog" class="product-dialog">
       <div class="dialog-shell">
         <button id="dialog-close" class="dialog-close" type="button" aria-label="关闭">
-          ×
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
         </button>
         <img id="dialog-image" alt="" />
         <div class="dialog-content">
@@ -239,7 +258,9 @@
             <img alt="" loading="lazy" />
             <span class="image-fallback"></span>
           </a>
-          <button class="favorite-button" type="button" aria-label="收藏商品">♡</button>
+          <button class="favorite-button" type="button" aria-label="收藏商品" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z" /></svg>
+          </button>
         </div>
         <div class="product-body">
           <div class="product-meta">
