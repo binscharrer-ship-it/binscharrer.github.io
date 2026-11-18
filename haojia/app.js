@@ -153,7 +153,6 @@ function filteredProducts() {
     if (state.category && productGroup(item) !== state.category) return false;
     if (state.quick === "coupon" && !(Number(item.coupon) > 0)) return false;
     if (state.quick === "favorites" && !state.favorites.has(item.id)) return false;
-    if (state.quick === "ordered" && !(Number(item.order_count) > 0)) return false;
     if (state.quick === "winter" && !(item.tags || []).includes("秋冬")) {
       return false;
     }
@@ -179,7 +178,6 @@ function filteredProducts() {
 
   const sorters = {
     score: (a, b) =>
-      Number(b.order_count || 0) - Number(a.order_count || 0) ||
       Number((b.tags || []).includes("秋冬")) -
         Number((a.tags || []).includes("秋冬")) ||
       Number(b.hot_score || 0) - Number(a.hot_score || 0) ||
@@ -227,7 +225,6 @@ function updateQuickFilters() {
     ["recommend", "猜你喜欢"],
     ["hot", "今日热榜"],
     ["coupon", "有券专区"],
-    ["ordered", "真实成交"],
     ["winter", "秋冬精选"],
     ["compare", "同款比价"],
     ["large", "大件好物"],
@@ -292,9 +289,8 @@ function openProduct(item) {
   elements.dialogImage.src = imageSource(item.image_url);
   elements.dialogImage.alt = item.title;
   elements.dialogCategory.textContent = productGroup(item);
-  const orderNote = Number(item.order_count) > 0 ? " · 已有成交" : "";
   elements.dialogSales.textContent =
-    `30日销量 ${compactNumber.format(item.sales_30d || 0)}${orderNote}`;
+    `30日销量 ${compactNumber.format(item.sales_30d || 0)}`;
   elements.dialogTitle.textContent = item.title;
   elements.dialogPrice.textContent = currency.format(item.price || 0);
   elements.dialogOriginalPrice.textContent =
@@ -367,7 +363,6 @@ function renderHeroShowcase(items) {
     .filter((item) => (!item.status || item.status === "active") && item.image_url)
     .sort(
       (a, b) =>
-        Number(b.order_count || 0) - Number(a.order_count || 0) ||
         Number((b.tags || []).includes("秋冬")) -
           Number((a.tags || []).includes("秋冬")) ||
         Number(b.original_price || 0) - Number(b.price || 0) -
@@ -511,12 +506,6 @@ function buildCard(item) {
     compareBadge.className = "compare-badge";
     compareBadge.textContent = `同款比价 · ${item.compare_label || "方案"}`;
     tagList.append(compareBadge);
-  }
-  if (Number(item.order_count) > 0) {
-    const orderBadge = document.createElement("span");
-    orderBadge.className = "order-badge";
-    orderBadge.textContent = "有人买过";
-    tagList.append(orderBadge);
   }
   (item.tags || []).slice(0, 3).forEach((tag) => {
     const chip = document.createElement("span");
